@@ -39,6 +39,8 @@ public class ShinryouMenu extends VBox {
     };
     private Consumer<List<ConductFullDTO>> onConductsEnteredHandler = cc -> {
     };
+    private Consumer<List<Integer>> onDeletedHandler = deletedShinryouIds -> {
+    };
 
     public ShinryouMenu(VisitDTO visit) {
         super(4);
@@ -56,6 +58,10 @@ public class ShinryouMenu extends VBox {
 
     public void setOnConductsEnteredHandler(Consumer<List<ConductFullDTO>> onConductsEnteredHandler) {
         this.onConductsEnteredHandler = onConductsEnteredHandler;
+    }
+
+    public void setOnDeletedHandler(Consumer<List<Integer>> onDeletedHandler) {
+        this.onDeletedHandler = onDeletedHandler;
     }
 
     public void simulateEnterRegularChoice() {
@@ -174,10 +180,10 @@ public class ShinryouMenu extends VBox {
         if (targetVisitId != 0) {
             ShinryouCopier copier = new ShinryouCopier(targetVisitId);
             copier.copyFromVisit(visitId)
-                    .thenAccept(enteredList ->
-                        enteredList.forEach(e ->
-                                Context.integrationService.broadcastNewShinryou(e.shinryou, e.attr))
-                    )
+                    .thenAcceptAsync(enteredList ->
+                                    enteredList.forEach(e ->
+                                            Context.integrationService.broadcastNewShinryou(e.shinryou, e.attr))
+                            , Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
@@ -203,25 +209,21 @@ public class ShinryouMenu extends VBox {
     }
 
     private void doDeleteSelected() {
-//        if (isWorkareaEmpty()) {
-//            if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を削除しますか？")) {
-//                Context.frontend.listShinryouFull(visitId)
-//                        .thenAccept(shinryouList -> {
-//                            DeleteSelectedForm form = new DeleteSelectedForm(shinryouList) {
-//
-//                                @Override
-//                                protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
-//                                    CFUtil.forEach(selection, this::deleteShinryou)
-//                                            .thenAccept(result -> Platform.runLater(() -> hideWorkarea()))
-//                                            .exceptionally(HandlerFX::exceptionally);
-//                                }
-//                            };
-//                            form.setOnCancelHandler(this::hideWorkarea);
-//                            Platform.runLater(() -> showWorkarea(form));
-//                        })
-//                        .exceptionally(HandlerFX::exceptionally);
-//            }
-//        }
+        if (isWorkareaEmpty()) {
+            if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を削除しますか？")) {
+                Context.frontend.listShinryouFullWithAttr(visitId)
+                        .thenAccept(shinryouList -> {
+                            DeleteSelectedForm form = new DeleteSelectedForm(shinryouList);
+                            form.setOnCancelHandler(this::hideWorkarea);
+                            form.setOnDeletedHandler(deletedShinryouIds -> {
+                                onDeletedHandler.accept(deletedShinryouIds);
+                                hideWorkarea();
+                            });
+                            Platform.runLater(() -> showWorkarea(form));
+                        })
+                        .exceptionally(HandlerFX::exceptionally);
+            }
+        }
     }
 
     private void doDeleteDuplicate() {

@@ -12,26 +12,30 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
+import static java.util.stream.Collectors.toList;
 
 public class DeleteSelectedForm extends HandleSelectedForm {
+
+    private Consumer<List<Integer>> onDeletedHandler = ids -> {};
 
     DeleteSelectedForm(List<ShinryouFullWithAttrDTO> shinryouList) {
         super("複数診療削除", shinryouList);
     }
 
-    @Override
-    protected void onEnter(List<ShinryouFullWithAttrDTO> selection) {
-//        List<Integer> deletedShinryouIds = new ArrayList<>();
-//        CFUtil.forEach(selection, this::deleteShinryou)
-//                .thenAccept(result -> Platform.runLater(() -> hideWorkarea()))
-//                .exceptionally(HandlerFX::exceptionally);
+    public void setOnDeletedHandler(Consumer<List<Integer>> onDeletedHandler) {
+        this.onDeletedHandler = onDeletedHandler;
     }
 
-    private CompletableFuture<Void> deleteShinryou(ShinryouFullDTO shinryou) {
-        return null;
-//        return Context.frontend.deleteShinryou(shinryou.shinryou.shinryouId)
-//                .thenAccept(result -> Platform.runLater(() ->
-//                        fireShinryouDeletedEvent(shinryou.shinryou)));
+    @Override
+    protected void onEnter(List<ShinryouFullWithAttrDTO> selection) {
+        List<Integer> shinryouIds = selection.stream()
+                .map(s -> s.shinryou.shinryou.shinryouId)
+                .collect(toList());
+        Context.frontend.batchDeleteShinryouCascading(shinryouIds)
+                .thenAcceptAsync(v -> onDeletedHandler.accept(shinryouIds), Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
 }

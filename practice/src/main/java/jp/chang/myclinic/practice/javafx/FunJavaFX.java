@@ -5,14 +5,12 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.lib.ErrorMessageExtractor;
-import jp.chang.myclinic.practice.javafx.shinryou.ShinryouCopierOld;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class FunJavaFX {
@@ -22,14 +20,6 @@ public class FunJavaFX {
             String message = ErrorMessageExtractor.extract(th);
             Platform.runLater(() -> GuiUtil.alertError(message));
         };
-    }
-
-    public static void batchCopyShinryou(int targetVisitId, List<ShinryouFullDTO> srcList,
-                                         BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> onEntered,
-                                         Runnable onEnd) {
-        ShinryouCopierOld copier = new ShinryouCopierOld(targetVisitId, srcList, onEntered, createErrorHandler(),
-                () -> Platform.runLater(onEnd));
-        copier.start();
     }
 
     public static class BatchEnteredShinryou {

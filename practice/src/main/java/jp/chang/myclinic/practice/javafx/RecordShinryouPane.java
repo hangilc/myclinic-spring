@@ -73,6 +73,7 @@ class RecordShinryouPane extends VBox {
             }
         });
         menu.setOnConductsEnteredHandler(cc -> onConductsEnteredHandler.accept(cc));
+        menu.setOnDeletedHandler(deletedShinryouIds -> deletedShinryouIds.forEach(this::deleteShinryou));
         return menu;
     }
 
