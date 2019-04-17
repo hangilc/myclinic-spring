@@ -1,56 +1,78 @@
 package jp.chang.myclinic.practice.javafx.conduct;
 
+import javafx.application.Platform;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import jp.chang.myclinic.dto.ConductKizaiDTO;
+import jp.chang.myclinic.dto.ConductKizaiFullDTO;
 import jp.chang.myclinic.dto.KizaiMasterDTO;
+import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.Context;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;
-import jp.chang.myclinic.practice.javafx.parts.SearchBoxOld;
+import jp.chang.myclinic.practice.javafx.parts.SearchBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.function.Consumer;
 
-public class ConductKizaiForm extends WorkForm {
+class ConductKizaiForm extends WorkForm {
 
-    private static Logger logger = LoggerFactory.getLogger(ConductKizaiForm.class);
-    private LocalDate at;
     private int conductId;
+    private KizaiInput kizaiInput = new KizaiInput();
+    private Consumer<ConductKizaiFullDTO> onEnteredHandler = s -> {};
+    private Runnable onCancelHandler = () -> {};
 
-    public ConductKizaiForm(LocalDate at, int conductId) {
+    ConductKizaiForm(LocalDate at, int conductId) {
         super("器材入力");
-        this.at = at;
         this.conductId = conductId;
-        KizaiInput kizaiInput = new KizaiInput();
-        SearchBoxOld<KizaiMasterDTO> searchBox = new SearchBoxOld<>(
+        SearchBox<KizaiMasterDTO> searchBox = new SearchBox<>(
                 t -> Context.frontend.searchKizaiMaster(t, at),
                 m -> m.name
         );
         searchBox.setOnSelectCallback(kizaiInput::setMaster);
-        EnterCancelBox commands = new EnterCancelBox();
-        commands.setEnterCallback(() -> doEnter(kizaiInput));
-        commands.setCancelCallback(this::onCancel);
         getChildren().addAll(
                 kizaiInput,
-                commands,
+                createCommandBox(),
                 searchBox
         );
     }
 
-    private void doEnter(KizaiInput input){
-        ConductKizaiDTO kizai = new ConductKizaiDTO();
-        kizai.conductId = conductId;
-        input.stuffInto(kizai, this::onEnter, HandlerFX::alert);
+    void setOnEnteredHandler(Consumer<ConductKizaiFullDTO> onEnteredHandler) {
+        this.onEnteredHandler = onEnteredHandler;
     }
 
-    protected void onEnter(ConductKizaiDTO kizai){
-
+    void setOnCancelHandler(Runnable onCancelHandler) {
+        this.onCancelHandler = onCancelHandler;
     }
 
-    protected void onCancel(){
+    private Node createCommandBox(){
+        HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        Button enterButton = new Button("入力");
+        Button cancelButton = new Button("キャンセル");
+        enterButton.setOnAction(evt ->doEnter());
+        cancelButton.setOnAction(evt -> onCancelHandler.run());
+        hbox.getChildren().addAll(enterButton, cancelButton);
+        return hbox;
+    }
 
+    private void doEnter(){
+        Validated<ConductKizaiDTO> validated = kizaiInput.getValidatedToEnter(conductId);
+        if( validated.isFailure() ){
+            AlertDialog.alert(validated.getErrorsAsString(), this);
+            return;
+        }
+        ConductKizaiDTO kizai = validated.getValue();
+        Frontend frontend = Context.frontend;
+        frontend.enterConductKizai(kizai)
+                .thenCompose(frontend::getConductKizaiFull)
+                .thenAcceptAsync(entered -> onEnteredHandler.accept(entered),
+                        Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
 }

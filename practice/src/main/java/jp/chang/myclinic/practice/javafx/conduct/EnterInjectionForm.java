@@ -12,7 +12,6 @@ import jp.chang.myclinic.practice.javafx.parts.SearchResult;
 import jp.chang.myclinic.practice.javafx.parts.SearchTextBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.util.validator.Validated;
-import jp.chang.myclinic.util.validator.dto.ConductDrugValidator;
 import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
@@ -99,7 +98,7 @@ public class EnterInjectionForm extends WorkForm {
         ConductEnterRequestDTO conductReq = new ConductEnterRequestDTO();
         conductReq.visitId = visitId;
         conductReq.kind = kindGroup.getValue().getCode();
-        Validated<ConductDrugDTO> validatedConductDrug = drugInput.getValidateConductDrugToEnter();
+        Validated<ConductDrugDTO> validatedConductDrug = drugInput.getValidateToEnterWithoutConductId();
         if( validatedConductDrug.isFailure() ){
             AlertDialog.alert(validatedConductDrug.getErrorsAsString(), this);
             return;

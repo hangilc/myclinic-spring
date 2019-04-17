@@ -128,7 +128,7 @@ public class ConductEditForm extends WorkForm {
     private void addShinryou(ConductShinryouFullDTO shinryou) {
         Text label = new Text(shinryou.master.name);
         Hyperlink deleteLink = new Hyperlink("削除");
-        TextFlow textFlow = new TextFlow(label, deleteLink);
+        TextFlow textFlow = new TextFlow(label, new Text(" "), deleteLink);
         deleteLink.setOnAction(evt -> doDeleteShinryou(shinryou, textFlow));
         shinryouBox.getChildren().add(textFlow);
     }
@@ -152,7 +152,7 @@ public class ConductEditForm extends WorkForm {
     private void addDrug(ConductDrugFullDTO drug) {
         Text label = new Text(DrugUtil.conductDrugRep(drug));
         Hyperlink deleteLink = new Hyperlink("削除");
-        TextFlow textFlow = new TextFlow(label, deleteLink);
+        TextFlow textFlow = new TextFlow(label, new Text(" "), deleteLink);
         deleteLink.setOnAction(evt -> doDeleteDrug(drug, textFlow));
         drugBox.getChildren().add(textFlow);
     }
@@ -176,7 +176,7 @@ public class ConductEditForm extends WorkForm {
     private void addKizai(ConductKizaiFullDTO kizai) {
         Text label = new Text(KizaiUtil.kizaiRep(kizai));
         Hyperlink deleteLink = new Hyperlink("削除");
-        TextFlow textFlow = new TextFlow(label, deleteLink);
+        TextFlow textFlow = new TextFlow(label, new Text(" "), deleteLink);
         deleteLink.setOnAction(evt -> doDeleteKizai(kizai, textFlow));
         kizaiBox.getChildren().add(textFlow);
     }
@@ -193,7 +193,8 @@ public class ConductEditForm extends WorkForm {
     }
 
     private Node createCommands(ConductFullDTO conduct) {
-        HBox hbox = new HBox();
+        HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         Button closeButton = new Button("閉じる");
         Hyperlink deleteLink = new Hyperlink("削除");
         closeButton.setOnAction(evt -> onClose(conduct));
@@ -220,24 +221,13 @@ public class ConductEditForm extends WorkForm {
         if (workarea.isVisible()) {
             return;
         }
-        ConductShinryouForm form = new ConductShinryouForm(at, getConductId()) {
-            @Override
-            protected void onEnter(ConductShinryouDTO shinryou) {
-                Context.frontend.enterConductShinryou(shinryou)
-                        .thenCompose(Context.frontend::getConductShinryouFull)
-                        .thenAccept(entered -> Platform.runLater(() -> {
-                            workarea.hide();
-                            conduct.conductShinryouList.add(entered);
-                            addShinryou(entered);
-                        }))
-                        .exceptionally(HandlerFX::exceptionally);
-            }
-
-            @Override
-            protected void onCancel() {
-                workarea.hide();
-            }
-        };
+        ConductShinryouForm form = new ConductShinryouForm(at, getConductId());
+        form.setOnCancelHandler(() -> workarea.hide());
+        form.setOnEnteredHandler(entered -> {
+            workarea.hide();
+            conduct.conductShinryouList.add(entered);
+            addShinryou(entered);
+        });
         workarea.show(form);
     }
 
@@ -245,24 +235,13 @@ public class ConductEditForm extends WorkForm {
         if (workarea.isVisible()) {
             return;
         }
-        ConductDrugForm form = new ConductDrugForm(at, getConductId()) {
-            @Override
-            protected void onEnter(ConductDrugDTO drug) {
-                Context.frontend.enterConductDrug(drug)
-                        .thenCompose(Context.frontend::getConductDrugFull)
-                        .thenAccept(entered -> Platform.runLater(() -> {
-                            workarea.hide();
-                            conduct.conductDrugs.add(entered);
-                            addDrug(entered);
-                        }))
-                        .exceptionally(HandlerFX::exceptionally);
-            }
-
-            @Override
-            protected void onCancel() {
-                workarea.hide();
-            }
-        };
+        ConductDrugForm form = new ConductDrugForm(at, getConductId());
+        form.setOnCancelHandler(workarea::hide);
+        form.setOnEnteredHandler(entered -> {
+            workarea.hide();
+            conduct.conductDrugs.add(entered);
+            addDrug(entered);
+        });
         workarea.show(form);
     }
 
@@ -270,24 +249,13 @@ public class ConductEditForm extends WorkForm {
         if( workarea.isVisible() ){
             return;
         }
-        ConductKizaiForm form = new ConductKizaiForm(at, getConductId()){
-            @Override
-            protected void onEnter(ConductKizaiDTO kizai) {
-                Context.frontend.enterConductKizai(kizai)
-                        .thenCompose(Context.frontend::getConductKizaiFull)
-                        .thenAccept(entered -> Platform.runLater(() -> {
-                            workarea.hide();
-                            conduct.conductKizaiList.add(entered);
-                            addKizai(entered);
-                        }))
-                        .exceptionally(HandlerFX::exceptionally);
-            }
-
-            @Override
-            protected void onCancel() {
-                workarea.hide();
-            }
-        };
+        ConductKizaiForm form = new ConductKizaiForm(at, getConductId());
+        form.setOnCancelHandler(workarea::hide);
+        form.setOnEnteredHandler(entered -> {
+            workarea.hide();
+            conduct.conductKizaiList.add(entered);
+            addKizai(entered);
+        });
         workarea.show(form);
     }
 

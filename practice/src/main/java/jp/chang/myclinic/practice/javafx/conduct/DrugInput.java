@@ -11,17 +11,15 @@ import jp.chang.myclinic.dto.ConductDrugDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.util.validator.Validated;
 import jp.chang.myclinic.util.validator.dto.ConductDrugValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class DrugInput extends GridPane {
+class DrugInput extends GridPane {
 
     private int iyakuhincode;
     private Text nameText;
     private TextField amountField;
     private Text amountUnitText;
 
-    public DrugInput() {
+    DrugInput() {
         int row = 0;
         {
             nameText = new Text("");
@@ -55,9 +53,6 @@ public class DrugInput extends GridPane {
         nameText.setText(name);
     }
 
-    private void setAmount(String amount) {
-        amountField.setText(amount);
-    }
 
     private void setAmountUnit(String unit) {
         amountUnitText.setText(unit);
@@ -71,10 +66,19 @@ public class DrugInput extends GridPane {
         return amountField.getText();
     }
 
-    Validated<ConductDrugDTO> getValidateConductDrugToEnter(){
+    Validated<ConductDrugDTO> getValidateToEnterWithoutConductId(){
         return new ConductDrugValidator()
                 .setValidatedConductDrugId(0)
                 .setValidatedConductId(0)
+                .validateIyakuhincode(getIyakuhincode())
+                .validateAmount(getAmount())
+                .validate();
+    }
+
+    Validated<ConductDrugDTO> getValidateToEnter(int conductId){
+        return new ConductDrugValidator()
+                .setValidatedConductDrugId(0)
+                .validateConductId(conductId)
                 .validateIyakuhincode(getIyakuhincode())
                 .validateAmount(getAmount())
                 .validate();

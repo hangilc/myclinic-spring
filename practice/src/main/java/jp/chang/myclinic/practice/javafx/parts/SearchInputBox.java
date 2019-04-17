@@ -7,7 +7,7 @@ import javafx.scene.layout.HBox;
 
 import java.util.function.Consumer;
 
-public class SearchInputBox extends HBox implements SearchBoxOld.InputBox {
+public class SearchInputBox extends HBox implements SearchBox.InputBox {
 
     private TextField inputField = new TextField();
     private Consumer<String> onTextCallback = s -> {};

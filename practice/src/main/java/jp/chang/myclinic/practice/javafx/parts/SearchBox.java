@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class SearchBoxOld<T> extends VBox {
+public class SearchBox<T> extends VBox {
 
     public interface InputBox {
         void setOnTextCallback(Consumer<String> cb);
@@ -21,13 +21,13 @@ public class SearchBoxOld<T> extends VBox {
     private Function<String, CompletableFuture<List<T>>> searcher;
     private SearchResult<T> resultBox = new SearchResult<>();
 
-    public SearchBoxOld(){
+    public SearchBox(){
         this(s -> CompletableFuture.completedFuture(Collections.emptyList()),
                 Object::toString);
     }
 
-    public SearchBoxOld(Function<String, CompletableFuture<List<T>>> searcher,
-                        Function<T, String> converter) {
+    public SearchBox(Function<String, CompletableFuture<List<T>>> searcher,
+                     Function<T, String> converter) {
         super(4);
         this.searcher = searcher;
         InputBox inputBox = createInputBox();
