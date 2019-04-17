@@ -3,9 +3,6 @@ package jp.chang.myclinic.apitool;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier.Keyword;
-
-import static com.github.javaparser.ast.NodeList.*;
-
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.*;
@@ -19,17 +16,26 @@ import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
 import jp.chang.myclinic.apitool.lib.DtoClassList;
 import jp.chang.myclinic.apitool.lib.Helper;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Parameters;
+import picocli.CommandLine.*;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
+
+import static com.github.javaparser.ast.NodeList.nodeList;
 
 @Command(name = "validator", description = "Creates validator.")
 public class Validator implements Runnable {
 
     @Parameters(paramLabel = "DTO class name", arity = "1")
     private String dtoClassName;
+
+    @Option(names = "--save")
+    private boolean save;
 
     private Helper helper = Helper.getInstance();
 
@@ -50,7 +56,23 @@ public class Validator implements Runnable {
         validateMethod(classDecl, dtoClass);
         Formatter formatter = new Formatter();
         try {
-            System.out.println(formatter.formatSource(unit.toString()));
+            String output = formatter.formatSource(unit.toString());
+            if (save) {
+                String validatorName = dtoClass.getSimpleName().replaceAll("ETO$", "") + "Validator";
+                Path savePath = Paths.get("myclinic-util/src/main/java/jp/chang/myclinic/util",
+                        validatorName + ".java");
+                if( Files.exists(savePath) ){
+                    System.err.printf("%s already exists.", savePath.toString());
+                    System.exit(1);
+                }
+                try {
+                    Files.write(savePath, output.getBytes());
+                } catch(IOException e){
+                    throw new UncheckedIOException(e);
+                }
+            } else {
+                System.out.println(output);
+            }
         } catch (FormatterException e) {
             throw new RuntimeException(e);
         }
@@ -78,13 +100,13 @@ public class Validator implements Runnable {
         methodDecl.setBody(new BlockStmt(nodeList(stmt, returnThis)));
     }
 
-    private void validateMethod(ClassOrInterfaceDeclaration classDecl, Class<?> dtoClass){
+    private void validateMethod(ClassOrInterfaceDeclaration classDecl, Class<?> dtoClass) {
         MethodDeclaration methodDecl = classDecl.addMethod("validate", Keyword.PUBLIC);
         methodDecl.setType(helper.createGenericType("Validated", dtoClass.getSimpleName()));
         Expression newInstanceExpr = new ObjectCreationExpr(null,
                 new ClassOrInterfaceType(null, dtoClass.getSimpleName()), nodeList());
         MethodCallExpr call = new MethodCallExpr("success", newInstanceExpr);
-        for(Field field: dtoClass.getFields()){
+        for (Field field : dtoClass.getFields()) {
             Expression assignLambda = new LambdaExpr(helper.createParameters("dto", field.getName()),
                     new AssignExpr(
                             new FieldAccessExpr(new NameExpr("dto"), field.getName()),

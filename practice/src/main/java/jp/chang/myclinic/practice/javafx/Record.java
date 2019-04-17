@@ -13,6 +13,7 @@ import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
 import jp.chang.myclinic.practice.javafx.hoken.HokenSelectForm;
 import jp.chang.myclinic.practice.javafx.shinryou.AddRegularForm;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
+import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -131,7 +132,8 @@ public class Record extends VBox {
         shinryouPane.setOnConductsEnteredHandler(newConducts -> {
             newConducts.forEach(this::addConduct);
         });
-        conductsPane = new RecordConductsPane(visit.conducts, visit.visit.visitId, visit.visit.visitedAt);
+        conductsPane = new RecordConductsPane(visit.conducts, visit.visit.visitId,
+                DateTimeUtil.parseSqlDateTime(visit.visit.visitedAt).toLocalDate());
         hokenArea.getChildren().add(new RecordHoken(visit.hoken, visit.visit));
         right.getChildren().addAll(
                 hokenArea,

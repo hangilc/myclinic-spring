@@ -10,10 +10,8 @@ import java.time.LocalDate;
 
 public class ShinryouSearchBox extends SearchBoxOld<ShinryouMasterDTO> {
 
-    private static Logger logger = LoggerFactory.getLogger(ShinryouSearchBox.class);
-
-    public ShinryouSearchBox(String at) {
-        super(t -> Context.frontend.searchShinryouMaster(t, LocalDate.parse(at)), m -> m.name);
+    public ShinryouSearchBox(LocalDate at) {
+        super(t -> Context.frontend.searchShinryouMaster(t, at), m -> m.name);
     }
 
 }

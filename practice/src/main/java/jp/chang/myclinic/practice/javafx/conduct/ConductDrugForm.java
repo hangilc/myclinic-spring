@@ -16,10 +16,10 @@ import java.time.LocalDate;
 public class ConductDrugForm extends WorkForm {
 
     private static Logger logger = LoggerFactory.getLogger(ConductDrugForm.class);
-    private String at;
+    private LocalDate at;
     private int conductId;
 
-    public ConductDrugForm(String at, int conductId) {
+    public ConductDrugForm(LocalDate at, int conductId) {
         super("薬剤追加");
         this.at = at;
         this.conductId = conductId;
@@ -28,7 +28,7 @@ public class ConductDrugForm extends WorkForm {
         commands.setEnterCallback(() -> doEnter(drugInput));
         commands.setCancelCallback(this::onCancel);
         SearchBoxOld<IyakuhinMasterDTO> searchBox = new SearchBoxOld<>(
-                t -> Context.frontend.searchIyakuhinMaster(t, LocalDate.parse(at)),
+                t -> Context.frontend.searchIyakuhinMaster(t, at),
                 m -> m.name
         );
         searchBox.setOnSelectCallback(drugInput::setMaster);

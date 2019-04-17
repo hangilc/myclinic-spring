@@ -16,16 +16,16 @@ import java.time.LocalDate;
 public class ConductKizaiForm extends WorkForm {
 
     private static Logger logger = LoggerFactory.getLogger(ConductKizaiForm.class);
-    private String at;
+    private LocalDate at;
     private int conductId;
 
-    public ConductKizaiForm(String at, int conductId) {
+    public ConductKizaiForm(LocalDate at, int conductId) {
         super("器材入力");
         this.at = at;
         this.conductId = conductId;
         KizaiInput kizaiInput = new KizaiInput();
         SearchBoxOld<KizaiMasterDTO> searchBox = new SearchBoxOld<>(
-                t -> Context.frontend.searchKizaiMaster(t, LocalDate.parse(at)),
+                t -> Context.frontend.searchKizaiMaster(t, at),
                 m -> m.name
         );
         searchBox.setOnSelectCallback(kizaiInput::setMaster);

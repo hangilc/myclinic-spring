@@ -6,11 +6,13 @@ import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;
 import jp.chang.myclinic.practice.javafx.parts.ShinryouSearchBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 
+import java.time.LocalDate;
+
 public class ConductShinryouForm extends WorkForm {
 
     private int conductId;
 
-    public ConductShinryouForm(String at, int conductId){
+    public ConductShinryouForm(LocalDate at, int conductId){
         super("診療行為追加");
         this.conductId = conductId;
         ShinryouInput shinryouInput = new ShinryouInput();

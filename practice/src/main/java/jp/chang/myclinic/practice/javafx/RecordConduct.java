@@ -10,12 +10,14 @@ import jp.chang.myclinic.dto.GazouLabelDTO;
 import jp.chang.myclinic.practice.javafx.conduct.ConductEditForm;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
+import java.time.LocalDate;
+
 class RecordConduct extends StackPane {
 
-    private String at;
+    private LocalDate at;
     private int conductId;
 
-    RecordConduct(ConductFullDTO conduct, String at){
+    RecordConduct(ConductFullDTO conduct, LocalDate at){
         this.at = at;
         this.conductId = conduct.conduct.conductId;
         getChildren().add(createDisp(conduct));

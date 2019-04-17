@@ -28,11 +28,11 @@ import static java.util.stream.Collectors.toList;
 public class ConductMenu extends VBox {
 
     private int visitId;
-    private String at;
+    private LocalDate at;
     private StackPane workarea = new StackPane();
     private Consumer<ConductFullDTO> onEnteredHandler = c -> {};
 
-    public ConductMenu(int visitId, String at) {
+    public ConductMenu(int visitId, LocalDate at) {
         super(4);
         this.visitId = visitId;
         this.at = at;
@@ -77,52 +77,6 @@ public class ConductMenu extends VBox {
         fireEvent(new ConductEnteredEvent(entered));
     }
 
-    private CompletableFuture<ConductFullDTO> enterXp(int visitId, String label, String film){ // returns conductId
-        class Store {
-            private LocalDate at;
-            private int shinryoucode1;
-            private int shinryoucode2;
-            private int kizaicode;
-        }
-        Store store = new Store();
-        Frontend frontend = Context.frontend;
-        return frontend.getVisit(visitId)
-                .thenCompose(visit -> {
-                    store.at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
-                    return frontend.resolveShinryouMasterByKey("単純撮影", store.at);
-                })
-                .thenCompose(m -> {
-                    store.shinryoucode1 = m.shinryoucode;
-                    return frontend.resolveShinryouMasterByKey("単純撮影診断", store.at);
-                })
-                .thenCompose(m -> {
-                    store.shinryoucode2 = m.shinryoucode;
-                    return frontend.resolveKizaiMasterByKey(film, store.at);
-                })
-                .thenCompose(m -> {
-                    store.kizaicode = m.kizaicode;
-                    ConductEnterRequestDTO req = new ConductEnterRequestDTO();
-                    req.visitId = visitId;
-                    req.kind = ConductKind.Gazou.getCode();
-                    req.gazouLabel = label;
-                    req.shinryouList = Stream.of(store.shinryoucode1, store.shinryoucode2)
-                            .map(shinryoucode -> {
-                                ConductShinryouDTO shinryou = new ConductShinryouDTO();
-                                shinryou.shinryoucode = shinryoucode;
-                                return shinryou;
-                            })
-                            .collect(toList());
-                    req.kizaiList = Stream.of(store.kizaicode)
-                            .map(kizaicode -> {
-                                ConductKizaiDTO kizai = new ConductKizaiDTO();
-                                kizai.kizaicode = kizaicode;
-                                kizai.amount = 1.0;
-                                return kizai;
-                            })
-                            .collect(toList());
-                    return frontend.enterConductFull(req);
-                });
-    }
 
     private void doEnterXp(){
         if( PracticeUtil.confirmCurrentVisitAction(visitId, "Ｘ線検査を入力しますか？") ) {
@@ -132,22 +86,6 @@ public class ConductMenu extends VBox {
                 onEnteredHandler.accept(entered);
                 hideWorkarea();
             });
-//            {
-//                @Override
-//                protected void onEnter(EnterXpForm form, String label, String film) {
-//                    enterXp(visitId, label, film)
-//                            .thenAccept(entered -> Platform.runLater(() -> {
-//                                fireConductEntered(entered);
-//                                hideWorkarea();
-//                            }))
-//                            .exceptionally(HandlerFX::exceptionally);
-//                }
-//
-//                @Override
-//                protected void onCancel(EnterXpForm form) {
-//                    hideWorkarea();
-//                }
-//            };
             showWorkarea(form);
         }
     }

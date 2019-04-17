@@ -26,20 +26,21 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class ConductEditForm extends WorkForm {
 
     private static Logger logger = LoggerFactory.getLogger(ConductEditForm.class);
 
-    private String at;
+    private LocalDate at;
     private ConductFullDTO conduct;
     private OptionalWrapper workarea = new OptionalWrapper();
     private VBox shinryouBox = new VBox(4);
     private VBox drugBox = new VBox(4);
     private VBox kizaiBox = new VBox(4);
 
-    public ConductEditForm(ConductFullDTO origConduct, String at) {
+    public ConductEditForm(ConductFullDTO origConduct, LocalDate at) {
         super("処置の編集");
         this.at = at;
         this.conduct = ConductFullDTO.deepCopy(origConduct);

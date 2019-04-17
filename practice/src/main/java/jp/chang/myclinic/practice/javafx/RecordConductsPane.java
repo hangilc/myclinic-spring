@@ -9,10 +9,10 @@ import java.util.List;
 
 class RecordConductsPane extends VBox {
 
-    private String at;
+    private LocalDate at;
     private VBox conductList = new VBox(4);
 
-    RecordConductsPane(List<ConductFullDTO> conducts, int visitId, String at){
+    RecordConductsPane(List<ConductFullDTO> conducts, int visitId, LocalDate at){
         super(4);
         this.at = at;
         getChildren().addAll(
@@ -22,7 +22,7 @@ class RecordConductsPane extends VBox {
         conducts.forEach(this::addConduct);
     }
 
-    private ConductMenu createMenu(int visitId, String at){
+    private ConductMenu createMenu(int visitId, LocalDate at){
         ConductMenu menu = new ConductMenu(visitId, at);
         menu.setOnEnteredHandler(this::addConduct);
         return menu;
