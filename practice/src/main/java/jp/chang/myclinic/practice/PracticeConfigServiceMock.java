@@ -27,8 +27,4 @@ public class PracticeConfigServiceMock implements PracticeConfigService {
         return printerEnv;
     }
 
-    @Override
-    public ClinicInfoDTO getClinicInfo() {
-        return SampleData.sampleClinicInfo;
-    }
 }

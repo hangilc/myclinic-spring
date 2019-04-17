@@ -6,11 +6,8 @@ import jp.chang.myclinic.dto.ClinicInfoDTO;
 public interface PracticeConfigService {
 
     String getShohousenPrinterSetting();
-
     void setShohousenPrinterSetting(String settingName);
-
+    String getKouhatsuKasan();
     PrinterEnv getPrinterEnv();
-
-    ClinicInfoDTO getClinicInfo();
 
 }
