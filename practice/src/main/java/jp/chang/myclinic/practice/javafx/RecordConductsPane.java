@@ -4,6 +4,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.practice.javafx.conduct.ConductMenu;
 
+import java.time.LocalDate;
 import java.util.List;
 
 class RecordConductsPane extends VBox {
@@ -15,17 +16,23 @@ class RecordConductsPane extends VBox {
         super(4);
         this.at = at;
         getChildren().addAll(
-                new ConductMenu(visitId, at),
+                createMenu(visitId, at),
                 conductList
         );
         conducts.forEach(this::addConduct);
     }
 
-    public void addConduct(ConductFullDTO conduct){
+    private ConductMenu createMenu(int visitId, String at){
+        ConductMenu menu = new ConductMenu(visitId, at);
+        menu.setOnEnteredHandler(this::addConduct);
+        return menu;
+    }
+
+    void addConduct(ConductFullDTO conduct){
         conductList.getChildren().add(new RecordConduct(conduct, at));
     }
 
-    public void deleteConduct(int conductId) {
+    void deleteConduct(int conductId) {
         conductList.getChildren().removeIf(node -> {
             if( node instanceof RecordConduct ){
                 RecordConduct recordConduct = (RecordConduct)node;

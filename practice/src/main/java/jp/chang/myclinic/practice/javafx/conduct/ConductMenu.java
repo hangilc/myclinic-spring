@@ -17,22 +17,20 @@ import jp.chang.myclinic.practice.lib.PracticeAPI;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
 public class ConductMenu extends VBox {
 
-    private static Logger logger = LoggerFactory.getLogger(ConductMenu.class);
-
     private int visitId;
     private String at;
     private StackPane workarea = new StackPane();
+    private Consumer<ConductFullDTO> onEnteredHandler = c -> {};
 
     public ConductMenu(int visitId, String at) {
         super(4);
@@ -41,6 +39,10 @@ public class ConductMenu extends VBox {
         getChildren().addAll(
             createLink()
         );
+    }
+
+    public void setOnEnteredHandler(Consumer<ConductFullDTO> onEnteredHandler) {
+        this.onEnteredHandler = onEnteredHandler;
     }
 
     private Node createLink(){
@@ -124,22 +126,28 @@ public class ConductMenu extends VBox {
 
     private void doEnterXp(){
         if( PracticeUtil.confirmCurrentVisitAction(visitId, "Ｘ線検査を入力しますか？") ) {
-            EnterXpForm form = new EnterXpForm() {
-                @Override
-                protected void onEnter(EnterXpForm form, String label, String film) {
-                    enterXp(visitId, label, film)
-                            .thenAccept(entered -> Platform.runLater(() -> {
-                                fireConductEntered(entered);
-                                hideWorkarea();
-                            }))
-                            .exceptionally(HandlerFX::exceptionally);
-                }
-
-                @Override
-                protected void onCancel(EnterXpForm form) {
-                    hideWorkarea();
-                }
-            };
+            EnterXpForm form = new EnterXpForm(visitId);
+            form.setOnCancelHandler(this::hideWorkarea);
+            form.setOnEnteredHandler(entered -> {
+                onEnteredHandler.accept(entered);
+                hideWorkarea();
+            });
+//            {
+//                @Override
+//                protected void onEnter(EnterXpForm form, String label, String film) {
+//                    enterXp(visitId, label, film)
+//                            .thenAccept(entered -> Platform.runLater(() -> {
+//                                fireConductEntered(entered);
+//                                hideWorkarea();
+//                            }))
+//                            .exceptionally(HandlerFX::exceptionally);
+//                }
+//
+//                @Override
+//                protected void onCancel(EnterXpForm form) {
+//                    hideWorkarea();
+//                }
+//            };
             showWorkarea(form);
         }
     }

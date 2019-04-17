@@ -20,7 +20,8 @@ public class RecordsPaneTest extends GroupTestBase {
         return List.of(
                 new RecordsPaneTextTest(stage, main),
                 new RecordsPaneDrugTest(stage, main),
-                new RecordsPaneShinryouTest(stage, main)
+                new RecordsPaneShinryouTest(stage, main),
+                new RecordsPaneConductTest(stage, main)
         );
     }
 }
