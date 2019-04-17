@@ -11,11 +11,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.FunJavaFX;
-import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
-import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
-import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
-import jp.chang.myclinic.practice.lib.CFUtil;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -25,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -139,18 +133,6 @@ public class ShinryouMenu extends VBox {
             }
             contextMenu.show(link, event.getScreenX(), event.getScreenY());
         }
-    }
-
-    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
-        fireEvent(new ShinryouEnteredEvent(shinryou, attr));
-    }
-
-    private void fireShinryouDeletedEvent(ShinryouDTO shinryou) {
-        fireEvent(new ShinryouDeletedEvent(shinryou));
-    }
-
-    private void fireConductEnteredEvent(ConductFullDTO conduct) {
-        fireEvent(new ConductEnteredEvent(conduct));
     }
 
     private void doKensa() {

@@ -9,8 +9,6 @@ import jp.chang.myclinic.practice.IntegrationService;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.ConductDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
-import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
-import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -72,23 +70,6 @@ public class RecordsPane extends VBox {
         findRecord(shinryou.shinryou.visitId).ifPresent(record ->
                 record.addShinryou(shinryou, attr));
 
-    }
-
-    private void onShinryouDeleted(ShinryouDeletedEvent event) {
-        int visitId = event.getVisitId();
-        findRecord(visitId).ifPresent(record ->
-                record.deleteShinryou(event.getShinryouId()));
-    }
-
-    private void onConductEntered(ConductEnteredEvent event){
-        ConductFullDTO conduct = event.getConduct();
-        findRecord(conduct.conduct.visitId).ifPresent(record ->
-                record.addConduct(conduct));
-    }
-
-    private void onConductDeleted(ConductDeletedEvent event){
-        findRecord(event.getVisitId()).ifPresent(record ->
-                record.deleteConduct(event.getConductId()));
     }
 
     private void onShoukiChanged(int visitId, ShoukiDTO shoukiDTO){
