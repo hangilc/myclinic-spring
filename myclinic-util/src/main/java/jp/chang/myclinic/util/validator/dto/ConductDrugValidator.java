@@ -33,7 +33,7 @@ public class ConductDrugValidator {
         return this;
     }
 
-    public ConductDrugValidator setValidateConductId(int conductId) {
+    public ConductDrugValidator setValidatedConductId(int conductId) {
         this.validatedConductId = success(conductId);
         return this;
     }
@@ -44,10 +44,17 @@ public class ConductDrugValidator {
         return this;
     }
 
-    public ConductDrugValidator validateAmount(double amount) {
-        this.validatedAmount = success(amount)
-                .confirm(isPositiveDouble());
+    private ConductDrugValidator validateAmount(Validated<Double> amount) {
+        this.validatedAmount = amount.confirm(isPositiveDouble());
         return this;
+    }
+
+    public ConductDrugValidator validateAmount(double amount) {
+        return validateAmount(success(amount));
+    }
+
+    public ConductDrugValidator validateAmount(String input) {
+        return validateAmount(success(input).apply(validateToDouble()));
     }
 
     public Validated<ConductDrugDTO> validate() {

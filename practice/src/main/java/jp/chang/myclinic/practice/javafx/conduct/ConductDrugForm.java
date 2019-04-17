@@ -42,7 +42,7 @@ public class ConductDrugForm extends WorkForm {
     private void doEnter(DrugInput input){
         ConductDrugDTO drug = new ConductDrugDTO();
         drug.conductId = conductId;
-        input.stuffInto(drug, this::onEnter, HandlerFX::alert);
+        //input.stuffInto(drug, this::onEnter, HandlerFX::alert);
     }
 
     protected void onEnter(ConductDrugDTO drug){

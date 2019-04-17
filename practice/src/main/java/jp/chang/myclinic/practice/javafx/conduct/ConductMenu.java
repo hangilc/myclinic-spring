@@ -92,22 +92,12 @@ public class ConductMenu extends VBox {
 
     private void doEnterInjection(){
         if( PracticeUtil.confirmCurrentVisitAction(visitId, "処置注射を入力しますか？") ){
-            EnterInjectionForm form = new EnterInjectionForm(at){
-                @Override
-                protected void onEnter(EnterInjectionForm form, ConductKind kind, ConductDrugDTO drug) {
-                    PracticeAPI.enterInjection(visitId, kind, drug)
-                            .thenAccept(entered -> Platform.runLater(() -> {
-                                fireConductEntered(entered);
-                                hideWorkarea();
-                            }))
-                            .exceptionally(HandlerFX::exceptionally);
-                }
-
-                @Override
-                protected void onCancel(EnterInjectionForm form) {
-                    hideWorkarea();
-                }
-            };
+            EnterInjectionForm form = new EnterInjectionForm(visitId, at);
+            form.setOnCancelHandler(this::hideWorkarea);
+            form.setOnEnteredHandler(entered -> {
+                onEnteredHandler.accept(entered);
+                hideWorkarea();
+            });
             showWorkarea(form);
         }
     }

@@ -5,30 +5,35 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.dto.ConductDrugDTO;
-import jp.chang.myclinic.dto.ConductFullDTO;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.parts.SearchResult;
 import jp.chang.myclinic.practice.javafx.parts.SearchTextBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.util.validator.dto.ConductDrugValidator;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class EnterInjectionForm extends WorkForm {
 
-    private LocalDate at;
+    private final int visitId;
+    private final LocalDate at;
     private DrugInput drugInput = new DrugInput();
     private RadioButtonGroup<ConductKind> kindGroup;
     private SearchResult<IyakuhinMasterDTO> searchResult;
     private Consumer<ConductFullDTO> onEnteredHandler = c -> {};
     private Runnable onCancelHandler = () -> {};
 
-    EnterInjectionForm(LocalDate at) {
+    EnterInjectionForm(int visitId, LocalDate at) {
         super("処置注射入力");
+        this.visitId = visitId;
         this.at = at;
         getStyleClass().add("enter-injection-form");
         getChildren().addAll(
@@ -90,16 +95,29 @@ public class EnterInjectionForm extends WorkForm {
     }
 
     private void doEnter(){
-        ConductDrugDTO drug = new ConductDrugDTO();
-        int conductDrugId = 0;
-        drug.conductDrugId = conductDrugId;
-        int conductId = 0;
-        drug.conductId = conductId;
-        drugInput.stuffInto(drug, d -> onEnter(this, kindGroup.getValue(), d), HandlerFX::alert);
-    }
-
-    protected void onEnter(EnterInjectionForm form, ConductKind kind, ConductDrugDTO drug){
-
+        BatchEnterRequestDTO request = new BatchEnterRequestDTO();
+        ConductEnterRequestDTO conductReq = new ConductEnterRequestDTO();
+        conductReq.visitId = visitId;
+        conductReq.kind = kindGroup.getValue().getCode();
+        Validated<ConductDrugDTO> validatedConductDrug = drugInput.getValidateConductDrugToEnter();
+        if( validatedConductDrug.isFailure() ){
+            AlertDialog.alert(validatedConductDrug.getErrorsAsString(), this);
+            return;
+        }
+        ConductDrugDTO conductDrug = validatedConductDrug.getValue();
+        conductReq.drugs = List.of(conductDrug);
+        request.conducts = List.of(conductReq);
+        Frontend frontend = Context.frontend;
+        System.out.println(request);
+        frontend.batchEnter(request)
+                .thenCompose(result -> {
+                    System.out.println(result);
+                    int conductId = result.conductIds.get(0);
+                    return frontend.getConductFull(conductId);
+                })
+                .thenAcceptAsync(entered -> onEnteredHandler.accept(entered),
+                        Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
 }

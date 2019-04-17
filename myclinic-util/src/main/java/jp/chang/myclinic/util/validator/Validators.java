@@ -66,10 +66,16 @@ public class Validators {
         };
     }
 
-    public static Function<Validated<String>, Validated<Integer>> validateToPositiveInt() {
+    public static Function<Validated<String>, Validated<Integer>> validateToInt() {
         return src -> src.confirm(isNotNull())
                 .confirm(isNotEmpty())
                 .convert(toInt());
+    }
+
+    public static Function<Validated<String>, Validated<Double>> validateToDouble() {
+        return src -> src.confirm(isNotNull())
+                .confirm(isNotEmpty())
+                .convert(toDouble());
     }
 
 }

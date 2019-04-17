@@ -64,7 +64,8 @@ public class DrugValidator {
 
     public void validateDays(String input) {
         this.validatedDays = success(input)
-                .apply(validateToPositiveInt());
+                .apply(validateToInt())
+                .confirm(isPositive());
     }
 
     public void validateCategory(int category) {

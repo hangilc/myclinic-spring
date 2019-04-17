@@ -9,4 +9,12 @@ public class BatchEnterRequestDTO {
     public List<ShinryouWithAttrDTO> shinryouList;
     public List<ConductEnterRequestDTO> conducts;
 
+    @Override
+    public String toString() {
+        return "BatchEnterRequestDTO{" +
+                "drugs=" + drugs +
+                ", shinryouList=" + shinryouList +
+                ", conducts=" + conducts +
+                '}';
+    }
 }

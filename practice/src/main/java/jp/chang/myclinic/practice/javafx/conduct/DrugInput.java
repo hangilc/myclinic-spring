@@ -7,13 +7,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.practice.lib.conduct.ConductDrugInputInterface;
+import jp.chang.myclinic.dto.ConductDrugDTO;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.util.validator.dto.ConductDrugValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DrugInput extends GridPane implements ConductDrugInputInterface {
-
-    private static Logger logger = LoggerFactory.getLogger(DrugInput.class);
+public class DrugInput extends GridPane {
 
     private int iyakuhincode;
     private Text nameText;
@@ -40,34 +41,43 @@ public class DrugInput extends GridPane implements ConductDrugInputInterface {
         }
     }
 
-    @Override
-    public void setIyakuhincode(int iyakuhincode) {
+    void setMaster(IyakuhinMasterDTO master){
+        setIyakuhincode(master.iyakuhincode);
+        setName(master.name);
+        setAmountUnit(master.unit);
+    }
+
+    private void setIyakuhincode(int iyakuhincode) {
         this.iyakuhincode = iyakuhincode;
     }
 
-    @Override
-    public void setName(String name) {
+    private void setName(String name) {
         nameText.setText(name);
     }
 
-    @Override
-    public void setAmount(String amount) {
+    private void setAmount(String amount) {
         amountField.setText(amount);
     }
 
-    @Override
-    public void setAmountUnit(String unit) {
+    private void setAmountUnit(String unit) {
         amountUnitText.setText(unit);
     }
 
-    @Override
-    public int getIyakuhincode() {
+    private int getIyakuhincode() {
         return iyakuhincode;
     }
 
-    @Override
-    public String getAmount() {
+    private String getAmount() {
         return amountField.getText();
+    }
+
+    Validated<ConductDrugDTO> getValidateConductDrugToEnter(){
+        return new ConductDrugValidator()
+                .setValidatedConductDrugId(0)
+                .setValidatedConductId(0)
+                .validateIyakuhincode(getIyakuhincode())
+                .validateAmount(getAmount())
+                .validate();
     }
 
 }

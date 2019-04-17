@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 
 public class SearchTextBox extends HBox {
 
-    private static Logger logger = LoggerFactory.getLogger(SearchTextBox.class);
-
     private TextField inputField = new TextField();
 
     public SearchTextBox() {

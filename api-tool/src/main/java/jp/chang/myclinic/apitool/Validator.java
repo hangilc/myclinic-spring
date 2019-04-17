@@ -42,8 +42,11 @@ public class Validator implements Runnable {
     @Override
     public void run() {
         CompilationUnit unit = new CompilationUnit();
+        unit.setPackageDeclaration("jp.chang.myclinic.util.validator.dto");
+        unit.addImport(new ImportDeclaration("jp.chang.myclinic.util.validator.Validated", false, false));
         unit.addImport(new ImportDeclaration("jp.chang.myclinic.util.validator.Validated.success", true, false));
         unit.addImport(new ImportDeclaration("jp.chang.myclinic.util.validator.Validators", true, true));
+        unit.addImport(new ImportDeclaration("jp.chang.myclinic.dto." + dtoClassName  , false, false));
         Class<?> dtoClass = DtoClassList.getDtoClassByName(dtoClassName);
         String validatorClassName = dtoClassName.replaceAll("DTO$", "") + "Validator";
         ClassOrInterfaceDeclaration classDecl = unit.addClass(validatorClassName);
@@ -58,9 +61,8 @@ public class Validator implements Runnable {
         try {
             String output = formatter.formatSource(unit.toString());
             if (save) {
-                String validatorName = dtoClass.getSimpleName().replaceAll("ETO$", "") + "Validator";
-                Path savePath = Paths.get("myclinic-util/src/main/java/jp/chang/myclinic/util",
-                        validatorName + ".java");
+                Path savePath = Paths.get("myclinic-util/src/main/java/jp/chang/myclinic/util/validator/dto",
+                        validatorClassName + ".java");
                 if( Files.exists(savePath) ){
                     System.err.printf("%s already exists.", savePath.toString());
                     System.exit(1);
