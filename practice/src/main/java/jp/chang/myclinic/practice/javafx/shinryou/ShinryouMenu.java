@@ -228,12 +228,8 @@ public class ShinryouMenu extends VBox {
 
     private void doDeleteDuplicate() {
         Context.frontend.deleteDuplicateShinryou(visitId)
-                .thenAccept(shinryouIds -> Platform.runLater(() -> {
-                    shinryouIds.forEach(shinryouId -> {
-                        ShinryouDeletedEvent e = new ShinryouDeletedEvent(visitId, shinryouId);
-                        ShinryouMenu.this.fireEvent(e);
-                    });
-                }))
+                .thenAcceptAsync(deletedShinryouIds -> onDeletedHandler.accept(deletedShinryouIds),
+                        Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }
 
