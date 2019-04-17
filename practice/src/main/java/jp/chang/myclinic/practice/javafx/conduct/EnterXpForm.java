@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
+import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.BatchEnterByNamesRequestDTO;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.EnterConductByNamesRequestDTO;
@@ -76,6 +77,7 @@ public class EnterXpForm extends WorkForm {
 
     private void doEnter(String gazouLabel, String film){
         EnterConductByNamesRequestDTO conductReq = new EnterConductByNamesRequestDTO();
+        conductReq.kind = ConductKind.Gazou.getCode();
         conductReq.gazouLabel = gazouLabel;
         conductReq.shinryouNames = List.of("単純撮影", "単純撮影診断");
         conductReq.kizaiList = List.of(EnterConductKizaiByNamesRequestDTO.create(film, 1));

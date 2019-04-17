@@ -30,14 +30,15 @@ public class ConductMenu extends VBox {
     private int visitId;
     private LocalDate at;
     private StackPane workarea = new StackPane();
-    private Consumer<ConductFullDTO> onEnteredHandler = c -> {};
+    private Consumer<ConductFullDTO> onEnteredHandler = c -> {
+    };
 
     public ConductMenu(int visitId, LocalDate at) {
         super(4);
         this.visitId = visitId;
         this.at = at;
         getChildren().addAll(
-            createLink()
+                createLink()
         );
     }
 
@@ -45,14 +46,14 @@ public class ConductMenu extends VBox {
         this.onEnteredHandler = onEnteredHandler;
     }
 
-    private Node createLink(){
+    private Node createLink() {
         Hyperlink link = new Hyperlink("[処置]");
         link.setOnMouseClicked(this::onClick);
         return link;
     }
 
-    private void onClick(MouseEvent event){
-        if( !isWorkareaShown() ) {
+    private void onClick(MouseEvent event) {
+        if (!isWorkareaShown()) {
             ContextMenu contextMenu = new ContextMenu();
             {
                 MenuItem item = new MenuItem("Ｘ線検査追加");
@@ -73,13 +74,13 @@ public class ConductMenu extends VBox {
         }
     }
 
-    private void fireConductEntered(ConductFullDTO entered){
+    private void fireConductEntered(ConductFullDTO entered) {
         fireEvent(new ConductEnteredEvent(entered));
     }
 
 
-    private void doEnterXp(){
-        if( PracticeUtil.confirmCurrentVisitAction(visitId, "Ｘ線検査を入力しますか？") ) {
+    private void doEnterXp() {
+        if (PracticeUtil.confirmCurrentVisitAction(visitId, "Ｘ線検査を入力しますか？")) {
             EnterXpForm form = new EnterXpForm(visitId);
             form.setOnCancelHandler(this::hideWorkarea);
             form.setOnEnteredHandler(entered -> {
@@ -90,8 +91,8 @@ public class ConductMenu extends VBox {
         }
     }
 
-    private void doEnterInjection(){
-        if( PracticeUtil.confirmCurrentVisitAction(visitId, "処置注射を入力しますか？") ){
+    private void doEnterInjection() {
+        if (PracticeUtil.confirmCurrentVisitAction(visitId, "処置注射を入力しますか？")) {
             EnterInjectionForm form = new EnterInjectionForm(visitId, at);
             form.setOnCancelHandler(this::hideWorkarea);
             form.setOnEnteredHandler(entered -> {
@@ -102,29 +103,34 @@ public class ConductMenu extends VBox {
         }
     }
 
-    private void doCopyAll(){
+    private void doCopyAll() {
         int targetVisitId = PracticeUtil.findCopyTarget(visitId);
-        if( targetVisitId > 0 ){
-            Context.frontend.copyAllConducts(targetVisitId, visitId)
-                    .thenCompose(Context.frontend::listConductFullByIds)
-                    .thenAccept(entered -> Platform.runLater(() -> {
-                        entered.forEach(this::fireConductEntered);
-                    }))
+        if (targetVisitId > 0) {
+            new ConductCopier(targetVisitId).copyFromVisit(visitId)
+                    .thenAcceptAsync(entered ->
+                                    entered.forEach(c -> Context.integrationService.broadcastNewConduct(c)),
+                            Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
+//            Context.frontend.copyAllConducts(targetVisitId, visitId)
+//                    .thenCompose(Context.frontend::listConductFullByIds)
+//                    .thenAccept(entered -> Platform.runLater(() -> {
+//                        entered.forEach(this::fireConductEntered);
+//                    }))
+//                    .exceptionally(HandlerFX::exceptionally);
         }
     }
 
-    private void showWorkarea(Node content){
+    private void showWorkarea(Node content) {
         workarea.getChildren().clear();
         workarea.getChildren().add(content);
         getChildren().add(workarea);
     }
 
-    private void hideWorkarea(){
+    private void hideWorkarea() {
         getChildren().remove(workarea);
     }
 
-    private boolean isWorkareaShown(){
+    private boolean isWorkareaShown() {
         return getChildren().contains(workarea);
     }
 

@@ -1146,71 +1146,71 @@ public class Backend {
         return listConduct(visitId).stream().map(this::extendConduct).collect(toList());
     }
 
-    public List<Integer> copyAllConducts(int targetVisitId, int sourceVisitId) {
-        List<Integer> copiedConductIds = new ArrayList<>();
-        List<ConductDTO> sourceConducts = listConduct(sourceVisitId);
-        VisitDTO targetVisit = getVisit(targetVisitId);
-        LocalDate at = DateTimeUtil.parseSqlDateTime(targetVisit.visitedAt).toLocalDate();
-        for (ConductDTO source : sourceConducts) {
-            ConductDTO newConduct = ConductDTO.copy(source);
-            newConduct.conductId = 0;
-            newConduct.visitId = targetVisitId;
-            enterConduct(newConduct);
-            int conductId = newConduct.conductId;
-            copiedConductIds.add(conductId);
-            GazouLabelDTO gazouLabel = getGazouLabel(source.conductId);
-            if (gazouLabel != null) {
-                gazouLabel.conductId = conductId;
-                enterGazouLabel(gazouLabel);
-            }
-            listConductShinryou(source.conductId)
-                    .forEach(shinryou -> {
-                        ConductShinryouDTO newShinryou = ConductShinryouDTO.copy(shinryou);
-                        newShinryou.conductShinryouId = 0;
-                        newShinryou.conductId = conductId;
-                        ShinryouMasterDTO master = getShinryouMaster(shinryou.shinryoucode, at);
-                        if (master == null) {
-                            VisitDTO sourceVisit = getVisit(sourceVisitId);
-                            ShinryouMasterDTO sourceMaster = getShinryouMaster(shinryou.shinryoucode,
-                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
-                            throw new RuntimeException("Cannot find effective shinryou master: " + sourceMaster.name);
-                        }
-                        newShinryou.shinryoucode = master.shinryoucode;
-                        enterConductShinryou(newShinryou);
-                    });
-            listConductDrug(source.conductId)
-                    .forEach(drug -> {
-                        ConductDrugDTO newDrug = ConductDrugDTO.copy(drug);
-                        newDrug.conductDrugId = 0;
-                        newDrug.conductId = conductId;
-                        IyakuhinMasterDTO master = resolveStockDrug(drug.iyakuhincode, at);
-                        if (master == null) {
-                            VisitDTO sourceVisit = getVisit(sourceVisitId);
-                            IyakuhinMasterDTO sourceMaster = getIyakuhinMaster(drug.iyakuhincode,
-                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
-                            throw new RuntimeException("Cannot find effective iyakuhin master: " + sourceMaster.name);
-                        }
-                        newDrug.iyakuhincode = master.iyakuhincode;
-                        enterConductDrug(newDrug);
-                    });
-            listConductKizai(source.conductId)
-                    .forEach(kizai -> {
-                        ConductKizaiDTO newKizai = ConductKizaiDTO.copy(kizai);
-                        newKizai.conductKizaiId = 0;
-                        newKizai.conductId = conductId;
-                        KizaiMasterDTO master = getKizaiMaster(kizai.kizaicode, at);
-                        if (master == null) {
-                            VisitDTO sourceVisit = getVisit(sourceVisitId);
-                            KizaiMasterDTO sourceMaster = getKizaiMaster(kizai.kizaicode,
-                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
-                            throw new RuntimeException("Cannot find effective kizai master: " + sourceMaster.name);
-                        }
-                        newKizai.kizaicode = master.kizaicode;
-                        enterConductKizai(newKizai);
-                    });
-        }
-        return copiedConductIds;
-    }
+//    public List<Integer> copyAllConducts(int targetVisitId, int sourceVisitId) {
+//        List<Integer> copiedConductIds = new ArrayList<>();
+//        List<ConductDTO> sourceConducts = listConduct(sourceVisitId);
+//        VisitDTO targetVisit = getVisit(targetVisitId);
+//        LocalDate at = DateTimeUtil.parseSqlDateTime(targetVisit.visitedAt).toLocalDate();
+//        for (ConductDTO source : sourceConducts) {
+//            ConductDTO newConduct = ConductDTO.copy(source);
+//            newConduct.conductId = 0;
+//            newConduct.visitId = targetVisitId;
+//            enterConduct(newConduct);
+//            int conductId = newConduct.conductId;
+//            copiedConductIds.add(conductId);
+//            GazouLabelDTO gazouLabel = getGazouLabel(source.conductId);
+//            if (gazouLabel != null) {
+//                gazouLabel.conductId = conductId;
+//                enterGazouLabel(gazouLabel);
+//            }
+//            listConductShinryou(source.conductId)
+//                    .forEach(shinryou -> {
+//                        ConductShinryouDTO newShinryou = ConductShinryouDTO.copy(shinryou);
+//                        newShinryou.conductShinryouId = 0;
+//                        newShinryou.conductId = conductId;
+//                        ShinryouMasterDTO master = getShinryouMaster(shinryou.shinryoucode, at);
+//                        if (master == null) {
+//                            VisitDTO sourceVisit = getVisit(sourceVisitId);
+//                            ShinryouMasterDTO sourceMaster = getShinryouMaster(shinryou.shinryoucode,
+//                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
+//                            throw new RuntimeException("Cannot find effective shinryou master: " + sourceMaster.name);
+//                        }
+//                        newShinryou.shinryoucode = master.shinryoucode;
+//                        enterConductShinryou(newShinryou);
+//                    });
+//            listConductDrug(source.conductId)
+//                    .forEach(drug -> {
+//                        ConductDrugDTO newDrug = ConductDrugDTO.copy(drug);
+//                        newDrug.conductDrugId = 0;
+//                        newDrug.conductId = conductId;
+//                        IyakuhinMasterDTO master = resolveStockDrug(drug.iyakuhincode, at);
+//                        if (master == null) {
+//                            VisitDTO sourceVisit = getVisit(sourceVisitId);
+//                            IyakuhinMasterDTO sourceMaster = getIyakuhinMaster(drug.iyakuhincode,
+//                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
+//                            throw new RuntimeException("Cannot find effective iyakuhin master: " + sourceMaster.name);
+//                        }
+//                        newDrug.iyakuhincode = master.iyakuhincode;
+//                        enterConductDrug(newDrug);
+//                    });
+//            listConductKizai(source.conductId)
+//                    .forEach(kizai -> {
+//                        ConductKizaiDTO newKizai = ConductKizaiDTO.copy(kizai);
+//                        newKizai.conductKizaiId = 0;
+//                        newKizai.conductId = conductId;
+//                        KizaiMasterDTO master = getKizaiMaster(kizai.kizaicode, at);
+//                        if (master == null) {
+//                            VisitDTO sourceVisit = getVisit(sourceVisitId);
+//                            KizaiMasterDTO sourceMaster = getKizaiMaster(kizai.kizaicode,
+//                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
+//                            throw new RuntimeException("Cannot find effective kizai master: " + sourceMaster.name);
+//                        }
+//                        newKizai.kizaicode = master.kizaicode;
+//                        enterConductKizai(newKizai);
+//                    });
+//        }
+//        return copiedConductIds;
+//    }
 
     // GazouLabel ///////////////////////////////////////////////////////////////////////////
 
@@ -1943,6 +1943,13 @@ public class Backend {
     public IyakuhinMasterDTO resolveStockDrug(int iyakuhincode, LocalDate at) {
         iyakuhincode = ss.stockDrugService.resolve(iyakuhincode, at);
         return getIyakuhinMaster(iyakuhincode, at);
+    }
+
+    public List<ResolvedStockDrugDTO> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
+        return iyakuhincodes.stream()
+                .map(code ->
+                        ResolvedStockDrugDTO.create(code, ss.stockDrugService.resolve(code, at)))
+                .collect(toList());
     }
 
     // ClinicInfo ////////////////////////////////////////////////////////////////////////

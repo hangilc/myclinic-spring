@@ -108,10 +108,8 @@ public class EnterInjectionForm extends WorkForm {
         conductReq.drugs = List.of(conductDrug);
         request.conducts = List.of(conductReq);
         Frontend frontend = Context.frontend;
-        System.out.println(request);
         frontend.batchEnter(request)
                 .thenCompose(result -> {
-                    System.out.println(result);
                     int conductId = result.conductIds.get(0);
                     return frontend.getConductFull(conductId);
                 })

@@ -807,11 +807,6 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<Integer>> copyAllConducts(int targetVisitId, int sourceVisitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
@@ -878,6 +873,11 @@ public class FrontendAdapter implements Frontend {
 
     @Override
     public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
 }

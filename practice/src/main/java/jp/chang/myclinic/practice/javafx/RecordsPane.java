@@ -25,6 +25,7 @@ public class RecordsPane extends VBox {
         integ.setOnNewText(this::onNewText);
         integ.setOnNewDrug(this::onNewDrug);
         integ.setOnNewShinryou(this::onNewShinryou);
+        integ.setOnNewConduct(this::onNewConduct);
         PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 
@@ -69,7 +70,10 @@ public class RecordsPane extends VBox {
     private void onNewShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         findRecord(shinryou.shinryou.visitId).ifPresent(record ->
                 record.addShinryou(shinryou, attr));
+    }
 
+    private void onNewConduct(ConductFullDTO conduct){
+        findRecord(conduct.conduct.visitId).ifPresent(record -> record.addConduct(conduct));
     }
 
     private void onShoukiChanged(int visitId, ShoukiDTO shoukiDTO){

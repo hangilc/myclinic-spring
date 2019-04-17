@@ -875,11 +875,6 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<Integer>> copyAllConducts(int targetVisitId, int sourceVisitId) {
-        return tx(backend -> backend.copyAllConducts(targetVisitId, sourceVisitId));
-    }
-
-    @Override
     public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
         return query(backend -> backend.getKizaiMaster(kizaicode, at));
     }
@@ -947,5 +942,10 @@ public class FrontendBackend implements Frontend {
     @Override
     public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
         return query(backend -> backend.listShinryouFullWithAttr(visitId));
+    }
+
+    @Override
+    public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
+        return query(backend -> backend.batchResolveStockDrug(iyakuhincodes, at));
     }
 }

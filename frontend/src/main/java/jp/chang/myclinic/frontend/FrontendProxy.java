@@ -809,11 +809,6 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<Integer>> copyAllConducts(int targetVisitId, int sourceVisitId) {
-        return delegate.copyAllConducts(targetVisitId, sourceVisitId);
-    }
-
-    @Override
     public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
         return delegate.getKizaiMaster(kizaicode, at);
     }
@@ -881,5 +876,10 @@ public class FrontendProxy implements Frontend {
     @Override
     public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
         return delegate.listShinryouFullWithAttr(visitId);
+    }
+
+    @Override
+    public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
+        return delegate.batchResolveStockDrug(iyakuhincodes, at);
     }
 }

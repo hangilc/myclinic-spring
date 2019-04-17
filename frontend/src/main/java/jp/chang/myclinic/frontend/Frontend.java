@@ -327,8 +327,6 @@ public interface Frontend {
 
     CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at);
 
-    CompletableFuture<List<Integer>> copyAllConducts(int targetVisitId, int sourceVisitId);
-
     CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at);
 
     CompletableFuture<ClinicInfoDTO> getClinicInfo();
@@ -356,4 +354,6 @@ public interface Frontend {
     CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds);
 
     CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId);
+
+    CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at);
 }
