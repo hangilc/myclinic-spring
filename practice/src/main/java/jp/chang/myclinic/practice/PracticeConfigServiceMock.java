@@ -27,4 +27,8 @@ public class PracticeConfigServiceMock implements PracticeConfigService {
         return printerEnv;
     }
 
+    @Override
+    public String getKouhatsuKasan() {
+        return null;
+    }
 }

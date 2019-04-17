@@ -86,6 +86,7 @@ public class Main extends Application {
             setupFrontend(ss);
             Context.configService = new ConfigPropertyFile(Paths.get(
                     System.getProperty("user.home"),
+                    "myclinic-env",
                     "practice.properties"
             ));
             Context.integrationService = new IntegrationServiceImpl();
