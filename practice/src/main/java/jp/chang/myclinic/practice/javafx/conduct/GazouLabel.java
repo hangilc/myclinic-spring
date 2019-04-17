@@ -11,13 +11,12 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GazouLabel extends StackPane {
+abstract class GazouLabel extends StackPane {
 
-    private static Logger logger = LoggerFactory.getLogger(GazouLabel.class);
     private int conductId;
     private String label;
 
-    public GazouLabel(GazouLabelDTO gazouLabelDTO, int conductId) {
+    GazouLabel(GazouLabelDTO gazouLabelDTO, int conductId) {
         this.conductId = conductId;
         this.label = gazouLabelDTO == null ? "" : gazouLabelDTO.label;
         getChildren().add(createDisp());
@@ -67,8 +66,6 @@ public class GazouLabel extends StackPane {
         getChildren().setAll(form);
     }
 
-    protected void onModified(String value){
-
-    }
+    abstract protected void onModified(String value);
 
 }

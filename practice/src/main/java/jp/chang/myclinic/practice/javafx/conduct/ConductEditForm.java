@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ConductEditForm extends WorkForm {
 
@@ -39,6 +40,8 @@ public class ConductEditForm extends WorkForm {
     private VBox shinryouBox = new VBox(4);
     private VBox drugBox = new VBox(4);
     private VBox kizaiBox = new VBox(4);
+    private Consumer<ConductFullDTO> onCloseHandler = c -> {};
+    private Runnable onDeletedHandler = () -> {};
 
     public ConductEditForm(ConductFullDTO origConduct, LocalDate at) {
         super("処置の編集");
@@ -54,6 +57,14 @@ public class ConductEditForm extends WorkForm {
                 createKizaiList(conduct.conductKizaiList),
                 createCommands(conduct)
         );
+    }
+
+    public void setOnCloseHandler(Consumer<ConductFullDTO> onCloseHandler) {
+        this.onCloseHandler = onCloseHandler;
+    }
+
+    public void setOnDeletedHandler(Runnable onDeletedHandler) {
+        this.onDeletedHandler = onDeletedHandler;
     }
 
     private Node createTopMenu() {
@@ -72,7 +83,7 @@ public class ConductEditForm extends WorkForm {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         ChoiceBox<ConductKind> choiceBox = new ChoiceBox<>();
-        choiceBox.setConverter(new StringConverter<ConductKind>() {
+        choiceBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(ConductKind kind) {
                 return kind.getKanjiRep();
@@ -197,7 +208,7 @@ public class ConductEditForm extends WorkForm {
         hbox.setAlignment(Pos.CENTER_LEFT);
         Button closeButton = new Button("閉じる");
         Hyperlink deleteLink = new Hyperlink("削除");
-        closeButton.setOnAction(evt -> onClose(conduct));
+        closeButton.setOnAction(evt -> onCloseHandler.accept(conduct));
         deleteLink.setOnAction(evt -> doDelete());
         hbox.getChildren().addAll(closeButton, deleteLink);
         return hbox;
@@ -206,9 +217,7 @@ public class ConductEditForm extends WorkForm {
     private void doDelete() {
         if( GuiUtil.confirm("この処置を削除しますか？") ) {
             Context.frontend.deleteConductCascading(getConductId())
-                    .thenAccept(result -> Platform.runLater(() -> {
-                        ConductEditForm.this.fireEvent(new ConductDeletedEvent(conduct.conduct));
-                    }))
+                    .thenAccept(result -> Platform.runLater(() -> onDeletedHandler.run()))
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
@@ -257,10 +266,6 @@ public class ConductEditForm extends WorkForm {
             addKizai(entered);
         });
         workarea.show(form);
-    }
-
-    protected void onClose(ConductFullDTO conduct) {
-
     }
 
 }

@@ -16,6 +16,7 @@ class RecordConduct extends StackPane {
 
     private LocalDate at;
     private int conductId;
+    private Runnable onDeletedHandler = () -> {};
 
     RecordConduct(ConductFullDTO conduct, LocalDate at){
         this.at = at;
@@ -25,6 +26,10 @@ class RecordConduct extends StackPane {
 
     public int getConductId() {
         return conductId;
+    }
+
+    public void setOnDeletedHandler(Runnable onDeletedHandler) {
+        this.onDeletedHandler = onDeletedHandler;
     }
 
     private Node createDisp(ConductFullDTO conduct){
@@ -56,12 +61,9 @@ class RecordConduct extends StackPane {
 
     private void onClick(ConductFullDTO conduct){
         if( PracticeUtil.confirmCurrentVisitAction(conduct.conduct.visitId, "処置を編集しますか？") ){
-            ConductEditForm form = new ConductEditForm(conduct, at){
-                @Override
-                protected void onClose(ConductFullDTO conduct) {
-                    setContent(createDisp(conduct));
-                }
-            };
+            ConductEditForm form = new ConductEditForm(conduct, at);
+            form.setOnCloseHandler(c -> setContent(createDisp(c)));
+            form.setOnDeletedHandler(() -> onDeletedHandler.run());
             setContent(form);
         }
     }
