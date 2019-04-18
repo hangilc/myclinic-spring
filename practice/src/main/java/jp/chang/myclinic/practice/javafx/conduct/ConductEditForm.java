@@ -15,8 +15,6 @@ import javafx.util.StringConverter;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.events.ConductDeletedEvent;
 import jp.chang.myclinic.practice.javafx.parts.OptionalWrapper;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.util.DrugUtil;

@@ -33,17 +33,23 @@ public class Record extends VBox {
     private RecordConductsPane conductsPane;
     private StackPane hokenArea = new StackPane();
     private ObjectProperty<ShoukiDTO> shouki;
+    private Runnable onDeletedHandler = () -> {};
 
     Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
                   Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shouki) {
         this.visitId = visit.visit.visitId;
         this.shouki = new SimpleObjectProperty<>(shouki);
         this.recordTitle = new RecordTitle(visit.visit, this.shouki);
+        recordTitle.setOnDeletedHandler(() -> onDeletedHandler.run());
         getChildren().addAll(
                 recordTitle,
                 createBody(visit, shinryouAttrMap, drugAttrMap)
         );
         setPrefWidth(400);
+    }
+
+    public void setOnDeletedHandler(Runnable onDeletedHandler) {
+        this.onDeletedHandler = onDeletedHandler;
     }
 
     void styleAsCurrentVisit(){

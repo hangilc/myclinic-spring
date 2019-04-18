@@ -7,6 +7,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.ShoukiDTO;
 import jp.chang.myclinic.dto.VisitDTO;
@@ -17,6 +18,7 @@ import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
+import jp.chang.myclinic.utilfx.ConfirmDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
@@ -27,16 +29,19 @@ public class RecordTitle extends TextFlow {
 
     private int visitId;
     private ObjectProperty<ShoukiDTO> shoukiProperty;
+    private Runnable onDeletedHandler = () -> {};
 
-    public RecordTitle(VisitDTO visit, ObjectProperty<ShoukiDTO> shoukiProperty) {
+    RecordTitle(VisitDTO visit, ObjectProperty<ShoukiDTO> shoukiProperty) {
         this.visitId = visit.visitId;
         this.shoukiProperty = shoukiProperty;
         getStyleClass().add("record-title-text");
         getChildren().addAll(new Text(createText(visit.visitedAt)));
         addContextMenu();
         adaptToEnv();
-//        PracticeEnv.INSTANCE.currentVisitIdProperty().addListener((obs, oldValue, newValue) -> adaptToEnv());
-//        PracticeEnv.INSTANCE.tempVisitIdProperty().addListener((obs, oldValue, newValue) -> adaptToEnv());
+    }
+
+    public void setOnDeletedHandler(Runnable onDeletedHandler) {
+        this.onDeletedHandler = onDeletedHandler;
     }
 
     void styleAsCurrentVisit(){
@@ -69,8 +74,6 @@ public class RecordTitle extends TextFlow {
     private String createText(String at) {
         LocalDateTime dateTime = DateTimeUtil.parseSqlDateTime(at);
         return new KanjiDateRepBuilder(dateTime).format3().str(" ").format4().build();
-//        return DateTimeUtil.sqlDateTimeToKanji(at,
-//                DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
     }
 
     private void addContextMenu() {
@@ -78,12 +81,14 @@ public class RecordTitle extends TextFlow {
         {
             MenuItem item = new MenuItem("この診察を削除");
             item.setOnAction(event -> {
-                if (!GuiUtil.confirm("この診察を削除しますか？")) {
+                if (!ConfirmDialog.confirm("この診察を削除しますか？", this)) {
                     return;
                 }
-                PracticeService.doDeleteVisit(visitId, result -> {
-                    this.fireEvent(new VisitDeletedEvent(visitId));
-                });
+                Frontend frontend = Context.frontend;
+                frontend.deleteVisitSafely(visitId)
+                        .thenAcceptAsync(v -> onDeletedHandler.run(),
+                                Platform::runLater)
+                        .exceptionally(HandlerFX::exceptionally);
             });
             contextMenu.getItems().add(item);
         }

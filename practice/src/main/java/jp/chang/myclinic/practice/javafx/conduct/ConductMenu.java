@@ -8,22 +8,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
-import jp.chang.myclinic.practice.lib.PracticeAPI;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
-import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDate;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 public class ConductMenu extends VBox {
 
@@ -73,11 +64,6 @@ public class ConductMenu extends VBox {
             contextMenu.show(this, event.getScreenX(), event.getScreenY());
         }
     }
-
-    private void fireConductEntered(ConductFullDTO entered) {
-        fireEvent(new ConductEnteredEvent(entered));
-    }
-
 
     private void doEnterXp() {
         if (PracticeUtil.confirmCurrentVisitAction(visitId, "Ｘ線検査を入力しますか？")) {

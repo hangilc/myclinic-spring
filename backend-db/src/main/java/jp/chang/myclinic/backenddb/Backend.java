@@ -906,6 +906,24 @@ public class Backend {
         practiceLogger.logShinryouCreated(shinryou);
     }
 
+    public ShinryouDTO enterShinryouByName(int visitId, String name){
+        int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(name);
+        if( shinryoucode == 0 ){
+            throw new RuntimeException("Cannot find shinryou: " + name);
+        }
+        VisitDTO visit = getVisit(visitId);
+        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
+        ShinryouMasterDTO master = getShinryouMaster(shinryoucode, at);
+        if( master == null ){
+            throw new RuntimeException(String.format("Shinryou (%s) is not available at %s", name, at.toString()));
+        }
+        ShinryouDTO shinryou = new ShinryouDTO();
+        shinryou.visitId = visitId;
+        shinryou.shinryoucode = shinryoucode;
+        enterShinryou(shinryou);
+        return shinryou;
+    }
+
     public void deleteShinryou(int shinryouId) {
         ShinryouDTO shinryou = getShinryou(shinryouId);
         ts.shinryouTable.delete(shinryouId);

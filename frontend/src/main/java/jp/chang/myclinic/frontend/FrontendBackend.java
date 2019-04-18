@@ -948,4 +948,9 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
         return query(backend -> backend.batchResolveStockDrug(iyakuhincodes, at));
     }
+
+    @Override
+    public CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name) {
+        return tx(backend -> backend.enterShinryouByName(visitId, name));
+    }
 }

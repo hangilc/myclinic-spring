@@ -356,4 +356,6 @@ public interface Frontend {
     CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId);
 
     CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at);
+
+    CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name);
 }

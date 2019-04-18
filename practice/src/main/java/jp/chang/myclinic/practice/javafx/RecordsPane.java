@@ -7,8 +7,6 @@ import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.CurrentPatientService;
 import jp.chang.myclinic.practice.IntegrationService;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.events.ConductDeletedEvent;
-import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +30,7 @@ public class RecordsPane extends VBox {
     public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
                           Map<Integer, DrugAttrDTO> drugAttrMap, Map<Integer, ShoukiDTO> shoukiMap){
         Record record = new Record(visit, shinryouAttrMap, drugAttrMap, shoukiMap.get(visit.visit.visitId));
+        record.setOnDeletedHandler(() -> onVisitDeleted(visit.visit.visitId));
         if( currentPatientService.getCurrentVisitId() == visit.visit.visitId ){
             record.styleAsCurrentVisit();
         } else if( currentPatientService.getTempVisitId() == visit.visit.visitId ){
@@ -55,6 +54,11 @@ public class RecordsPane extends VBox {
     List<Record> listRecord() {
         return getChildren().stream().filter(n -> n instanceof Record)
                 .map(n -> (Record)n).collect(Collectors.toList());
+    }
+
+    private void onVisitDeleted(int visitId){
+        findRecord(visitId)
+                .ifPresent(record -> getChildren().remove(record));
     }
 
     private void onNewText(TextDTO text){

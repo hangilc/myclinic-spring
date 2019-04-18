@@ -4,8 +4,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.practice.guitest.GroupTestBase;
 import jp.chang.myclinic.practice.guitest.TestInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -22,7 +20,7 @@ public class RecordsPaneTest extends GroupTestBase {
                 new RecordsPaneDrugTest(stage, main),
                 new RecordsPaneShinryouTest(stage, main),
                 new RecordsPaneConductTest(stage, main),
-                new RecordsPaneTitleTest(stage, main)
+                new RecordsPaneChargeTest(stage, main)
         );
     }
 }
