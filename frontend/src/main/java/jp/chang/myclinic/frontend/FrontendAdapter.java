@@ -880,4 +880,9 @@ public class FrontendAdapter implements Frontend {
     public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
+
+    @Override
+    public CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name) {
+        throw new RuntimeException("not implemented");
+    }
 }
