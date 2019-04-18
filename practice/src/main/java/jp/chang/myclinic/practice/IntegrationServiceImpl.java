@@ -2,6 +2,8 @@ package jp.chang.myclinic.practice;
 
 import jp.chang.myclinic.dto.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -54,4 +56,17 @@ public class IntegrationServiceImpl implements IntegrationService {
     public void setOnNewConduct(Consumer<ConductFullDTO> handler) {
         this.onNewConductHandler = handler;
     }
+
+    private List<BiConsumer<PatientDTO, Integer>> onCurrentPatientChangedHandlers = new ArrayList<>();
+
+    @Override
+    public void broadcastCurrentPatientChanged(PatientDTO patient, int visitId) {
+        onCurrentPatientChangedHandlers.forEach(handler -> handler.accept(patient, visitId));
+    }
+
+    @Override
+    public void addOnCurrentPatientChanged(BiConsumer<PatientDTO, Integer> handler) {
+        onCurrentPatientChangedHandlers.add(handler);
+    }
+    
 }

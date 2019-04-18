@@ -17,5 +17,7 @@ public interface IntegrationService {
     void setOnNewShinryou(BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> handler);
     void broadcastNewConduct(ConductFullDTO entered);
     void setOnNewConduct(Consumer<ConductFullDTO> handler);
+    void broadcastCurrentPatientChanged(PatientDTO patient, int visitId);
+    void addOnCurrentPatientChanged(BiConsumer<PatientDTO, Integer> handler);
 
 }
