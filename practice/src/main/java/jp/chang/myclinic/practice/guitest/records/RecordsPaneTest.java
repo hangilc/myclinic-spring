@@ -21,7 +21,8 @@ public class RecordsPaneTest extends GroupTestBase {
                 new RecordsPaneTextTest(stage, main),
                 new RecordsPaneDrugTest(stage, main),
                 new RecordsPaneShinryouTest(stage, main),
-                new RecordsPaneConductTest(stage, main)
+                new RecordsPaneConductTest(stage, main),
+                new RecordsPaneTitleTest(stage, main)
         );
     }
 }
