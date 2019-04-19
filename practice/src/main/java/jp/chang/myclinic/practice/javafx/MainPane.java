@@ -48,6 +48,7 @@ public class MainPane extends BorderPane {
     private CurrentPatientInfo currentPatientInfo = new CurrentPatientInfo();
     private StackPane patientManipWrapper = new StackPane();
     private PatientManip patientManip;
+    private PracticeHelper helper = PracticeHelper.getInstance();
 
     public MainPane() {
         setTop(createMenu());
@@ -282,7 +283,7 @@ public class MainPane extends BorderPane {
         if (!PracticeEnv.INSTANCE.confirmClosingPatient()) {
             return;
         }
-        PracticeLib.endPatient();
+        helper.endPatient();
     }
 
     private void doSearchText() {
@@ -393,14 +394,19 @@ public class MainPane extends BorderPane {
     }
 
     private void doRecentVisits() {
-        PracticeService.listRecentVisits(list -> {
-            RecentVisitsDialog dialog = new RecentVisitsDialog(list);
-            dialog.setCallback(patient -> {
-                PracticeLib.startPatient(patient, () -> {
-                });
-            });
-            dialog.show();
-        });
+        Frontend frontend = Context.frontend;
+        frontend.listRecentVisitWithPatient(0, 30)
+                .thenAccept(result -> {
+                    RecentVisitsDialog dialog = new RecentVisitsDialog(result);
+                    dialog.setCallback(patient -> {
+                        helper.startPatient(patient)
+                                .thenAcceptAsync(v -> dialog.close(),
+                                        Platform::runLater)
+                                .exceptionally(HandlerFX::exceptionally);
+                    });
+                    dialog.show();
+                })
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private String createTitle(PatientDTO patient) {
@@ -415,7 +421,7 @@ public class MainPane extends BorderPane {
         }
     }
 
-    private void onNewText(TextDTO entered){
+    private void onNewText(TextDTO entered) {
         findRecord(entered.visitId)
                 .ifPresent(record -> record.appendText(entered));
     }
