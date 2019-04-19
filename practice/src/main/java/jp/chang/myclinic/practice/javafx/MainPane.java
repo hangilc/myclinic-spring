@@ -16,8 +16,6 @@ import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.*;
-import jp.chang.myclinic.practice.javafx.events.EventTypes;
-import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.javafx.globalsearch.GlobalSearchDialog;
 import jp.chang.myclinic.practice.javafx.prescexample.EditPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.prescexample.NewPrescExampleDialog;
@@ -47,17 +45,27 @@ public class MainPane extends BorderPane {
     private MenuItem selectVisitMenu;
     private Supplier<Optional<PatientManip>> findPatientManipFun;
     private RecordsPane recordsPane = new RecordsPane();
+    private CurrentPatientInfo currentPatientInfo = new CurrentPatientInfo();
+    private StackPane patientManipWrapper = new StackPane();
+    private PatientManip patientManip;
 
     public MainPane() {
         setTop(createMenu());
         setCenter(createCenter());
-        addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
         Context.mainStageService.setTitle(createTitle(null));
         Context.integrationService.setOnNewText(this::onNewText);
-    }
-
-    public void setCurrent(PatientDTO patient, int visitId) {
-        Context.currentPatientService.setCurrentPatient(patient, visitId);
+        Context.currentPatientService.addOnChangeHandler((patient, visitId) -> {
+            currentPatientInfo.setPatient(patient);
+            if (patient != null) {
+                patientManipWrapper.getChildren().setAll(patientManip);
+            } else {
+                patientManipWrapper.getChildren().clear();
+            }
+        });
+        Context.integrationService.setVisitPageHandler((page, totalPages, visits) -> {
+            recordsPane.getChildren().clear();
+            setVisits(visits);
+        });
     }
 
     public void simulateSelectVisitMenuChoice() {
@@ -73,8 +81,13 @@ public class MainPane extends BorderPane {
     }
 
     public void simulateClickCashierButton() {
-        findPatientManipFun.get().orElseThrow(() -> new RuntimeException("cannot find patient manip"))
-                .simulateClickCashierButton();
+        for (Node node : patientManipWrapper.getChildren()) {
+            if (node instanceof PatientManip) {
+                PatientManip manip = (PatientManip) node;
+                manip.simulateClickCashierButton();
+            }
+        }
+        throw new RuntimeException("cannot find patient manip");
     }
 
     private Node createMenu() {
@@ -150,17 +163,6 @@ public class MainPane extends BorderPane {
         dialog.show();
     }
 
-    private void onVisitDeleted(VisitDeletedEvent event) {
-        int visitId = event.getVisitId();
-        PracticeEnv env = PracticeEnv.INSTANCE;
-        if (env.getCurrentVisitId() == visitId) {
-            env.setCurrentVisitId(0);
-        }
-        if (env.getTempVisitId() == visitId) {
-            env.setTempVisitId(0);
-        }
-    }
-
     private void doTodaysVisits() {
         Context.frontend.listTodaysVisit()
                 .thenAccept(list -> Platform.runLater(() -> {
@@ -209,8 +211,6 @@ public class MainPane extends BorderPane {
     private Node createMainColumn() {
         VBox root = new VBox(4);
         root.getStyleClass().add("main-column");
-        CurrentPatientInfo currentPatientInfo = new CurrentPatientInfo();
-        currentPatientInfo.patientProperty().bind(PracticeEnv.INSTANCE.currentPatientProperty());
         HBox.setHgrow(root, Priority.ALWAYS);
         root.getChildren().addAll(
                 currentPatientInfo,
@@ -219,10 +219,6 @@ public class MainPane extends BorderPane {
                 createRecords(),
                 createRecordNav()
         );
-        PracticeEnv.INSTANCE.pageVisitsProperty().addListener((obs, oldValue, newValue) -> {
-            recordsPane.getChildren().clear();
-            setVisits(newValue);
-        });
         return root;
     }
 
@@ -243,8 +239,7 @@ public class MainPane extends BorderPane {
     }
 
     private Node createPatientManip() {
-        StackPane wrapper = new StackPane();
-        PatientManip patientManip = new PatientManip() {
+        this.patientManip = new PatientManip() {
             @Override
             protected void onCashier() {
                 doCashier();
@@ -265,22 +260,7 @@ public class MainPane extends BorderPane {
                 doRefer(true);
             }
         };
-        PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                wrapper.getChildren().setAll(patientManip);
-            } else {
-                wrapper.getChildren().clear();
-            }
-        });
-        this.findPatientManipFun = () -> {
-            for (Node node : wrapper.getChildren()) {
-                if (node instanceof PatientManip) {
-                    return Optional.of((PatientManip) node);
-                }
-            }
-            return Optional.empty();
-        };
-        return wrapper;
+        return patientManipWrapper;
     }
 
     private void doCashier() {

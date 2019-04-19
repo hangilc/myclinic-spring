@@ -24,6 +24,14 @@ public class RecordsPane extends VBox {
         integ.setOnNewDrug(this::onNewDrug);
         integ.setOnNewShinryou(this::onNewShinryou);
         integ.setOnNewConduct(this::onNewConduct);
+        Context.currentPatientService.setOnTempVisitIdChangedHandler(change -> {
+            if( change.prevTempVisitId != 0 ) {
+                findRecord(change.prevTempVisitId).ifPresent(Record::styleAsRegular);
+            }
+            if( change.newTempVisitId != 0 ){
+                findRecord(change.newTempVisitId).ifPresent(Record::styleAsTempVisit);
+            }
+        });
         PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 

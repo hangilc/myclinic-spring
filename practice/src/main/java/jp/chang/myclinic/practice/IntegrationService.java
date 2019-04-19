@@ -4,6 +4,7 @@ import jp.chang.myclinic.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -17,7 +18,12 @@ public interface IntegrationService {
     void setOnNewShinryou(BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> handler);
     void broadcastNewConduct(ConductFullDTO entered);
     void setOnNewConduct(Consumer<ConductFullDTO> handler);
-    void broadcastCurrentPatientChanged(PatientDTO patient, int visitId);
-    void addOnCurrentPatientChanged(BiConsumer<PatientDTO, Integer> handler);
+    void broadcastVisitPage(int page, int totalPages, List<VisitFull2DTO> visits);
+
+    interface VisitPageHandler {
+        void accept(int page, int totalPages, List<VisitFull2DTO> visits);
+    }
+
+    void setVisitPageHandler(VisitPageHandler handler);
 
 }

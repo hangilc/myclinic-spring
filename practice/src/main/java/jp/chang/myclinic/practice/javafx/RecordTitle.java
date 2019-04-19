@@ -11,18 +11,15 @@ import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.ShoukiDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.Context;
+import jp.chang.myclinic.practice.CurrentPatientService;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
-import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.util.DateTimeUtil;
-import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class RecordTitle extends TextFlow {
@@ -122,18 +119,17 @@ public class RecordTitle extends TextFlow {
     }
 
     private void doSetTempVisit() {
-        PracticeEnv env = PracticeEnv.INSTANCE;
-        if (env.getCurrentVisitId() > 0) {
-            GuiUtil.alertError("現在診察中なので、暫定診察を設定できません。");
+        if (Context.currentPatientService.getCurrentVisitId() > 0) {
+            AlertDialog.alert("現在診察中なので、暫定診察を設定できません。", this);
         } else {
-            env.setTempVisitId(visitId);
+            Context.currentPatientService.setTempVisitId(visitId);
         }
     }
 
     private void doUnsetTempVisit() {
-        PracticeEnv env = PracticeEnv.INSTANCE;
-        if (env.getTempVisitId() == visitId) {
-            env.setTempVisitId(0);
+        CurrentPatientService curr = Context.currentPatientService;
+        if (curr.getTempVisitId() == visitId) {
+            curr.setTempVisitId(0);
         }
     }
 

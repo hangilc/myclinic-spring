@@ -60,6 +60,8 @@ public class Record extends VBox {
         recordTitle.styleAsTempVisit();
     }
 
+    void styleAsRegular(){ recordTitle.styleAsRegular(); }
+
     public int getVisitId() {
         return visitId;
     }

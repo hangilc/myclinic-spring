@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -8,9 +9,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.WqueueFullDTO;
+import jp.chang.myclinic.frontend.Frontend;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.lib.PracticeLib;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class SelectFromWqueueDialog extends Stage {
 
@@ -74,10 +79,32 @@ public class SelectFromWqueueDialog extends Stage {
         return hbox;
     }
 
+    private CompletableFuture<Void> suspendPatient(){
+        int currentVisitId = Context.currentPatientService.getCurrentVisitId();
+        if( currentVisitId > 0 ){
+            return Context.frontend.suspendExam(currentVisitId)
+                    .thenAccept(v -> Context.currentPatientService.setCurrentPatient(null, 0));
+        } else {
+            return CompletableFuture.completedFuture(null);
+        }
+
+    }
+
     private void doSelect(){
         WqueueFullDTO wq = wqueueTable.getSelectionModel().getSelectedItem();
         if( wq != null ){
-            PracticeLib.startPatient(wq.visit.visitId, wq.patient, this::close);
+            Frontend frontend = Context.frontend;
+            suspendPatient()
+                    .thenCompose(v -> frontend.startExam(wq.visit.visitId))
+                    .thenCompose(v -> frontend.listVisitFull2(wq.patient.patientId, 0))
+                    .thenAcceptAsync(result -> {
+                        Context.currentPatientService.setCurrentPatient(wq.patient, wq.visit.visitId);
+                        Context.integrationService.broadcastVisitPage(
+                                result.page, result.totalPages, result.visits
+                        );
+                        close();
+                    }, Platform::runLater)
+                    .exceptionally(HandlerFX::exceptionally);
         }
     }
 
