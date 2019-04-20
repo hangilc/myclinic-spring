@@ -76,4 +76,21 @@ public class MainPaneBlankTest extends GuiTestBase {
         createMainPane();
     }
 
+    @GuiTest
+    public void multiPatients(){
+        Frontend frontend = Context.frontend;
+        MockData mock = new MockData();
+        PatientDTO patient = mock.pickPatient();
+        patient.patientId = frontend.enterPatient(patient).join();
+        frontend.startVisit(patient.patientId, LocalDateTime.now());
+        for(int i=0;i<6;i++){
+            PatientDTO p = mock.pickPatient();
+            p.lastName = patient.lastName;
+            p.lastNameYomi = patient.lastNameYomi;
+            p.patientId = frontend.enterPatient(p).join();
+            frontend.startVisit(p.patientId, LocalDateTime.now());
+        }
+        createMainPane();
+    }
+
 }
