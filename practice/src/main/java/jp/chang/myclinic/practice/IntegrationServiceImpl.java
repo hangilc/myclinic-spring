@@ -57,16 +57,16 @@ public class IntegrationServiceImpl implements IntegrationService {
         this.onNewConductHandler = handler;
     }
 
-    private VisitPageHandler visitPageHandler = (p, t, v) -> {};
+    private List<VisitPageHandler> visitPageHandlers = new ArrayList<>();
 
     @Override
     public void broadcastVisitPage(int page, int totalPages, List<VisitFull2DTO> visits) {
-        visitPageHandler.accept(page, totalPages, visits);
+        visitPageHandlers.forEach(handler -> handler.accept(page, totalPages, visits));
     }
 
     @Override
-    public void setVisitPageHandler(VisitPageHandler handler) {
-        this.visitPageHandler = handler;
+    public void addVisitPageHandler(VisitPageHandler handler) {
+        visitPageHandlers.add(handler);
     }
 
     private BiConsumer<Integer, ShoukiDTO> onShoukiHandler = (visitId, shouki) -> {};

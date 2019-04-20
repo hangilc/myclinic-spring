@@ -17,6 +17,13 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 public class MainPaneBlankTest extends GuiTestBase {
 
@@ -46,6 +53,25 @@ public class MainPaneBlankTest extends GuiTestBase {
         MockData mock = new MockData();
         PatientDTO patient = mock.pickPatient();
         patient.patientId = frontend.enterPatient(patient).join();
+        VisitDTO visit = frontend.startVisit(patient.patientId, LocalDateTime.now()).join();
+        createMainPane();
+    }
+
+    @GuiTest
+    public void nav(){
+        Frontend frontend = Context.frontend;
+        MockData mock = new MockData();
+        PatientDTO patient = mock.pickPatient();
+        patient.patientId = frontend.enterPatient(patient).join();
+        List<LocalDateTime> prevTimes = IntStream.range(1, 16)
+                .mapToObj(i -> LocalDateTime.now().minus(i, ChronoUnit.DAYS))
+                .collect(toList());
+        Collections.reverse(prevTimes);
+        prevTimes.forEach(at -> {
+            VisitDTO visit = frontend.startVisit(patient.patientId, at).join();
+            frontend.endExam(visit.visitId, 0);
+            frontend.deleteWqueue(visit.visitId);
+        });
         VisitDTO visit = frontend.startVisit(patient.patientId, LocalDateTime.now()).join();
         createMainPane();
     }

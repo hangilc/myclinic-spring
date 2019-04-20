@@ -23,7 +23,6 @@ import jp.chang.myclinic.practice.javafx.prescexample.NewPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
-import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -65,7 +64,7 @@ public class MainPane extends BorderPane {
                 patientManipWrapper.getChildren().clear();
             }
         });
-        Context.integrationService.setVisitPageHandler((page, totalPages, visits) -> {
+        Context.integrationService.addVisitPageHandler((page, totalPages, visits) -> {
             recordsPane.getChildren().clear();
             setVisits(visits);
         });
@@ -236,8 +235,10 @@ public class MainPane extends BorderPane {
 
     private Node createRecordNav() {
         RecordNav nav = new RecordNav();
-        nav.totalPagesProperty().bind(PracticeEnv.INSTANCE.totalRecordPagesProperty());
-        nav.currentPageProperty().bind(PracticeEnv.INSTANCE.currentRecordPageProperty());
+        Context.integrationService.addVisitPageHandler((page, totalPages, visits) -> {
+            nav.setTotalPages(totalPages);
+            nav.setCurrentPage(page);
+        });
         return nav;
     }
 
@@ -266,8 +267,23 @@ public class MainPane extends BorderPane {
         return patientManipWrapper;
     }
 
+    private boolean cancelEndPatient(){
+        for(Window w: Window.getWindows()){
+            if( w instanceof ShoukiForm ){
+                String msg = "閉じられていない詳記入力フォームがありますが、このまま、この診察を終了しますか？";
+                if(ConfirmDialog.confirm(msg, this)){
+                    ((ShoukiForm)w).close();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void doCashier() {
-        if (!confirmEndPatient()) {
+        if (cancelEndPatient()) {
             return;
         }
         int visitId = PracticeEnv.INSTANCE.getCurrentVisitId();
@@ -281,23 +297,8 @@ public class MainPane extends BorderPane {
         }
     }
 
-    private boolean confirmEndPatient(){
-        for(Window w: Window.getWindows()){
-            if( w instanceof ShoukiForm ){
-                String msg = "閉じられていない詳記入力フォームがありますが、このまま、この診察を終了しますか？";
-                if(ConfirmDialog.confirm(msg, this)){
-                    ((ShoukiForm)w).close();
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     private void doEndPatient() {
-        if( !confirmEndPatient() ){
+        if(cancelEndPatient()){
             return;
         }
         helper.endPatient();
