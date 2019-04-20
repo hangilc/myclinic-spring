@@ -10,7 +10,8 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
-import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.AlertDialog;
+import jp.chang.myclinic.utilfx.ConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +62,12 @@ public class ListSettingDialog extends Stage {
             editSettingDialog.show();
         } catch (Exception e) {
             logger.error("Failed to get printer setting info.", e);
-            GuiUtil.alertException("印刷設定情報の取得に失敗しました。", e);
+            AlertDialog.alert("印刷設定情報の取得に失敗しました。", e, this);
         }
     }
 
     private void doDelete(String name){
-        if( !GuiUtil.confirm(name + ": この印刷設定を削除していいですか？") ){
+        if( !ConfirmDialog.confirm(name + ": この印刷設定を削除していいですか？", this) ){
             return;
         }
         try {
@@ -78,7 +79,7 @@ public class ListSettingDialog extends Stage {
             sizeToScene();
         } catch (Exception e) {
             logger.error("Failed to delete printer setting.", e);
-            GuiUtil.alertException("印刷設定の削除に失敗しました。", e);
+            AlertDialog.alert("印刷設定の削除に失敗しました。", e, this);
         }
     }
 

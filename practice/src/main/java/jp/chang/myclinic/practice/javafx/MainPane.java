@@ -180,11 +180,11 @@ public class MainPane extends BorderPane {
     }
 
     private void doNewVisitOfCurrentPatient() {
-        PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
+        PatientDTO patient = Context.currentPatientService.getCurrentPatient();
         if (patient != null) {
             String confirmText = String.format("(%d) %s%s様を再受付しますか？", patient.patientId,
                     patient.lastName, patient.firstName);
-            if (GuiUtil.confirm(confirmText)) {
+            if (ConfirmDialog.confirm(confirmText, this)) {
                 Context.frontend.startVisit(patient.patientId, LocalDateTime.now())
                         .exceptionally(HandlerFX::exceptionally);
             }
@@ -267,12 +267,12 @@ public class MainPane extends BorderPane {
         return patientManipWrapper;
     }
 
-    private boolean cancelEndPatient(){
-        for(Window w: Window.getWindows()){
-            if( w instanceof ShoukiForm ){
+    private boolean cancelEndPatient() {
+        for (Window w : Window.getWindows()) {
+            if (w instanceof ShoukiForm) {
                 String msg = "閉じられていない詳記入力フォームがありますが、このまま、この診察を終了しますか？";
-                if(ConfirmDialog.confirm(msg, this)){
-                    ((ShoukiForm)w).close();
+                if (ConfirmDialog.confirm(msg, this)) {
+                    ((ShoukiForm) w).close();
                     return false;
                 } else {
                     return true;
@@ -298,7 +298,7 @@ public class MainPane extends BorderPane {
     }
 
     private void doEndPatient() {
-        if(cancelEndPatient()){
+        if (cancelEndPatient()) {
             return;
         }
         helper.endPatient();
@@ -313,22 +313,17 @@ public class MainPane extends BorderPane {
     }
 
     private void doRefer(boolean includePatientInfo) {
-        try {
-            PrinterEnv printerEnv = PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
-            String printerSetting = PracticeEnv.INSTANCE.getAppProperty(PracticeEnv.REFER_PRINTER_SETTING_KEY);
-            ReferDialog dialog = new ReferDialog();
-            dialog.setPrinterEnv(printerEnv);
-            dialog.setDefaultPrinterSetting(printerSetting);
-            PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
-            if (includePatientInfo && patient != null) {
-                dialog.setPatient(patient);
-            }
-            dialog.setIssueDate(LocalDate.now());
-            dialog.show();
-        } catch (IOException ex) {
-            logger.error("Failed to open refer dialog.", ex);
-            GuiUtil.alertException("紹介状ダイアログの表示に失敗しました。", ex);
+        PrinterEnv printerEnv = Context.printerEnv;
+        String printerSetting = Context.getReferPrinterSetting();
+        ReferDialog dialog = new ReferDialog();
+        dialog.setPrinterEnv(printerEnv);
+        dialog.setDefaultPrinterSetting(printerSetting);
+        PatientDTO patient = Context.currentPatientService.getCurrentPatient();
+        if (includePatientInfo && patient != null) {
+            dialog.setPatient(patient);
         }
+        dialog.setIssueDate(LocalDate.now());
+        dialog.show();
     }
 
     private void doShohousen() {
@@ -418,8 +413,7 @@ public class MainPane extends BorderPane {
                     RecentVisitsDialog dialog = new RecentVisitsDialog(result);
                     dialog.setCallback(patient -> {
                         helper.startPatient(patient)
-                                .thenAcceptAsync(v -> dialog.close(),
-                                        Platform::runLater)
+                                .thenAcceptAsync(v -> dialog.close(), Platform::runLater)
                                 .exceptionally(HandlerFX::exceptionally);
                     });
                     dialog.show();

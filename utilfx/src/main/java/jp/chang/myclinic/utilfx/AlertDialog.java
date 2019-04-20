@@ -16,18 +16,26 @@ import javafx.stage.Window;
 
 public class AlertDialog extends Stage {
 
-    public static void alert(String message, Node node){
-        AlertDialog dialog = new AlertDialog(message, node);
+    public static void alert(String message, Window owner){
+        AlertDialog dialog = new AlertDialog(message, owner);
         dialog.showAndWait();
+    }
+
+    public static void alert(String message, Node node){
+        alert(message, node.getScene().getWindow());
+    }
+
+    public static void alert(String message, Exception ex, Node node){
+        alert(message + "\n" + ex.toString(), node);
+    }
+
+    public static void alert(String message, Exception ex, Window owner){
+        alert(message + "\n" + ex.toString(), owner);
     }
 
     private Button okButton = new Button("OK");
 
-    public AlertDialog(String message, Node node){
-        this(message, node.getScene().getWindow());
-    }
-
-    public AlertDialog(String message, Window owner) {
+    private AlertDialog(String message, Window owner) {
         Pane mainPane = createPane(message);
         mainPane.setStyle("-fx-padding: 10px");
         mainPane.setPrefWidth(260);

@@ -14,7 +14,7 @@ import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DevmodeInfo;
 import jp.chang.myclinic.drawer.printer.DevnamesInfo;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
-import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
@@ -32,6 +32,7 @@ public abstract class SelectDefaultSettingDialog extends Stage {
 
     public SelectDefaultSettingDialog(String current, List<String> names,  PrinterEnv printerEnv) {
         this.printerEnv = printerEnv;
+        setTitle("既定の印刷設定の選択");
         Parent root = createRoot(current, names, printerEnv);
         root.setStyle("-fx-padding:10px");
         setScene(new Scene(root));
@@ -88,7 +89,7 @@ public abstract class SelectDefaultSettingDialog extends Stage {
                     devnamesInfo.getDevice(), devmodeInfo.getDefaultSourceLabel(),
                     devmodeInfo.getOrientationLabel(),
                     auxSetting.getDx(), auxSetting.getDy(), auxSetting.getScale());
-            GuiUtil.alertInfo(text);
+            AlertDialog.alert(text, this);
         } catch (Exception e) {
             HandlerFX.exception("印刷設定情報の取得に失敗しました。", e);
         }

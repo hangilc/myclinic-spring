@@ -33,7 +33,8 @@ public class SearchPatientDialog extends Stage {
     }
 
     private Node createSearchBox(){
-        SimpleSearchBox<PatientDTO> box = new SimpleSearchBox<>(Context.frontend::searchPatient, SearchPatientDialog::converter);
+        SimpleSearchBox<PatientDTO> box =
+                new SimpleSearchBox<>(Context.frontend::searchPatient, SearchPatientDialog::converter);
         box.setOnDoubleClickSelectCallback(patientDTO -> Platform.runLater(() -> {
             helper.startPatient(patientDTO);
             SearchPatientDialog.this.close();

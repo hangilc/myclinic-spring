@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.refer;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -13,6 +14,7 @@ import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ReferItemDTO;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
@@ -20,6 +22,7 @@ import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,55 +61,54 @@ public class ReferDialog extends Stage {
         setScene(new Scene(root));
     }
 
-    public void setPatient(PatientDTO patient){
+    public void setPatient(PatientDTO patient) {
         patientNameInput.setText(patient.lastName + " " + patient.firstName);
         birthdayInput.setText(composeBirthdayRep(patient.birthday));
         ageInput.setText(composeAgeRep(patient.birthday));
         sexInput.getSelectionModel().select(Sex.fromCode(patient.sex));
     }
 
-    public void setIssueDate(LocalDate date){
+    public void setIssueDate(LocalDate date) {
         String s = KanjiDate.toKanji(date);
         issueDateInput.setText(s);
     }
 
-    public void setPrinterEnv(PrinterEnv printerEnv){
+    public void setPrinterEnv(PrinterEnv printerEnv) {
         this.printerEnv = printerEnv;
     }
 
-    public void setDefaultPrinterSetting(String setting){
+    public void setDefaultPrinterSetting(String setting) {
         this.defaultPrinterSetting = setting;
     }
 
-    private String composeBirthdayRep(String sqldate){
-        if( sqldate == null || sqldate.isEmpty() ){
+    private String composeBirthdayRep(String sqldate) {
+        if (sqldate == null || sqldate.isEmpty()) {
             return "";
         } else {
             return new KanjiDateRepBuilder(DateTimeUtil.parseSqlDate(sqldate)).format1().build();
-//            return DateTimeUtil.sqlDateToKanji(sqldate, DateTimeUtil.kanjiFormatter1);
         }
     }
 
-    private String composeAgeRep(String sqldate){
+    private String composeAgeRep(String sqldate) {
         try {
             LocalDate bd = LocalDate.parse(sqldate);
             return "" + DateTimeUtil.calcAge(bd);
-        } catch(Exception ex){
+        } catch (Exception ex) {
             return "";
         }
     }
 
-    private Node createCommands(){
+    private Node createCommands() {
         HBox hbox = new HBox(4);
         Button previewButton = new Button("プレビュー");
         Button registeredButton = new Button("登録先");
         previewButton.setOnAction(evt -> doPreview());
-        registeredButton.setOnAction(evt-> doRegistered());
+        registeredButton.setOnAction(evt -> doRegistered());
         hbox.getChildren().addAll(previewButton, registeredButton);
         return hbox;
     }
 
-    private Node createPropertiesInput(){
+    private Node createPropertiesInput() {
         DispGrid part = new DispGrid();
         part.rightAlignFirstColumn();
         ageInput.getStyleClass().add("age-input");
@@ -123,7 +125,7 @@ public class ReferDialog extends Stage {
         return part;
     }
 
-    private Node createTitleInput(){
+    private Node createTitleInput() {
         titleInput = new ComboBox<>();
         titleInput.getStyleClass().add("title-input");
         titleInput.getItems().addAll("紹介状", "ご報告");
@@ -132,46 +134,46 @@ public class ReferDialog extends Stage {
         return titleInput;
     }
 
-    private HBox createHBox(Node... children){
+    private HBox createHBox(Node... children) {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(children);
         return hbox;
     }
 
-    private Node createMainContent(){
+    private Node createMainContent() {
         mainContentInput.setWrapText(true);
         mainContentInput.setText("いつも大変お世話になっております。");
         return mainContentInput;
     }
 
-    private String composeReferDoctor(){
+    private String composeReferDoctor() {
         String section = sectionInput.getText();
-        if( section.isEmpty() ){
+        if (section.isEmpty()) {
             section = "　　　　　　";
         }
         String doctorName = doctorInput.getText();
-        if( doctorName.isEmpty() ){
+        if (doctorName.isEmpty()) {
             doctorName = "　　　 　　　";
         }
         return String.format("%s　%s 先生 御机下", section, doctorName);
     }
 
-    private String composePatientName(){
+    private String composePatientName() {
         String name = patientNameInput.getText();
-        if( name.isEmpty() ){
+        if (name.isEmpty()) {
             name = "　　　 　　　";
         }
         return String.format("%s 様", name);
     }
 
-    private String composePatientInfo(){
+    private String composePatientInfo() {
         String birthday = birthdayInput.getText();
-        if( birthday.isEmpty() ){
+        if (birthday.isEmpty()) {
             birthday = "　　   年   月   日";
         }
         String age = ageInput.getText();
-        if( age.isEmpty() ){
+        if (age.isEmpty()) {
             age = "    ";
         }
         Sex sex = sexInput.getSelectionModel().getSelectedItem();
@@ -179,7 +181,7 @@ public class ReferDialog extends Stage {
         return String.format("%s生 %s才 %s性", birthday, age, sexText);
     }
 
-    private void doPreview(){
+    private void doPreview() {
         ReferDrawer drawer = new ReferDrawer();
         drawer.setTitle(getReferTitle());
         drawer.setReferHospital(hospitalInput.getText());
@@ -189,38 +191,42 @@ public class ReferDialog extends Stage {
         drawer.setDiagnosis("診断 " + diagnosisInput.getText());
         drawer.setIssueDate(issueDateInput.getText());
         drawer.setContent(mainContentInput.getText());
-        ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
-        drawer.setAddress(clinicInfo.postalCode, clinicInfo.address, clinicInfo.tel, clinicInfo.fax,
-                clinicInfo.name, clinicInfo.doctorName);
-        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(){
-            @Override
-            protected void onDefaultSettingChange(String newSettingName) {
-                ReferDialog.this.defaultPrinterSetting = newSettingName;
-                ReferUtil.changeDefaultPrinterSetting(newSettingName);
-            }
-        };
-        previewDialog.setPrinterEnv(printerEnv);
-        previewDialog.setDefaultPrinterSetting(defaultPrinterSetting);
-        previewDialog.setTitle("紹介状のプレビュー");
-        previewDialog.setScaleFactor(0.5);
-        previewDialog.setContentSize(PaperSize.A4.getWidth(), PaperSize.A4.getHeight());
-        previewDialog.setOps(drawer.getOps());
-        previewDialog.show();
+        Context.frontend.getClinicInfo()
+                .thenAcceptAsync(clinicInfo -> {
+                            drawer.setAddress(clinicInfo.postalCode, clinicInfo.address, clinicInfo.tel,
+                                    clinicInfo.fax, clinicInfo.name, clinicInfo.doctorName);
+                            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog() {
+                                @Override
+                                protected void onDefaultSettingChange(String newSettingName) {
+                                    ReferDialog.this.defaultPrinterSetting = newSettingName;
+                                    ReferUtil.changeDefaultPrinterSetting(newSettingName);
+                                }
+                            };
+                            previewDialog.setPrinterEnv(printerEnv);
+                            previewDialog.setDefaultPrinterSetting(defaultPrinterSetting);
+                            previewDialog.setTitle("紹介状のプレビュー");
+                            previewDialog.setScaleFactor(0.5);
+                            previewDialog.setContentSize(PaperSize.A4.getWidth(), PaperSize.A4.getHeight());
+                            previewDialog.setOps(drawer.getOps());
+                            previewDialog.show();
+                        },
+                        Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
-    private void doRegistered(){
+    private void doRegistered() {
         List<ReferItemDTO> referList = PracticeEnv.INSTANCE.getReferList();
-        if( referList != null ){
-            RegisteredDialog dialog = new RegisteredDialog(referList){
+        if (referList != null) {
+            RegisteredDialog dialog = new RegisteredDialog(referList) {
                 @Override
                 void onEnter(RegisteredDialog self, ReferItemDTO item) {
-                    if( item.hospital != null ){
+                    if (item.hospital != null) {
                         hospitalInput.setText(item.hospital);
                     }
-                    if( item.section != null ){
+                    if (item.section != null) {
                         sectionInput.setText(item.section);
                     }
-                    if( item.doctor != null ){
+                    if (item.doctor != null) {
                         doctorInput.setText(item.doctor);
                     }
                     self.close();
@@ -230,7 +236,7 @@ public class ReferDialog extends Stage {
         }
     }
 
-    private String getReferTitle(){
+    private String getReferTitle() {
         return titleInput.getSelectionModel().getSelectedItem();
     }
 }

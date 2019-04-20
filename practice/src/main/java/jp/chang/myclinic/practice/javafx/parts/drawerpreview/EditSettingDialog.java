@@ -18,7 +18,8 @@ import jp.chang.myclinic.drawer.printer.DevnamesInfo;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
-import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.AlertDialog;
+import jp.chang.myclinic.utilfx.PromptDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public class EditSettingDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(EditSettingDialog.class);
     private static List<Op> defaultTestPrintOps = new ArrayList<>();
+
     {
         DrawerCompiler comp = new DrawerCompiler();
         comp.createFont("default-font", "sans-serif", 10);
@@ -38,6 +40,7 @@ public class EditSettingDialog extends Stage {
         comp.textAt("こんにちは、世界", 0, 0, DrawerCompiler.HAlign.Left, DrawerCompiler.VAlign.Top);
         defaultTestPrintOps = comp.getOps();
     }
+
     private PrinterEnv printerEnv;
     private String name;
     private byte[] devmode;
@@ -48,7 +51,7 @@ public class EditSettingDialog extends Stage {
     private class PrinterPart extends VBox {
         private Text text;
 
-        PrinterPart(){
+        PrinterPart() {
             super(4);
             text = new Text("");
             Button modifyButton = new Button("変更");
@@ -60,19 +63,19 @@ public class EditSettingDialog extends Stage {
             update();
         }
 
-        private void update(){
+        private void update() {
             text.setText(createLabel());
         }
 
-        private String createLabel(){
+        private String createLabel() {
             DevnamesInfo devnamesInfo = new DevnamesInfo(devnames);
             return String.format("%s", devnamesInfo.getDevice());
         }
 
-        private void doModify(){
+        private void doModify() {
             DrawerPrinter drawerPrinter = new DrawerPrinter();
             DrawerPrinter.DialogResult result = drawerPrinter.printDialog(devmode, devnames);
-            if( result.ok ){
+            if (result.ok) {
                 byte[] newDevmode = result.devmodeData;
                 byte[] newDevnames = result.devnamesData;
                 try {
@@ -82,7 +85,7 @@ public class EditSettingDialog extends Stage {
                     update();
                 } catch (Exception e) {
                     logger.error("Failed to save printer setting.", e);
-                    GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
+                    AlertDialog.alert("印刷設定の保存に失敗しました。", e, this);
                 }
             }
         }
@@ -96,7 +99,7 @@ public class EditSettingDialog extends Stage {
         String description;
         private Text text = new Text("");
 
-        AuxPart(String label, Supplier<Double> getter, Consumer<Double> setter, String description){
+        AuxPart(String label, Supplier<Double> getter, Consumer<Double> setter, String description) {
             super(4);
             setAlignment(Pos.CENTER_LEFT);
             this.label = label;
@@ -111,28 +114,27 @@ public class EditSettingDialog extends Stage {
             );
         }
 
-        private void doModify(){
+        private void doModify() {
             String prompt = String.format("%s （%s）の値を入力", label, description);
-            GuiUtil.askForString(prompt, text.getText())
-                    .ifPresent(input -> {
-                        try {
-                            double newValue = Double.parseDouble(input);
-                            setter.accept(newValue);
-                            printerEnv.saveSetting(name, auxSetting);
-                            text.setText("" + getter.get());
-                        } catch(NumberFormatException ex){
-                            GuiUtil.alertError(label + " の入力が不適切です。");
-                        } catch (Exception e) {
-                            logger.error("Failed to save printer aux setting.", e);
-                            GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
-                        }
-                    });
-
+            String input = PromptDialog.askForString(prompt, text.getText(), "", this);
+            if (input != null) {
+                try {
+                    double newValue = Double.parseDouble(input);
+                    setter.accept(newValue);
+                    printerEnv.saveSetting(name, auxSetting);
+                    text.setText("" + getter.get());
+                } catch (NumberFormatException ex) {
+                    AlertDialog.alert(label + " の入力が不適切です。", this);
+                } catch (Exception e) {
+                    logger.error("Failed to save printer aux setting.", e);
+                    AlertDialog.alert("印刷設定の保存に失敗しました。", e, this);
+                }
+            }
         }
 
     }
 
-    public EditSettingDialog(PrinterEnv printerEnv, String name, byte[] devmode, byte[] devnames, AuxSetting auxSetting) {
+    EditSettingDialog(PrinterEnv printerEnv, String name, byte[] devmode, byte[] devnames, AuxSetting auxSetting) {
         this.printerEnv = printerEnv;
         this.name = name;
         this.devmode = devmode;
@@ -145,11 +147,11 @@ public class EditSettingDialog extends Stage {
         setScene(new Scene(root));
     }
 
-    public void setTestPrintOps(List<Op> testPrintOps) {
+    void setTestPrintOps(List<Op> testPrintOps) {
         this.testPrintOps = testPrintOps;
     }
 
-    private Node createCenter(){
+    private Node createCenter() {
         VBox vbox = new VBox(4);
         vbox.getChildren().addAll(
                 createMain(),
@@ -158,7 +160,7 @@ public class EditSettingDialog extends Stage {
         return vbox;
     }
 
-    private Node createMain(){
+    private Node createMain() {
         DispGrid root = new DispGrid();
         root.addRow("名前：", new Label(name));
         root.addRow("プリンター：", new PrinterPart());
@@ -168,7 +170,7 @@ public class EditSettingDialog extends Stage {
         return root;
     }
 
-    private Node createCommands(){
+    private Node createCommands() {
         HBox hbox = new HBox(4);
         Button doneButton = new Button("終了");
         Button testPrintButton = new Button("テスト印刷");
@@ -181,7 +183,7 @@ public class EditSettingDialog extends Stage {
         return hbox;
     }
 
-    private void doTestPrint(){
+    private void doTestPrint() {
         DrawerPrinter drawerPrinter = new DrawerPrinter();
         drawerPrinter.print(testPrintOps, devmode, devnames, auxSetting);
     }

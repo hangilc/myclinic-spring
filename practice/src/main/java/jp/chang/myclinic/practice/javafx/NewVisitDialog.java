@@ -23,6 +23,7 @@ class NewVisitDialog extends Stage {
     private PatientDisp disp;
 
     NewVisitDialog() {
+        setTitle("患者受付  ");
         VBox root = new VBox(4);
         root.getStyleClass().add("new-visit-dialog");
         root.getStylesheets().addAll(

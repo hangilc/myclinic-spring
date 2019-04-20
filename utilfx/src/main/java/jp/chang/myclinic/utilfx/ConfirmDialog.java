@@ -18,21 +18,21 @@ import org.slf4j.LoggerFactory;
 
 public class ConfirmDialog extends Stage {
 
-    public static boolean confirm(String message, Node node){
-        ConfirmDialog dialog = new ConfirmDialog(message, node);
+    public static boolean confirm(String message, Window owner){
+        ConfirmDialog dialog = new ConfirmDialog(message, owner);
         dialog.showAndWait();
         return dialog.isOk();
+    }
+
+    public static boolean confirm(String message, Node node){
+        return confirm(message, node.getScene().getWindow());
     }
 
     private Button okButton = new Button("はい");
     private Button noButton = new Button("いいえ");
     private boolean ok = false;
 
-    public ConfirmDialog(String message, Node node){
-        this(message, node.getScene().getWindow());
-    }
-
-    public ConfirmDialog(String message, Window owner) {
+    private ConfirmDialog(String message, Window owner) {
         Pane mainPane = createPane(message);
         mainPane.setStyle("-fx-padding: 10px");
         mainPane.setPrefWidth(260);

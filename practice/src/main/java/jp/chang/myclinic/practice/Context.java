@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.javafx.MainPane;
+import jp.chang.myclinic.support.clinicinfo.ClinicInfoProvider;
 import jp.chang.myclinic.support.config.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
