@@ -193,53 +193,6 @@ public class PracticeEnv {
         this.kouhatsuKasan = kouhatsuKasan;
     }
 
-    // ShoukiForm ///////////////////////////////////////////////////////////////////////////////////////
-
-    public void addShoukiFormChangeListener(BiConsumer<Integer, ShoukiDTO> listener){
-        shoukiChangeListeners.add(listener);
-    }
-
-    public ShoukiForm getShoukiForm(int visitId){
-        return shoukiFormMap.get(visitId);
-    }
-
-    public void registerShoukiForm(ShoukiForm shoukiForm){
-        ShoukiForm prev = shoukiFormMap.putIfAbsent(shoukiForm.getVisitId(), shoukiForm);
-        if( prev != null ){
-            GuiUtil.alertError("ShoukiForm is already opened.");
-        }
-        shoukiForm.setCallback((visitId, shoukiDTO) -> {
-            for(BiConsumer<Integer, ShoukiDTO> callback: shoukiChangeListeners){
-                callback.accept(visitId, shoukiDTO);
-            }
-        });
-    }
-
-    public void unregisterShoukiForm(ShoukiForm shoukiForm){
-        shoukiFormMap.remove(shoukiForm.getVisitId());
-    }
-
-    public boolean confirmClosingPatient(){
-        if( shoukiFormMap.size() != 0 ){
-            boolean force = GuiUtil.confirm("閉じられていない詳記入力フォームがありますが、このまま、この診察を終了しますか？");
-            if( force ){
-                for(ShoukiForm shoukiForm: shoukiFormMap.values()){
-                    shoukiForm.close();
-                }
-                shoukiFormMap.clear();
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void closeRemainingWindows(){
-        for(ShoukiForm form: shoukiFormMap.values()){
-            form.close();
-        }
-    }
-
     @Override
     public String toString() {
         return "PracticeEnv{" +

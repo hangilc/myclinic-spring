@@ -11,6 +11,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.*;
@@ -23,6 +24,7 @@ import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
+import jp.chang.myclinic.utilfx.ConfirmDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
@@ -265,7 +267,7 @@ public class MainPane extends BorderPane {
     }
 
     private void doCashier() {
-        if (!PracticeEnv.INSTANCE.confirmClosingPatient()) {
+        if (!confirmEndPatient()) {
             return;
         }
         int visitId = PracticeEnv.INSTANCE.getCurrentVisitId();
@@ -279,8 +281,23 @@ public class MainPane extends BorderPane {
         }
     }
 
+    private boolean confirmEndPatient(){
+        for(Window w: Window.getWindows()){
+            if( w instanceof ShoukiForm ){
+                String msg = "閉じられていない詳記入力フォームがありますが、このまま、この診察を終了しますか？";
+                if(ConfirmDialog.confirm(msg, this)){
+                    ((ShoukiForm)w).close();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private void doEndPatient() {
-        if (!PracticeEnv.INSTANCE.confirmClosingPatient()) {
+        if( !confirmEndPatient() ){
             return;
         }
         helper.endPatient();

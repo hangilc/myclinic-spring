@@ -68,4 +68,16 @@ public class IntegrationServiceImpl implements IntegrationService {
     public void setVisitPageHandler(VisitPageHandler handler) {
         this.visitPageHandler = handler;
     }
+
+    private BiConsumer<Integer, ShoukiDTO> onShoukiHandler = (visitId, shouki) -> {};
+
+    @Override
+    public void broadcastShouki(int visitId, ShoukiDTO shouki) {
+        onShoukiHandler.accept(visitId, shouki);
+    }
+
+    @Override
+    public void setOnShoukiHandler(BiConsumer<Integer, ShoukiDTO> handler) {
+        this.onShoukiHandler = handler;
+    }
 }

@@ -7,6 +7,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Window;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.ShoukiDTO;
@@ -143,18 +144,14 @@ public class RecordTitle extends TextFlow {
     }
 
     private void doModifyShouki(){
-        ShoukiForm current = PracticeEnv.INSTANCE.getShoukiForm(visitId);
-        if( current != null ){
-            current.toFront();
-        } else {
-            ShoukiForm form = new ShoukiForm(visitId, shoukiProperty.getValue());
-            PracticeEnv.INSTANCE.registerShoukiForm(form);
-            form.showingProperty().addListener((obs, oldValue, newValue) -> {
-                if( !newValue ){
-                    PracticeEnv.INSTANCE.unregisterShoukiForm(form);
-                }
-            });
-            form.show();
+        for(Window w: Window.getWindows()){
+            if( w instanceof ShoukiForm ){
+                ((ShoukiForm)w).toFront();
+                return;
+            }
         }
+        ShoukiForm form = new ShoukiForm(visitId, shoukiProperty.getValue());
+        form.setCallback(Context.integrationService::broadcastShouki);
+        form.show();
     }
 }

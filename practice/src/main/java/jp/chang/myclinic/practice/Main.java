@@ -30,6 +30,7 @@ import picocli.CommandLine;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class Main extends Application {
 
@@ -99,6 +100,8 @@ public class Main extends Application {
                 }).start();
             } else if( opts.guiTestOne != null ){
                 if (opts.guiTestOne.length == 0 || opts.guiTestOne.length >= 3) {
+                    System.out.println(opts.guiTestOne.length);
+                    Arrays.asList(opts.guiTestOne).forEach(System.out::println);
                     System.err.println("CLASSNAME[:METHODNAME] expected");
                     System.exit(1);
                 }

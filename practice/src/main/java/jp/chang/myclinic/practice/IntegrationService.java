@@ -25,5 +25,7 @@ public interface IntegrationService {
     }
 
     void setVisitPageHandler(VisitPageHandler handler);
+    void broadcastShouki(int visitId, ShoukiDTO shouki);
+    void setOnShoukiHandler(BiConsumer<Integer, ShoukiDTO> handler);
 
 }

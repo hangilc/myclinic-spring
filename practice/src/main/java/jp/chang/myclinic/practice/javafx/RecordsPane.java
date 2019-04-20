@@ -32,7 +32,7 @@ public class RecordsPane extends VBox {
                 findRecord(change.newTempVisitId).ifPresent(Record::styleAsTempVisit);
             }
         });
-        PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
+        Context.integrationService.setOnShoukiHandler(this::onShoukiChanged);
     }
 
     public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
