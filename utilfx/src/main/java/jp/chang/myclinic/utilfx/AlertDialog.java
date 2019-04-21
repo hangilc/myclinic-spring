@@ -25,11 +25,11 @@ public class AlertDialog extends Stage {
         alert(message, node.getScene().getWindow());
     }
 
-    public static void alert(String message, Exception ex, Node node){
+    public static void alert(String message, Throwable ex, Node node){
         alert(message + "\n" + ex.toString(), node);
     }
 
-    public static void alert(String message, Exception ex, Window owner){
+    public static void alert(String message, Throwable ex, Window owner){
         alert(message + "\n" + ex.toString(), owner);
     }
 

@@ -23,6 +23,7 @@ import jp.chang.myclinic.practice.javafx.prescexample.NewPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -331,20 +332,24 @@ public class MainPane extends BorderPane {
             PrinterEnv printerEnv = PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
             ShohousenDialog dialog = new ShohousenDialog();
             dialog.setPrinterEnv(printerEnv);
-            ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
-            dialog.setClinicInfo(clinicInfo);
-            dialog.setDoctorName(clinicInfo.doctorName);
-            dialog.show();
+            Context.frontend.getClinicInfo()
+                    .thenAcceptAsync(clinicInfo -> {
+                                dialog.setClinicInfo(clinicInfo);
+                                dialog.setDoctorName(clinicInfo.doctorName);
+                                dialog.show();
+                            },
+                            Platform::runLater)
+                    .exceptionally(HandlerFX::exceptionally);
         } catch (Exception ex) {
             logger.error("Failed to do shohousen.", ex);
-            GuiUtil.alertException("処方箋ダイアログの表示に失敗しました。", ex);
+            AlertDialog.alert("処方箋ダイアログの表示に失敗しました。", ex, this);
         }
     }
 
-    public CompletableFuture<Void> setVisits(List<VisitFull2DTO> visits) {
+    public void setVisits(List<VisitFull2DTO> visits) {
         recordsPane.getChildren().clear();
         if (visits == null) {
-            return CompletableFuture.completedFuture(null);
+            return;
         }
         List<Integer> shinryouIds = visits.stream().flatMap(v -> v.shinryouList.stream())
                 .map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
@@ -357,7 +362,7 @@ public class MainPane extends BorderPane {
         }
         Local local = new Local();
         Frontend frontend = Context.frontend;
-        return frontend.batchGetShinryouAttr(shinryouIds)
+        frontend.batchGetShinryouAttr(shinryouIds)
                 .thenCompose(attrList -> {
                     Map<Integer, ShinryouAttrDTO> shinryouAttrMap = new HashMap<>();
                     attrList.forEach(attr -> shinryouAttrMap.put(attr.shinryouId, attr));
@@ -376,7 +381,8 @@ public class MainPane extends BorderPane {
                     Platform.runLater(() ->
                             visits.forEach(v -> recordsPane.addRecord(v, local.shinryouAttrMap,
                                     local.drugAttrMap, shoukiMap)));
-                });
+                })
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private Node createRecords() {
@@ -396,7 +402,7 @@ public class MainPane extends BorderPane {
                 .exceptionally(ex -> {
                     logger.error("Failed list wqueue for exam.", ex);
                     Platform.runLater(() ->
-                            GuiUtil.alertException("受付患者リストの取得に失敗しました。", ex));
+                            AlertDialog.alert("受付患者リストの取得に失敗しました。", ex, this));
                     return null;
                 });
     }

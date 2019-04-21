@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ShohousenData {
@@ -32,7 +33,7 @@ public class ShohousenData {
     private LocalDate validUptoDate;
     private List<String> drugLines;
 
-    public void applyTo(ShohousenDrawer drawer){
+    void applyTo(ShohousenDrawer drawer){
         drawer.setHakkouKikan(clinicAddress, clinicName, clinicPhone, kikancode);
         drawer.setDoctorName(doctorName);
         drawer.setHokenshaBangou(hokenshaBangou);
@@ -71,6 +72,7 @@ public class ShohousenData {
             drawer.setKoufuDate(koufuDate.getYear(), koufuDate.getMonthValue(), koufuDate.getDayOfMonth());
         }
         if( validUptoDate != null ){
+            //noinspection StatementWithEmptyBody
             if (koufuDate != null && validUptoDate.equals(koufuDate.plusDays(3))) {
                 // it is the default value, so omit printing
             } else {
@@ -82,7 +84,7 @@ public class ShohousenData {
         }
     }
 
-    public void setClinicInfo(ClinicInfoDTO clinicInfo){
+    void setClinicInfo(ClinicInfoDTO clinicInfo){
         if( clinicInfo != null ){
             clinicAddress = clinicInfo.postalCode + " " + clinicInfo.address;
             clinicName = clinicInfo.name;
@@ -133,7 +135,7 @@ public class ShohousenData {
         sex = Sex.fromCode(patient.sex);
     }
 
-    public void setFutanWari(HokenDTO hoken, PatientDTO patient, LocalDate visitedAt){
+    void setFutanWari(HokenDTO hoken, PatientDTO patient, LocalDate visitedAt){
         if( patient.birthday != null && !"0000-00-00".equals(patient.birthday) ){
             LocalDate bd = LocalDate.parse(patient.birthday);
             int rcptAge = HokenUtil.calcRcptAge(bd.getYear(), bd.getMonthValue(), bd.getDayOfMonth(),
@@ -142,12 +144,8 @@ public class ShohousenData {
         }
     }
 
-    public void setKoufuDate(LocalDate koufuDate){
+    void setKoufuDate(LocalDate koufuDate){
         this.koufuDate = koufuDate;
-    }
-
-    public void setValidUptoDate(LocalDate date){
-        this.validUptoDate = date;
     }
 
     public void setDrugs(String content){
@@ -169,11 +167,7 @@ public class ShohousenData {
         String kigou = shahokokuho.hihokenshaKigou;
         String bangou = shahokokuho.hihokenshaBangou;
         if( kigou == null ){
-            if( bangou == null ){
-                return "";
-            } else {
-                return bangou;
-            }
+            return Objects.requireNonNullElse(bangou, "");
         } else {
             if( bangou == null ){
                 return kigou;
