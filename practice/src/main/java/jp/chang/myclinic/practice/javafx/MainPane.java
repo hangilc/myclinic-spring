@@ -392,7 +392,7 @@ public class MainPane extends BorderPane {
     }
 
     private void doSelectVisit() {
-        PracticeFun.listWqueue()
+        Context.frontend.listWqueueFullForExam()
                 .thenAcceptAsync(list -> {
                     SelectFromWqueueDialog dialog = new SelectFromWqueueDialog(list);
                     dialog.show();
@@ -429,11 +429,10 @@ public class MainPane extends BorderPane {
         if (patient == null) {
             return "診察";
         } else {
-            String title = String.format("診察 (%d) %s%s",
+            return String.format("診察 (%d) %s%s",
                     patient.patientId,
                     patient.lastName,
                     patient.firstName);
-            return title;
         }
     }
 

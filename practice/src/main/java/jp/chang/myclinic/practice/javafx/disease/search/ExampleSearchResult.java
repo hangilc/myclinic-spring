@@ -22,7 +22,7 @@ public class ExampleSearchResult implements DiseaseSearchResultModel {
 
     @Override
     public String rep() {
-        return example.label;
+        return example.label != null ? example.label : example.byoumei;
     }
 
     @Override

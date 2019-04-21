@@ -42,7 +42,6 @@ public class MainPaneTest extends GroupTestBase {
         Context.mainStageService = new MainStageServiceAdapter(){
             @Override
             public void setTitle(String title) {
-                ;
             }
         };
         MainPane mainPane = new MainPane();

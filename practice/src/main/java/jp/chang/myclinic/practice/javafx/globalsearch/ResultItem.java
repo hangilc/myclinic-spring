@@ -73,7 +73,7 @@ class ResultItem extends VBox {
             lastEnd = start + hilight.length();
         }
         if( lastEnd <text.length() ){
-            textFlow.getChildren().add(new Text(text.substring(lastEnd, text.length())));
+            textFlow.getChildren().add(new Text(text.substring(lastEnd)));
         }
         return textFlow;
     }

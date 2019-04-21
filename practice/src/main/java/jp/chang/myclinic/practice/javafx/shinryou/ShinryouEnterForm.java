@@ -8,7 +8,6 @@ import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.parts.SearchInputBox;
 import jp.chang.myclinic.practice.javafx.parts.SearchResult;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
@@ -90,10 +89,7 @@ class ShinryouEnterForm extends WorkForm {
                         .thenAccept(result -> {
                             Platform.runLater(() -> searchResult.setList(result));
                         })
-                        .exceptionally(ex -> {
-                            FunJavaFX.createErrorHandler().accept(ex);
-                            return null;
-                        });
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
         });
         return box;

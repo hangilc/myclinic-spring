@@ -9,7 +9,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.practice.javafx.FunJavaFX;
+import jp.chang.myclinic.practice.PracticeHelper;
 import jp.chang.myclinic.practice.javafx.parts.TwoColumn;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 
@@ -95,7 +95,7 @@ class AddKensaForm extends WorkForm {
         List<String> selected = checks.stream().filter(CheckBox::isSelected)
                 .map(ch -> ((KensaEntry)ch.getUserData()).getValue())
                 .collect(Collectors.toList());
-        FunJavaFX.batchEnterShinryouByNames(visitId, selected, result -> {
+        PracticeHelper.getInstance().batchEnterShinryouByNames(visitId, selected, result -> {
             Platform.runLater(() -> onEnteredCallback.accept(result.shinryouList, result.attrMap, result.conducts));
         });
     }

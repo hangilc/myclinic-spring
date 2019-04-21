@@ -35,7 +35,6 @@ public class MainPaneBlankTest extends GuiTestBase {
         Context.mainStageService = new MainStageServiceAdapter(){
             @Override
             public void setTitle(String title) {
-                ;
             }
         };
         Context.currentPatientService = new CurrentPatientService();

@@ -1,21 +1,11 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.dto.ShinryouAttrDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.ShinryouFullWithAttrDTO;
 import jp.chang.myclinic.dto.ShinryouWithAttrDTO;
-import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.toList;

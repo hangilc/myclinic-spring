@@ -12,7 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.FunJavaFX;
+import jp.chang.myclinic.practice.PracticeHelper;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 import java.util.ArrayList;
@@ -149,12 +149,9 @@ public class AddRegularForm extends VBox {
     private void doEnter() {
         List<String> selected = checks.stream().filter(CheckBox::isSelected).map(CheckBox::getText)
                 .collect(Collectors.toList());
-        FunJavaFX.batchEnterShinryouByNames(visitId, selected, result ->
+        PracticeHelper.getInstance().batchEnterShinryouByNames(visitId, selected, result ->
                         Platform.runLater(() ->
                                 onEnteredCallback.accept(result.shinryouList, result.attrMap, result.conducts))
-//                result.shinryouList.forEach(s -> fireShinryouEnteredEvent(s, result.attrMap.get(s.shinryou.shinryouId)));
-//                result.conducts.forEach(this::fireConductEnteredEvent);
-//                onEntered(AddRegularForm.this);
         );
     }
 

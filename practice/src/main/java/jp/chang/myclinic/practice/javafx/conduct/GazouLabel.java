@@ -23,13 +23,12 @@ abstract class GazouLabel extends StackPane {
     }
 
     private Node createDisp() {
-        GazouLabelDisp disp = new GazouLabelDisp(label){
+        return new GazouLabelDisp(label){
             @Override
             protected void onEdit() {
                 doEdit(this);
             }
         };
-        return disp;
     }
 
     private void doEdit(GazouLabelDisp disp) {

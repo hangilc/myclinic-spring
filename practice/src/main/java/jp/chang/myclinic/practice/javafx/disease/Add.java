@@ -59,7 +59,7 @@ public class Add extends VBox {
                 commandBox,
                 searchBox
         );
-        doExample();
+        Platform.runLater(this::doExample);
     }
 
     private void doEnter(){

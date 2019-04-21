@@ -34,7 +34,6 @@ public class MainPaneTextTest extends ComponentTestBase {
         Context.mainStageService = new MainStageServiceAdapter(){
             @Override
             public void setTitle(String title) {
-                ;
             }
         };
         Context.frontend = frontend;

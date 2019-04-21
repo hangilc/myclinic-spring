@@ -102,8 +102,10 @@ public class SearchBox extends VBox {
                         .thenAccept(byoumeiMaster -> Platform.runLater(() -> triggerByoumeiSelect(byoumeiMaster)))
                         .exceptionally(HandlerFX.exceptionally(this));
             }
-            CFUtil.forEach(example.adjList, this::handleAdj)
-                    .exceptionally(HandlerFX.exceptionally(this));
+            if( example.adjList != null ) {
+                CFUtil.forEach(example.adjList, this::handleAdj)
+                        .exceptionally(HandlerFX.exceptionally(this));
+            }
         } else {
             GuiUtil.alertError("開始日の設定が不適切です。");
         }
