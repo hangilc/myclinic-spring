@@ -6,9 +6,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.PracticeConfigService;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
-import jp.chang.myclinic.support.config.ConfigService;
 
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;

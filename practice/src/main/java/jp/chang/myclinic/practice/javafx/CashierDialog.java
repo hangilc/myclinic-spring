@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -9,10 +10,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.MeisaiDTO;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.parts.MeisaiDisp;
 import jp.chang.myclinic.practice.javafx.parts.inplaceediting.InPlaceEditable;
-import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.function.Consumer;
 
@@ -153,7 +155,9 @@ public class CashierDialog extends Stage {
     }
 
     private void doEnter(){
-        PracticeLib.endExam(visitId, chargeValue, () -> close());
+        Context.frontend.endExam(visitId, chargeValue)
+                .thenAcceptAsync(v -> close(), Platform::runLater)
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

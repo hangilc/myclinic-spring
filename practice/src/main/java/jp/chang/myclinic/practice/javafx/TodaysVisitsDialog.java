@@ -7,16 +7,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitPatientDTO;
-import jp.chang.myclinic.practice.lib.PracticeLib;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.practice.PracticeHelper;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class TodaysVisitsDialog extends Stage {
 
-    private static Logger logger = LoggerFactory.getLogger(TodaysVisitsDialog.class);
     private PatientTable table = new PatientTable();
 
     public TodaysVisitsDialog(List<VisitPatientDTO> list) {
@@ -49,7 +46,7 @@ public class TodaysVisitsDialog extends Stage {
     private void doSelect(){
         PatientDTO patient = table.getSelectionModel().getSelectedItem();
         if( patient != null ){
-            PracticeLib.startPatient(patient);
+            PracticeHelper.getInstance().startPatient(patient);
         }
     }
 

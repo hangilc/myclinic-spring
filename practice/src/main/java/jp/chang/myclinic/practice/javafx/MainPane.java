@@ -10,7 +10,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
@@ -18,26 +17,23 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.*;
 import jp.chang.myclinic.practice.javafx.globalsearch.GlobalSearchDialog;
+import jp.chang.myclinic.practice.javafx.parts.drawerpreview.ListSettingDialog;
 import jp.chang.myclinic.practice.javafx.prescexample.EditPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.prescexample.NewPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
-import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
-import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -193,7 +189,9 @@ public class MainPane extends BorderPane {
     }
 
     private void doListPrinterSetting() {
-        PracticeLib.openPrinterSettingList().ifPresent(Stage::show);
+        PrinterEnv printerEnv = Context.printerEnv;
+        List<String> names = printerEnv.listNames();
+        new ListSettingDialog(names, printerEnv).show();
     }
 
     private void doGlobalSearchText() {
@@ -306,7 +304,7 @@ public class MainPane extends BorderPane {
     }
 
     private void doSearchText() {
-        PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
+        PatientDTO patient = Context.currentPatientService.getCurrentPatient();
         if (patient != null) {
             SearchTextDialog dialog = new SearchTextDialog(patient.patientId);
             dialog.showAndWait();

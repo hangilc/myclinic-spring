@@ -16,7 +16,7 @@ import jp.chang.myclinic.practice.javafx.parts.SexInput;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.logic.ErrorMessages;
-import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import jp.chang.myclinic.utilfx.dateinput.DateForm;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
@@ -211,7 +211,7 @@ public class ShohousenDialog extends Stage {
             previewDialog.showAndWait();
         } catch(Exception ex){
             logger.error("Failed to preview shohousen.", ex);
-            GuiUtil.alertException("処方箋のプレビューに失敗しました。", ex);
+            AlertDialog.alert("処方箋のプレビューに失敗しました。", ex, this);
         }
     }
 
@@ -228,13 +228,13 @@ public class ShohousenDialog extends Stage {
             int num = Integer.parseInt(input);
             String rep = "" + num;
             if( rep.length() > 8 ){
-                GuiUtil.alertError("公費負担者番号の大きさは８桁までです。");
+                AlertDialog.alert("公費負担者番号の大きさは８桁までです。", this);
                 return false;
             }
             drawer.setKouhi1Futansha(rep);
             return true;
         } catch(Exception ex){
-            GuiUtil.alertError("公費負担者番号の入力が不適切です。");
+            AlertDialog.alert("公費負担者番号の入力が不適切です。", this);
             return false;
         }
 
@@ -249,13 +249,13 @@ public class ShohousenDialog extends Stage {
             int num = Integer.parseInt(input);
             String rep = "" + num;
             if( rep.length() > 8 ){
-                GuiUtil.alertError("公費負担者番号の大きさは８桁までです。");
+                AlertDialog.alert("公費負担者番号の大きさは８桁までです。", this);
                 return false;
             }
             drawer.setKouhi2Futansha(rep);
             return true;
         } catch(Exception ex){
-            GuiUtil.alertError("公費負担者番号の入力が不適切です。");
+            AlertDialog.alert("公費負担者番号の入力が不適切です。", this);
             return false;
         }
 
@@ -270,13 +270,13 @@ public class ShohousenDialog extends Stage {
             int num = Integer.parseInt(input);
             String rep = "" + num;
             if( rep.length() > 7 ){
-                GuiUtil.alertError("公費受給者番号の大きさは７桁までです。");
+                AlertDialog.alert("公費受給者番号の大きさは７桁までです。", this);
                 return false;
             }
             drawer.setKouhi1Jukyuusha(rep);
             return true;
         } catch(Exception ex){
-            GuiUtil.alertError("公費受給者番号の入力が不適切です。");
+            AlertDialog.alert("公費受給者番号の入力が不適切です。", this);
             return false;
         }
 
@@ -291,13 +291,13 @@ public class ShohousenDialog extends Stage {
             int num = Integer.parseInt(input);
             String rep = "" + num;
             if( rep.length() > 7 ){
-                GuiUtil.alertError("公費受給者番号の大きさは７桁までです。");
+                AlertDialog.alert("公費受給者番号の大きさは７桁までです。", this);
                 return false;
             }
             drawer.setKouhi2Jukyuusha(rep);
             return true;
         } catch(Exception ex){
-            GuiUtil.alertError("公費受給者番号の入力が不適切です。");
+            AlertDialog.alert("公費受給者番号の入力が不適切です。", this);
             return false;
         }
 
@@ -312,13 +312,13 @@ public class ShohousenDialog extends Stage {
             int num = Integer.parseInt(input);
             String rep = "" + num;
             if( rep.length() > 8 ){
-                GuiUtil.alertError("保険者番号の大きさは８桁までです。");
+                AlertDialog.alert("保険者番号の大きさは８桁までです。", this);
                 return false;
             }
             drawer.setHokenshaBangou(rep);
             return true;
         } catch(Exception ex){
-            GuiUtil.alertError("保険者番号の入力が不適切です。");
+            AlertDialog.alert("保険者番号の入力が不適切です。", this);
             return false;
         }
     }
@@ -332,7 +332,7 @@ public class ShohousenDialog extends Stage {
             drawer.setFutanWari(futanWari);
             return true;
         } catch(Exception ex){
-            GuiUtil.alertError("負担割の入力が不適切です。");
+            AlertDialog.alert("負担割の入力が不適切です。", this);
             return false;
         }
     }
@@ -364,7 +364,7 @@ public class ShohousenDialog extends Stage {
             drawer.setKoufuDate(birthday.getYear(), birthday.getMonthValue(), birthday.getDayOfMonth());
             return true;
         } else {
-            GuiUtil.alertError(em.getMessage());
+            AlertDialog.alert(em.getMessage(), this);
             return false;
         }
     }
@@ -380,7 +380,7 @@ public class ShohousenDialog extends Stage {
             drawer.setKoufuDate(issueDate.getYear(), issueDate.getMonthValue(), issueDate.getDayOfMonth());
             return true;
         } else {
-            GuiUtil.alertError(em.getMessage());
+            AlertDialog.alert(em.getMessage(), this);
             return false;
         }
     }

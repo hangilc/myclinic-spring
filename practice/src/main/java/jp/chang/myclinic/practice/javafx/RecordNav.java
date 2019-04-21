@@ -7,9 +7,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 public class RecordNav extends TextFlow {

@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.List;

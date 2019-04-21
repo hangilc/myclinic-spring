@@ -18,16 +18,12 @@ import java.util.function.BiConsumer;
 
 public class PracticeEnv {
 
-    private static final Logger logger = LoggerFactory.getLogger(PracticeEnv.class);
-
     public static final String APP_NAME = "practice";
-    public static final String PRINTER_SETTING_KEY = "default-printer-setting";
     public static final String SHOHOUSEN_PRINTER_SETTING_KEY = "shohousen-printer-setting";
     public static final String REFER_PRINTER_SETTING_KEY = "refer-printer-setting";
     public static PracticeEnv INSTANCE = new PracticeEnv();
 
     //private Path printerSettingsDir;
-    private ClinicInfoDTO clinicInfo;
     private ObjectProperty<PatientDTO> currentPatient = new SimpleObjectProperty<>();
     private IntegerProperty currentVisitId = new SimpleIntegerProperty(0);
     private IntegerProperty tempVisitId = new SimpleIntegerProperty(0);
@@ -49,13 +45,6 @@ public class PracticeEnv {
         });
     }
 
-    public ClinicInfoDTO getClinicInfo() {
-        return clinicInfo;
-    }
-
-    public void setClinicInfo(ClinicInfoDTO clinicInfo) {
-        this.clinicInfo = clinicInfo;
-    }
 
     public PatientDTO getCurrentPatient() {
         return currentPatient.get();
@@ -163,20 +152,6 @@ public class PracticeEnv {
         getMyclinicEnv().saveAppProperties(properties);
     }
 
-    public String getDefaultPrinterSetting() throws IOException {
-        return getAppProperties().getProperty(PRINTER_SETTING_KEY);
-    }
-
-    public void setDefaultPrinterSetting(String settingName) throws IOException {
-        Properties properties = getAppProperties();
-        if( settingName == null ){
-            properties.remove(PRINTER_SETTING_KEY);
-        } else {
-            properties.setProperty(PRINTER_SETTING_KEY, settingName);
-        }
-        saveAppProperties(properties);
-    }
-
     public List<ReferItemDTO> getReferList() {
         return referList;
     }
@@ -196,7 +171,6 @@ public class PracticeEnv {
     @Override
     public String toString() {
         return "PracticeEnv{" +
-                "clinicInfo=" + clinicInfo +
                 ", currentPatient=" + currentPatient +
                 ", currentVisitId=" + currentVisitId +
                 ", tempVisitId=" + tempVisitId +
