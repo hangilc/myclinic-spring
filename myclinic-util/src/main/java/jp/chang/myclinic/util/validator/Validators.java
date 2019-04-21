@@ -1,5 +1,7 @@
 package jp.chang.myclinic.util.validator;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -52,6 +54,17 @@ public class Validators {
                 return Validated.success(Integer.parseInt(input));
             } catch (NumberFormatException e) {
                 return Validated.fail("整数に変換できません。");
+            }
+        };
+    }
+
+    public static Function<String, String> isValidSqldate(){
+        return (String input) -> {
+            try {
+                LocalDate.parse(input);
+                return null;
+            } catch(DateTimeParseException e){
+                return "正しい日付でありません。";
             }
         };
     }

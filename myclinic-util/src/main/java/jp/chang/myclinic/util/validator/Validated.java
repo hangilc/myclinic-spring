@@ -26,6 +26,13 @@ public class Validated<T> {
         return new Validated<>(null, errors);
     }
 
+    public static <U> Validated<U> create(U value, List<String> errors) {
+        if (errors.size() > 0) {
+            value = null;
+        }
+        return new Validated<>(value, errors);
+    }
+
     private Validated(T value, List<String> errors) {
         this.value = value;
         this.errors = errors;
@@ -92,7 +99,7 @@ public class Validated<T> {
         if (fieldValue == null) {
             throw new RuntimeException("Null validated field.");
         }
-        if( value == null ){
+        if (value == null) {
             throw new RuntimeException("Null validated value.");
         }
         if (fieldValue.isSuccess()) {

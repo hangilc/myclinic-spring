@@ -13,6 +13,8 @@ import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.practice.javafx.drug.lib.PrescExampleInput;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 class ConvertToPrescExampleDialog extends Stage {
@@ -46,11 +48,12 @@ class ConvertToPrescExampleDialog extends Stage {
     }
 
     private void doEnter(){
-        PrescExampleDTO example = input.createPrescExample();
-        if( example == null ){
+        Validated<PrescExampleDTO> validated = input.getValidatedToEnter();
+        if( validated.isFailure() ){
+            AlertDialog.alert(validated.getErrorsAsString(), this);
             return;
         }
-        example.prescExampleId = 0;
+        PrescExampleDTO example = validated.getValue();
         Context.frontend.enterPrescExample(example)
                 .thenAcceptAsync(result -> {
                     close();

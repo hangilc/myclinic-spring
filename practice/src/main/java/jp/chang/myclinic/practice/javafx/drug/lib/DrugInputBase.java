@@ -22,7 +22,7 @@ import java.text.DecimalFormat;
 
 import static jp.chang.myclinic.consts.DrugCategory.Naifuku;
 
-abstract class DrugInputBase extends VBox {
+class DrugInputBase extends VBox {
 
     private int iyakuhincode;
     private Text drugName = new Text("");
@@ -48,7 +48,7 @@ abstract class DrugInputBase extends VBox {
     private Label commentLabel = new Label();
     private HBox commentRow;
 
-    DrugInputBase() {
+    public DrugInputBase() {
         super(4);
         getStyleClass().add("drug-input");
         amountInput.getStyleClass().add("amount-input");
@@ -282,7 +282,9 @@ abstract class DrugInputBase extends VBox {
         setNodeVisible(this.commentRow, visible);
     }
 
-    abstract void categoryChangeHook(DrugCategory prevCategory, DrugCategory newCategory);
+    void categoryChangeHook(DrugCategory prevCategory, DrugCategory newCategory){
+
+    }
 
     private void onCategoryChange(DrugCategory prevCategory, DrugCategory newCategory) {
         if (newCategory != null) {
@@ -311,11 +313,21 @@ abstract class DrugInputBase extends VBox {
         categoryChangeHook(prevCategory, newCategory);
     }
 
+    void clearMaster(){
+        this.iyakuhincode = 0;
+        setDrugName("");
+        setAmountUnit("");
+    }
+
     private boolean isNotEmptyString(String s) {
         return s != null && !s.isEmpty();
     }
 
-    abstract void setDrugData(String amount, String usage, String days);
+    void setDrugData(String amount, String usage, String days){
+        setAmount(amount);
+        setUsage(usage);
+        setDays(days);
+    }
 
     private void setData(IyakuhinMasterDTO master,
                          DrugCategory category,

@@ -54,7 +54,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
     }
 
     private void doListAll(){
-        DrugSearcher.listAllExamples(ex -> getInput().setExample(ex))
+        DrugSearcher.listAllExamples(ex -> getInput().setPrescExample(ex))
                 .thenAcceptAsync(result -> getSearchResult().setItems(result), Platform::runLater)
                 .exceptionally(HandlerFX.exceptionally(this));
     }
@@ -74,21 +74,21 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
     }
 
     private void doUpdate(){
-        PrescExampleDTO ex = createPrescExample();
-        if( ex != null && ex.prescExampleId == 0 ){
-            GuiUtil.alertError("prescExampleId is zero.");
-            return;
-        }
-        if( ex != null ){
-            Context.frontend.resolveStockDrug(ex.iyakuhincode, getLocalDate())
-                    .thenCompose(master -> {
-                        ex.masterValidFrom = master.validFrom;
-                        return Context.frontend.updatePrescExample(ex);
-                    })
-                    .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
-                    .exceptionally(HandlerFX.exceptionally(this));
-
-        }
+//        PrescExampleDTO ex = createPrescExample();
+//        if( ex != null && ex.prescExampleId == 0 ){
+//            GuiUtil.alertError("prescExampleId is zero.");
+//            return;
+//        }
+//        if( ex != null ){
+//            Context.frontend.resolveStockDrug(ex.iyakuhincode, getLocalDate())
+//                    .thenCompose(master -> {
+//                        ex.masterValidFrom = master.validFrom;
+//                        return Context.frontend.updatePrescExample(ex);
+//                    })
+//                    .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
+//                    .exceptionally(HandlerFX.exceptionally(this));
+//
+//        }
     }
 
 }

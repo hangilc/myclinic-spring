@@ -56,6 +56,12 @@ abstract class PrescExampleBaseDialog extends Stage {
         searchModeChooser.setValue(DrugSearchMode.Example);
         modeChooserBox.getChildren().addAll(searchModeChooser.getButtons());
         searchTextInput.setHandler(this::doSearch);
+        searchResult.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        newValue.onSelect();
+                    }
+                });
         VBox.setVgrow(searchResult, Priority.ALWAYS);
         vbox.getChildren().addAll(
                 input,
@@ -80,7 +86,7 @@ abstract class PrescExampleBaseDialog extends Stage {
                     break;
                 }
                 case Example: {
-                    DrugSearcher.searchExample(text, input::setExample)
+                    DrugSearcher.searchExample(text, input::setPrescExample)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
                             .exceptionally(HandlerFX.exceptionally(this));
                     break;
@@ -99,10 +105,6 @@ abstract class PrescExampleBaseDialog extends Stage {
 
     void setSearchMode(DrugSearchMode mode) {
         searchModeChooser.setValue(mode);
-    }
-
-    PrescExampleDTO createPrescExample() {
-        return input.createPrescExample();
     }
 
     void doClear() {

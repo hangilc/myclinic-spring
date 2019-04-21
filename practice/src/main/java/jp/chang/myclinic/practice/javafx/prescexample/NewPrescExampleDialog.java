@@ -6,19 +6,20 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
+import jp.chang.myclinic.dto.PrescExampleFullDTO;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDate;
 
 public class NewPrescExampleDialog extends PrescExampleBaseDialog {
-
-    //private static Logger logger = LoggerFactory.getLogger(NewPrescExampleDialog.class);
 
     public NewPrescExampleDialog() {
         super(new SearchModeChooser(DrugSearchMode.Master, DrugSearchMode.Example));
@@ -46,9 +47,9 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
         return hbox;
     }
 
-    private void doCurrent(){
+    private void doCurrent() {
         int iyakuhincode = getInput().getIyakuhincode();
-        if( iyakuhincode == 0 ){
+        if (iyakuhincode == 0) {
             GuiUtil.alertError("医薬品が選択されていません。");
             return;
         }
@@ -60,13 +61,15 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
     }
 
     private void doEnter() {
-        PrescExampleDTO ex = createPrescExample();
-        if (ex != null) {
-            ex.prescExampleId = 0;
-            Context.frontend.enterPrescExample(ex)
-                    .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
-                    .exceptionally(HandlerFX.exceptionally(this));
+        Validated<PrescExampleDTO> validated = getInput().getValidatedToEnter();
+        if (validated.isFailure()) {
+            AlertDialog.alert(validated.getErrorsAsString(), this);
+            return;
         }
+        PrescExampleDTO example = validated.getValue();
+        Context.frontend.enterPrescExample(example)
+                .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }
