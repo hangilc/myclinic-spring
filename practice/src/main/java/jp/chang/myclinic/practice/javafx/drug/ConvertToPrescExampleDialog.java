@@ -55,6 +55,6 @@ class ConvertToPrescExampleDialog extends Stage {
                 .thenAcceptAsync(result -> {
                     close();
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 }

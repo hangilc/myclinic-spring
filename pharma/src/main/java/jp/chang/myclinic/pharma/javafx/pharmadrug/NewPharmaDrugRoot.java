@@ -74,7 +74,7 @@ class NewPharmaDrugRoot extends VBox {
         }
         Service.api.searchIyakuhinMasterByName(text, LocalDate.now().toString())
                 .thenAccept(result -> Platform.runLater(() -> openIyakuhinListDialog(result)))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void openIyakuhinListDialog(List<IyakuhinMasterDTO> masters){
@@ -92,7 +92,7 @@ class NewPharmaDrugRoot extends VBox {
                                 close();
                             }
                         }))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
 
             @Override
@@ -114,7 +114,7 @@ class NewPharmaDrugRoot extends VBox {
                         clear();
                         onEnter(pd.iyakuhincode);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

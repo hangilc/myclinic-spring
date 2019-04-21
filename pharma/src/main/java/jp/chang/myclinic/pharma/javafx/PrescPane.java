@@ -172,10 +172,10 @@ class PrescPane extends VBox {
                     if( wqueueState == WqueueWaitState.WaitDrug){
                         Service.api.prescDone(visitId)
                                 .thenAccept(result -> Platform.runLater(this::onPrescDone))
-                                .exceptionally(HandlerFX::exceptionally);
+                                .exceptionally(HandlerFX.exceptionally(this));
                     }
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     protected void onCancel() {
@@ -285,7 +285,7 @@ class PrescPane extends VBox {
                         previewDialog.addToCommands(includePrescribedCheck);
                         previewDialog.show();
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

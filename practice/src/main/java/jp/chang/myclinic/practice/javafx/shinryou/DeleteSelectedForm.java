@@ -35,7 +35,7 @@ public class DeleteSelectedForm extends HandleSelectedForm {
                 .collect(toList());
         Context.frontend.batchDeleteShinryouCascading(shinryouIds)
                 .thenAcceptAsync(v -> onDeletedHandler.accept(shinryouIds), Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

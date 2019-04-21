@@ -72,7 +72,7 @@ class ConductDrugForm extends WorkForm {
                 .thenCompose(frontend::getConductDrugFull)
                 .thenAcceptAsync(entered -> onEnteredHandler.accept(entered),
                         Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

@@ -138,11 +138,11 @@ public class MainPane extends VBox implements DispatchHook {
                                                 store.payments, wq.visit, charge);
                                         cashierDialog.show();
                                     }))
-                                    .exceptionally(HandlerFX::exceptionally);
+                                    .exceptionally(HandlerFX.exceptionally(this));
                         }
                     }
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doDeselect() {

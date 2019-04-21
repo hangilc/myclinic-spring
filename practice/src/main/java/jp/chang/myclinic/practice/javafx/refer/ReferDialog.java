@@ -211,7 +211,7 @@ public class ReferDialog extends Stage {
                             previewDialog.show();
                         },
                         Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doRegistered() {

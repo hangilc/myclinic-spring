@@ -32,7 +32,7 @@ class ActionHook implements DispatchAction {
     public void onVisitCreated(VisitDTO created, Runnable toNext) {
         registry.createVisit(created)
                 .thenAccept(visit -> Platform.runLater(() -> hook.onVisitCreated(visit, toNext)))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally());
     }
 
     @Override

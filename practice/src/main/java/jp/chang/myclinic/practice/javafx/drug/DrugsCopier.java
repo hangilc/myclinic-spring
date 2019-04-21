@@ -69,7 +69,7 @@ public class DrugsCopier {
                         Platform.runLater(() -> drugEnteredCallback.accept(newDrugFull, local.dstAttr));
                         doCopy(drugs.subList(1, drugs.size()));
                     })
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally());
         }
     }
 }

@@ -81,7 +81,7 @@ public class EnterInjectionForm extends WorkForm {
                         .thenAccept(result -> Platform.runLater(() -> {
                             searchResult.setList(result);
                         }))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
         };
     }
@@ -114,7 +114,7 @@ public class EnterInjectionForm extends WorkForm {
                 })
                 .thenAcceptAsync(entered -> onEnteredHandler.accept(entered),
                         Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

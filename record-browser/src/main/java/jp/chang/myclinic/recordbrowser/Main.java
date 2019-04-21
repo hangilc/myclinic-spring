@@ -3,6 +3,7 @@ package jp.chang.myclinic.recordbrowser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -118,7 +119,7 @@ public class Main extends Application {
                         dialog.setY(Main.getYofMainStage() + 20);
                         dialog.show();
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(stage));
         });
         stage.show();
     }
@@ -129,29 +130,6 @@ public class Main extends Application {
         Service.stop();
         tracker.shutdown();
     }
-
-//    private void startWebSocket(){
-//        websocketClient = new WebsocketClient(wsUrl, timerExecutor){
-//            @Override
-//            public void onOpen(WebSocket webSocket, Response response) {
-//                webSocket.send("hello");
-//            }
-//
-//            @Override
-//            protected void onNewMessage(String text){
-//                try {
-//                    PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
-//                    if( dispatcher != null ){
-//                        dispatcher.add(plog);
-//                    }
-//                } catch (IOException e) {
-//                    logger.error("Cannot parse practice log.", e);
-//                }
-//            }
-//
-//        };
-//        logger.info("Started web socket");
-//    }
 
     private MenuBar createMenu() {
         MenuBar mBar = new MenuBar();
@@ -178,7 +156,7 @@ public class Main extends Application {
             }
             {
                 MenuItem item = new MenuItem("会計一覧");
-                item.setOnAction(evt -> doListCharge());
+                item.setOnAction(evt -> doListCharge(mBar));
                 menu.getItems().add(item);
             }
             mBar.getMenus().add(menu);
@@ -206,14 +184,14 @@ public class Main extends Application {
         dialog.show();
     }
 
-    private void doListCharge() {
+    private void doListCharge(Node owner) {
         Service.api.listVisitChargePatientAt(LocalDate.now().toString())
                 .thenAccept(result -> Platform.runLater(() -> {
                     ListChargeDialog dialog = new ListChargeDialog(result);
                     Main.setAsChildWindow(dialog);
                     dialog.show();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(owner));
     }
 
     private void doSearchByoumei(){

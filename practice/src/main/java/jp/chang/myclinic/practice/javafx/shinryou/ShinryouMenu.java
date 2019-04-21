@@ -166,7 +166,7 @@ public class ShinryouMenu extends VBox {
                                     enteredList.forEach(e ->
                                             Context.integrationService.broadcastNewShinryou(e.shinryou, e.attr))
                             , Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -185,7 +185,7 @@ public class ShinryouMenu extends VBox {
                             form.setOnCancelHandler(this::hideWorkarea);
                             Platform.runLater(() -> showWorkarea(form));
                         })
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
         }
     }
@@ -203,7 +203,7 @@ public class ShinryouMenu extends VBox {
                             });
                             Platform.runLater(() -> showWorkarea(form));
                         })
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
         }
     }
@@ -212,7 +212,7 @@ public class ShinryouMenu extends VBox {
         Context.frontend.deleteDuplicateShinryou(visitId)
                 .thenAcceptAsync(deletedShinryouIds -> onDeletedHandler.accept(deletedShinryouIds),
                         Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private boolean isWorkareaEmpty() {

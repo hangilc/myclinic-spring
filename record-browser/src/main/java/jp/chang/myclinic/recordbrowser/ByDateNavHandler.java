@@ -40,7 +40,7 @@ class ByDateNavHandler implements NavHandler {
                         });
                     }
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally());
     }
 
     private int nextSerialId() {

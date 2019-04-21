@@ -1,33 +1,37 @@
 package jp.chang.myclinic.utilfx;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class HandlerFX {
 
     private static Logger logger = LoggerFactory.getLogger(HandlerFX.class);
 
-    HandlerFX() {
+    private HandlerFX() {
 
     }
 
-    public static <T> T exceptionally(Throwable t){
-        logger.error("Error:", t);
-        String message = t.toString();
-        Platform.runLater(() -> GuiUtil.alertError(message));
-        return null;
+    public static <T> Function<Throwable, T> exceptionally(Window owner){
+        return t -> {
+            logger.error("Error: ", t);
+            String message = t.toString();
+            Platform.runLater(() -> AlertDialog.alert(message, owner));
+            return null;
+        };
     }
 
-    public static void alert(List<String> errors){
-        GuiUtil.alertError(String.join("\n", errors));
+    public static <T> Function<Throwable, T> exceptionally(Node node){
+        return exceptionally(node.getScene().getWindow());
     }
 
-    public static void exception(String message, Throwable t){
-        logger.error(message, t);
-        GuiUtil.alertException(message, t);
+    public static <T> Function<Throwable, T> exceptionally(){
+        return exceptionally((Window)null);
     }
 
 }

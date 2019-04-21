@@ -220,7 +220,7 @@ public class End extends VBox {
                         resetDiseases(newDiseases);
                         onModified(newDiseases);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

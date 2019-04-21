@@ -34,7 +34,7 @@ public class SearchBox<T> extends VBox {
         inputBox.setOnTextCallback(t -> {
             getSearcher().apply(t)
                     .thenAccept(list -> Platform.runLater(() -> resultBox.setList(list)))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         });
         resultBox.setConverter(converter);
         getChildren().addAll(inputBox.asNode(), resultBox);

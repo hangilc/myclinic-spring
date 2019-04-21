@@ -86,7 +86,7 @@ public class RecordTitle extends TextFlow {
                 frontend.deleteVisitSafely(visitId)
                         .thenAcceptAsync(v -> onDeletedHandler.run(),
                                 Platform::runLater)
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             });
             contextMenu.getItems().add(item);
         }
@@ -140,7 +140,7 @@ public class RecordTitle extends TextFlow {
                     RcptDetailDialog dialog = new RcptDetailDialog(meisai);
                     dialog.showAndWait();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doModifyShouki(){

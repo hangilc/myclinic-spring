@@ -77,7 +77,7 @@ class Edit extends VBox {
                     editButton.setDisable(false);
                     viewMode();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     void onEnter(int iyakuhincode){
@@ -152,7 +152,7 @@ class Edit extends VBox {
             data.sideeffect = sideTextArea.getText();
             Service.api.updatePharmaDrug(data)
                     .thenAccept(result -> Platform.runLater(cb))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -163,7 +163,7 @@ class Edit extends VBox {
             }
             Service.api.deletePharmaDrug(iyakuhincode)
                     .thenAccept(result -> Platform.runLater(() -> cb.accept(iyakuhincode)))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

@@ -97,7 +97,7 @@ public class Edit extends VBox {
                 .map(m -> m.shuushokugocode).collect(Collectors.toList());
         Context.frontend.modifyDisease(modify)
                 .thenAccept(result -> onComplete())
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doDelete(){
@@ -107,7 +107,7 @@ public class Edit extends VBox {
         int diseaseId = origDisease.diseaseId;
         Context.frontend.deleteDisease(diseaseId)
                 .thenAccept(result -> Platform.runLater(this::onComplete))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     protected void onComplete(){

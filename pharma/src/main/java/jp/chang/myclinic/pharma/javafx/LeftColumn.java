@@ -162,7 +162,7 @@ class LeftColumn extends VBox {
                             .collect(Collectors.toList());
                     noTrackingList.setAll(models);
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doNoTrackingPharmaQueueReload() {
@@ -172,7 +172,7 @@ class LeftColumn extends VBox {
                             .collect(Collectors.toList());
                     noTrackingList.setAll(models);
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doStartPresc() {

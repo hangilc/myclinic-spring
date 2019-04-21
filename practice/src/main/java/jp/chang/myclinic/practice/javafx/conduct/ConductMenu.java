@@ -96,13 +96,13 @@ public class ConductMenu extends VBox {
                     .thenAcceptAsync(entered ->
                                     entered.forEach(c -> Context.integrationService.broadcastNewConduct(c)),
                             Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
 //            Context.frontend.copyAllConducts(targetVisitId, visitId)
 //                    .thenCompose(Context.frontend::listConductFullByIds)
 //                    .thenAccept(entered -> Platform.runLater(() -> {
 //                        entered.forEach(this::fireConductEntered);
 //                    }))
-//                    .exceptionally(HandlerFX::exceptionally);
+//                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

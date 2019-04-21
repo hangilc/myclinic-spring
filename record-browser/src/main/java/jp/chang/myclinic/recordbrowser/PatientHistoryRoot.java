@@ -112,7 +112,7 @@ class PatientHistoryRoot extends VBox {
                             byoumeiDialog.toFront();
                         }
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         });
         mainLabel.getChildren().addAll(
                 new Text(makeMainLabelText(patient)),

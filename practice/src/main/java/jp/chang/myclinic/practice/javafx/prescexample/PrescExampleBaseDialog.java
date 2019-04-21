@@ -76,13 +76,13 @@ abstract class PrescExampleBaseDialog extends Stage {
                 case Master: {
                     DrugSearcher.searchMaster(text, at, input::setMaster)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
-                            .exceptionally(HandlerFX::exceptionally);
+                            .exceptionally(HandlerFX.exceptionally(this));
                     break;
                 }
                 case Example: {
                     DrugSearcher.searchExample(text, input::setExample)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
-                            .exceptionally(HandlerFX::exceptionally);
+                            .exceptionally(HandlerFX.exceptionally(this));
                     break;
                 }
                 default: {

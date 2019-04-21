@@ -75,7 +75,7 @@ class HokenshoListStage extends Stage {
                             GuiUtil.alertError("Failed to download file.");
                         }
                     })
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             cb.accept(savePath);
         }

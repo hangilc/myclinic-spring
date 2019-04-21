@@ -75,7 +75,7 @@ public class HokenSelectForm extends VBox {
                 Context.frontend.updateHoken(visit)
                         .thenCompose(v -> frontend.getHoken(visitId))
                         .thenAccept(newHoken -> onEnteredHandler.accept(newHoken))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
         });
         cancellink.setOnAction(event -> onCancelHandler.run());
         hbox.getChildren().addAll(enterlink, cancellink);

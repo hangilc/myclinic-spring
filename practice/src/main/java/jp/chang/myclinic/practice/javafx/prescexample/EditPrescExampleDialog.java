@@ -56,7 +56,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
     private void doListAll(){
         DrugSearcher.listAllExamples(ex -> getInput().setExample(ex))
                 .thenAcceptAsync(result -> getSearchResult().setItems(result), Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doDelete(){
@@ -70,7 +70,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
         }
         Context.frontend.deletePrescExample(prescExampleId)
                 .thenAcceptAsync(result -> doClear(), Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doUpdate(){
@@ -86,7 +86,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
                         return Context.frontend.updatePrescExample(ex);
                     })
                     .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
 
         }
     }

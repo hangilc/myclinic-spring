@@ -99,7 +99,7 @@ abstract class ByDateNav extends HBox implements Nav {
                         setCurrentPage(result.page);
                         setTotalPages(result.totalPages);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 }

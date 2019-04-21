@@ -215,7 +215,7 @@ public class PatientWithHokenStage extends Stage {
                     stage.initOwner(PatientWithHokenStage.this);
                     stage.show();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private String extractHokenshoDateTime(String file) {
@@ -260,7 +260,7 @@ public class PatientWithHokenStage extends Stage {
                             fetchAndUpdateHokenList();
                             editor.close();
                         }))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             });
             editor.showAndWait();
         } else if (model instanceof HokenTable.KouhiModel) {
@@ -272,7 +272,7 @@ public class PatientWithHokenStage extends Stage {
                             fetchAndUpdateHokenList();
                             editor.close();
                         }))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             });
             editor.showAndWait();
         } else if (model instanceof HokenTable.RoujinModel ){

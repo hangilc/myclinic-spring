@@ -10,6 +10,7 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.reception.event.RefreshEvent;
 import jp.chang.myclinic.reception.grpc.MgmtServer;
@@ -94,7 +95,7 @@ public class Main extends Application {
             if (tracker.isRunning()) {
                 tracker.reload();
             } else {
-                doManualUpdate();
+                doManualUpdate(primaryStage);
             }
         });
     }
@@ -152,14 +153,14 @@ public class Main extends Application {
         Globals.getAppVars().setTracking(false);
     }
 
-    private void doManualUpdate(){
+    private void doManualUpdate(Window owner){
         Service.api.listWqueueFull()
                 .thenAccept(result -> {
                     List<WqueueTable.Model> list = result.stream()
                             .map(WqueueDTOModel::new).collect(Collectors.toList());
                     mainPane.setWqueueModels(list);
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(owner));
     }
 
 }

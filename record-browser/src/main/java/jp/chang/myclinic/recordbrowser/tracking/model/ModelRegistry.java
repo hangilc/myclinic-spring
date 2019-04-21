@@ -59,7 +59,7 @@ public class ModelRegistry {
                         toNext.run();
                     });
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally());
     }
 
     public boolean deleteRecord(int visitId) {
@@ -137,7 +137,7 @@ public class ModelRegistry {
                             toNext.run();
                         });
                     })
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally());
         } else {
             toNext.run();
         }
@@ -159,7 +159,7 @@ public class ModelRegistry {
                                 cb.accept(true);
                             });
                         })
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally());
 
             } else {
                 logger.error("Cannot find drug: " + drug);
@@ -195,7 +195,7 @@ public class ModelRegistry {
                             toNext.run();
                         });
                     })
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally());
         } else {
             toNext.run();
         }
@@ -292,7 +292,7 @@ public class ModelRegistry {
                             altered.accept(true);
                         });
                     })
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally());
         } else {
             altered.accept(false);
         }
@@ -320,7 +320,7 @@ public class ModelRegistry {
                             altered.accept(true);
                         });
                     })
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally());
         } else {
             altered.accept(false);
         }
@@ -348,7 +348,7 @@ public class ModelRegistry {
                             altered.accept(true);
                         });
                     })
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally());
         } else {
             altered.accept(false);
         }
@@ -426,7 +426,7 @@ public class ModelRegistry {
                         recordModel.updateHoken(hokenModel);
                         altered.accept(true);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally());
         } else {
             altered.accept(false);
         }

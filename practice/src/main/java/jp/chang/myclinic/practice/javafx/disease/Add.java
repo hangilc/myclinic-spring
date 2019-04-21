@@ -93,7 +93,7 @@ public class Add extends VBox {
                         searchBox.clearTextInput();
                         doExample();
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -106,7 +106,7 @@ public class Add extends VBox {
                 .thenAccept(adj -> Platform.runLater(() -> {
                     diseaseInput.addShuushokugo(adj);
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doDeleteAdj(){
@@ -126,7 +126,7 @@ public class Add extends VBox {
                         Add.this.examples = models;
                         searchBox.setList(models);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

@@ -90,7 +90,7 @@ public class EnterXpForm extends WorkForm {
                     return frontend.getConductFull(conductId);
                 })
                 .thenAcceptAsync(entered -> onEnteredHandler.accept(entered), Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

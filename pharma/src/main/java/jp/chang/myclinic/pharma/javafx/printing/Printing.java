@@ -133,7 +133,7 @@ public class Printing {
                 .thenAccept(pages -> {
                     printPages(pages, setting);
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally());
     }
 
     private static List<Op> createTechouOps(List<DrugFullDTO> drugs, PatientDTO patient) {

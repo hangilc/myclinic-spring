@@ -69,7 +69,7 @@ public class ConductShinryouForm extends WorkForm {
                 .thenCompose(frontend::getConductShinryouFull)
                 .thenAcceptAsync(entered -> onEnteredHandler.accept(entered),
                         Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

@@ -16,20 +16,20 @@ import javafx.stage.Window;
 
 public class AlertDialog extends Stage {
 
-    public static void alert(String message, Window owner){
+    public static void alert(String message, Window owner) {
         AlertDialog dialog = new AlertDialog(message, owner);
         dialog.showAndWait();
     }
 
-    public static void alert(String message, Node node){
+    public static void alert(String message, Node node) {
         alert(message, node.getScene().getWindow());
     }
 
-    public static void alert(String message, Throwable ex, Node node){
+    public static void alert(String message, Throwable ex, Node node) {
         alert(message + "\n" + ex.toString(), node);
     }
 
-    public static void alert(String message, Throwable ex, Window owner){
+    public static void alert(String message, Throwable ex, Window owner) {
         alert(message + "\n" + ex.toString(), owner);
     }
 
@@ -40,16 +40,18 @@ public class AlertDialog extends Stage {
         mainPane.setStyle("-fx-padding: 10px");
         mainPane.setPrefWidth(260);
         setScene(new Scene(mainPane));
-        initOwner(owner);
+        if (owner != null) {
+            initOwner(owner);
+        }
         initModality(Modality.WINDOW_MODAL);
         sizeToScene();
     }
 
-    public void simulateClickOkButton(){
+    public void simulateClickOkButton() {
         okButton.fire();
     }
 
-    private Pane createPane(String message){
+    private Pane createPane(String message) {
         VBox vbox = new VBox(4);
         vbox.getChildren().addAll(
                 createMessagePart(message),
@@ -58,7 +60,7 @@ public class AlertDialog extends Stage {
         return vbox;
     }
 
-    private Node createMessagePart(String message){
+    private Node createMessagePart(String message) {
         StackPane wrapper = new StackPane();
         wrapper.setStyle("-fx-padding: 10px");
         TextFlow textFlow = new TextFlow();
@@ -67,7 +69,7 @@ public class AlertDialog extends Stage {
         return wrapper;
     }
 
-    private Node createCommanPart(){
+    private Node createCommanPart() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_RIGHT);
         okButton.setOnAction(event -> close());

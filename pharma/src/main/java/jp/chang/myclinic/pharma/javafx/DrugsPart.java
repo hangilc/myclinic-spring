@@ -107,6 +107,6 @@ class DrugsPart extends VBox {
                         previewDialog.show();
                     });
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 }

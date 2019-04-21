@@ -64,7 +64,7 @@ class ShinryouEnterForm extends WorkForm {
                     onEnteredHandler.accept(entered);
                     shinryouInput.clear();
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private Node createInput() {

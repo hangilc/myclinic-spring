@@ -109,14 +109,14 @@ public class ShinryouEditForm extends WorkForm {
                 .thenAcceptAsync(v -> {
                     onEnteredHandler.accept(attr);
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void onDelete(){
         if( ConfirmDialog.confirm("この摘要を削除しますか？", ShinryouEditForm.this) ) {
             Context.frontend.deleteShinryouCascading(shinryouId)
                     .thenAccept(v -> onDeletedHandler.run())
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 }

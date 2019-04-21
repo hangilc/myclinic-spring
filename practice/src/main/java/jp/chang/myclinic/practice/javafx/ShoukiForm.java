@@ -78,7 +78,7 @@ public class ShoukiForm extends Stage {
                         callback.accept(visitId, shoukiDTO);
                         close();
                     }, Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             ShoukiDTO edited = ShoukiDTO.copy(orig);
             edited.shouki = textArea.getText();
@@ -87,7 +87,7 @@ public class ShoukiForm extends Stage {
                         callback.accept(visitId, edited);
                         close();
                     }, Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -98,7 +98,7 @@ public class ShoukiForm extends Stage {
                         callback.accept(visitId, null);
                         close();
                     }, Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

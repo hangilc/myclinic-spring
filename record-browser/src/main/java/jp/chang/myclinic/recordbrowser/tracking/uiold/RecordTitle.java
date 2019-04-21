@@ -36,7 +36,7 @@ public class RecordTitle extends TextFlow {
                         dialog.setY(Main.getYofMainStage() + 20);
                         dialog.show();
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         });
         String s = dateTimeString(visit.getVisitedAt());
         visit.wqueueStateProperty().addListener((obs, oldValue, newValue) -> {

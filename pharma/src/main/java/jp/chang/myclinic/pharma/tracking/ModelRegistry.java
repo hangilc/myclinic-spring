@@ -36,7 +36,7 @@ public class ModelRegistry {
                     visitList.add(ModelImpl.fromModel(visit));
                     toNext.run();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally());
     }
 
     private Visit findVisit(int visitId){

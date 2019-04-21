@@ -73,7 +73,7 @@ public class GlobalSearchDialog extends Stage {
                         resultBox.set(result.textVisitPatients, text);
                         nav.set(result.page, result.totalPages);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

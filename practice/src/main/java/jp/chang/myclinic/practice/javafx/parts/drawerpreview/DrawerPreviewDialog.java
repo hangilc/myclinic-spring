@@ -244,7 +244,7 @@ public class DrawerPreviewDialog extends Stage {
             dialog.setTestPrintOps(ops);
             dialog.showAndWait();
         } catch (Exception e) {
-            HandlerFX.exception("印刷設定のリストの取得に失敗しました。", e);
+            AlertDialog.alert("印刷設定のリストの取得に失敗しました。", e, this);
         }
     }
 }

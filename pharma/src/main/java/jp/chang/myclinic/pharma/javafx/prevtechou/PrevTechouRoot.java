@@ -79,7 +79,7 @@ class PrevTechouRoot extends VBox {
                         nav.set(page, result.totalPages);
                         setResultList(result.visitDrugs);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -93,7 +93,7 @@ class PrevTechouRoot extends VBox {
                         currentPatient = patient;
                         loadPage(0);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } catch (NumberFormatException ex) {
             GuiUtil.alertError("患者番号の入力が不適切です。");
         }

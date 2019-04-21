@@ -27,7 +27,7 @@ public class SimpleSearchBox<T> extends VBox {
         input.setOnSearchCallback(t -> {
             searcher.apply(t)
                     .thenAccept(list -> Platform.runLater(() -> result.setList(list)))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         });
         getChildren().addAll(
                 input,

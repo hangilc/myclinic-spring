@@ -125,7 +125,7 @@ class SelectPatientDialog extends Stage {
                     .thenAccept(result -> Platform.runLater(() ->{
                         listView.getItems().setAll(result);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

@@ -57,7 +57,7 @@ public class PracticeLib {
                         Platform.runLater(() -> GuiUtil.alertException("患者を開始できませんでした。", ex));
                     }
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally());
     }
 
     public static void startPatient(PatientDTO patient, Runnable cb) {
@@ -101,7 +101,7 @@ public class PracticeLib {
                     clearCurrentPatient();
                     cb.run();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally());
     }
 
     public static void gotoFirstRecordPage() {

@@ -94,7 +94,7 @@ abstract public class DrugForm extends VBox {
                         handler.accept(master);
                     }
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     abstract protected void onMasterSelected(IyakuhinMasterDTO master);
@@ -132,7 +132,7 @@ abstract public class DrugForm extends VBox {
                     }
                     DrugSearcher.searchMaster(searchText, at, this::setMaster)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
-                            .exceptionally(HandlerFX::exceptionally);
+                            .exceptionally(HandlerFX.exceptionally(this));
                     break;
                 }
                 case Example: {
@@ -141,13 +141,13 @@ abstract public class DrugForm extends VBox {
                     }
                     DrugSearcher.searchExample(searchText, this::setExample)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
-                            .exceptionally(HandlerFX::exceptionally);
+                            .exceptionally(HandlerFX.exceptionally(this));
                     break;
                 }
                 case Previous: {
                     DrugSearcher.searchDrug(searchText, patientId, this::setDrug)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
-                            .exceptionally(HandlerFX::exceptionally);
+                            .exceptionally(HandlerFX.exceptionally(this));
                     break;
                 }
                 default: {

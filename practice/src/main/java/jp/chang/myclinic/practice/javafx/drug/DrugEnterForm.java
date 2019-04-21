@@ -120,7 +120,7 @@ public class DrugEnterForm extends DrugForm {
                     getSearchTextInput().clear();
                     getSearchResult().clear();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     @Override

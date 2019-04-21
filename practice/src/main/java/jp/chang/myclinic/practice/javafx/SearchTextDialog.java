@@ -68,7 +68,7 @@ public class SearchTextDialog extends Stage {
                         setSearchRsult(result.textVisits);
                         cb.run();
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         });
         return new SimplePageNav(pageNav);
     }
@@ -110,7 +110,7 @@ public class SearchTextDialog extends Stage {
                     setSearchRsult(result.textVisits);
                     pageNav.start(0, result.totalPages);
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private CompletableFuture<TextVisitPageDTO> search(int page){

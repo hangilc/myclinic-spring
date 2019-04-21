@@ -89,7 +89,7 @@ abstract class ByDrugNav extends VBox implements Nav {
                 .thenAccept(result -> Platform.runLater(() -> {
                     renderSummary(result);
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void renderSummary(List<IyakuhincodeNameDTO> items) {
@@ -157,7 +157,7 @@ abstract class ByDrugNav extends VBox implements Nav {
                         onPage(result.visitTextDrugs, drugName);
                         renderPageNav(result.page, result.totalPages);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 }

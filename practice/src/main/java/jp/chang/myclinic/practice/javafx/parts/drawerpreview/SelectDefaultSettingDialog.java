@@ -91,7 +91,7 @@ public abstract class SelectDefaultSettingDialog extends Stage {
                     auxSetting.getDx(), auxSetting.getDy(), auxSetting.getScale());
             AlertDialog.alert(text, this);
         } catch (Exception e) {
-            HandlerFX.exception("印刷設定情報の取得に失敗しました。", e);
+            AlertDialog.alert("印刷設定情報の取得に失敗しました。", e, this);
         }
     }
 
@@ -99,7 +99,7 @@ public abstract class SelectDefaultSettingDialog extends Stage {
         try {
             printerEnv.printSinglePage(testPrintOps, name);
         } catch(Exception ex){
-            HandlerFX.exception("テスト印刷に失敗しました。", ex);
+            AlertDialog.alert("テスト印刷に失敗しました。", ex, this);
         }
     }
 

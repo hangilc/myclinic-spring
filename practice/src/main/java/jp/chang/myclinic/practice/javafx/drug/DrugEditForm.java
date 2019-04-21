@@ -178,7 +178,7 @@ public class DrugEditForm extends DrugForm {
                     dialog.initModality(Modality.WINDOW_MODAL);
                     dialog.show();
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doEnter() {
@@ -191,14 +191,14 @@ public class DrugEditForm extends DrugForm {
         drug.prescribed = 0;
         Context.frontend.updateDrugWithAttr(drug, attr)
                 .thenAccept(ok -> closeForm())
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doDelete() {
         if (GuiUtil.confirm("この処方を削除していいですか？")) {
             Context.frontend.deleteDrugCascading(getDrugId())
                     .thenAcceptAsync(ok -> onDeletedHandler.run(), Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -231,7 +231,7 @@ public class DrugEditForm extends DrugForm {
                 .thenAcceptAsync(attr -> {
                     onEnteredHandler.accept(local.drugFull, attr);
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
 
     }
 }

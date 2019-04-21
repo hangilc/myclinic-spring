@@ -81,7 +81,7 @@ class PharmaDrugRoot extends HBox {
                     allPharmaDrugs = result;
                     updateList();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

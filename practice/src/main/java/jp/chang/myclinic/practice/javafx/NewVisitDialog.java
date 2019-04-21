@@ -65,7 +65,7 @@ class NewVisitDialog extends Stage {
         } else {
             Context.frontend.startVisit(patientId, LocalDateTime.now())
                     .thenAccept(visitId -> Platform.runLater(this::close))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

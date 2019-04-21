@@ -106,7 +106,7 @@ public class ConductEditForm extends WorkForm {
                 .thenAccept(result -> {
                     conduct.conduct.kind = value.getCode();
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private Node createLabelInput(GazouLabelDTO gazouLabelDTO) {
@@ -149,7 +149,7 @@ public class ConductEditForm extends WorkForm {
                         shinryouBox.getChildren().remove(disp);
                         conduct.conductShinryouList.remove(shinryou);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -173,7 +173,7 @@ public class ConductEditForm extends WorkForm {
                         drugBox.getChildren().remove(disp);
                         conduct.conductDrugs.remove(drug);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -197,7 +197,7 @@ public class ConductEditForm extends WorkForm {
                         kizaiBox.getChildren().remove(disp);
                         conduct.conductKizaiList.remove(kizai);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -216,7 +216,7 @@ public class ConductEditForm extends WorkForm {
         if( GuiUtil.confirm("この処置を削除しますか？") ) {
             Context.frontend.deleteConductCascading(getConductId())
                     .thenAccept(result -> Platform.runLater(() -> onDeletedHandler.run()))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

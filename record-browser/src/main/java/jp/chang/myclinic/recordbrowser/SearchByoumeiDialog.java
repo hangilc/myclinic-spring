@@ -89,7 +89,7 @@ class SearchByoumeiDialog extends Stage {
             diseases = CompletableFuture.completedFuture(Collections.emptyList());
         }
         diseases.thenAccept(result -> Platform.runLater(() -> diseaseTable.setRows(result)))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doSearch(String text, SearchMode searchMode) {

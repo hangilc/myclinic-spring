@@ -57,7 +57,7 @@ public class EditShahokokuhoStage extends Stage {
                     onUpdateCallback.run();
                     this.close();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

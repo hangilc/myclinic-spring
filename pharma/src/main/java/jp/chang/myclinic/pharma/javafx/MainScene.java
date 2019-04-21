@@ -44,7 +44,7 @@ public class MainScene extends HBox {
                 .thenAccept(drugs -> Platform.runLater(() -> {
                     rightColumn.startPresc(local.item, drugs);
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

@@ -94,7 +94,7 @@ public class RecordNav extends TextFlow {
                                 result.page, result.totalPages, result.visits
                                 ),
                                 Platform::runLater)
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
         }
     }

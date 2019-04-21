@@ -250,7 +250,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         conduct.getShinryouList().add(conductShinryou);
                         scrollToCurrentVisit(2, cb);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             cb.run();
         }
@@ -277,7 +277,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         conduct.getDrugs().add(conductDrug);
                         scrollToCurrentVisit(2, toNext);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             toNext.run();
         }
@@ -304,7 +304,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         conduct.getKizaiList().add(conductKizai);
                         scrollToCurrentVisit(2, toNext);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             toNext.run();
         }
@@ -381,7 +381,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         recordList.getChildren().add(0, record);
                         scrollToCurrentVisit(2, toNext);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             toNext.run();
         }
@@ -454,7 +454,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         visit.getDrugs().add(drug);
                         scrollToCurrentVisit(2, cb);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             cb.run();
         }
@@ -471,7 +471,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                             drug.updateRep(updated, master);
                             scrollToCurrentVisit(2, cb);
                         }))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
         } else {
             cb.run();
@@ -502,7 +502,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         visit.getShinryouList().add(shinryou);
                         scrollToCurrentVisit(2, cb);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             cb.run();
         }
@@ -531,7 +531,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         visit.initHokenRep();
                         scrollToCurrentVisit(2, toNext);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             toNext.run();
         }

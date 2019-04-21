@@ -172,7 +172,7 @@ public class MainPane extends BorderPane {
                     TodaysVisitsDialog dialog = new TodaysVisitsDialog(list);
                     dialog.show();
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doNewVisit() {
@@ -187,7 +187,7 @@ public class MainPane extends BorderPane {
                     patient.lastName, patient.firstName);
             if (ConfirmDialog.confirm(confirmText, this)) {
                 Context.frontend.startVisit(patient.patientId, LocalDateTime.now())
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
         }
     }
@@ -294,7 +294,7 @@ public class MainPane extends BorderPane {
                         CashierDialog dialog = new CashierDialog(meisai, visitId);
                         dialog.showAndWait();
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
@@ -339,7 +339,7 @@ public class MainPane extends BorderPane {
                                 dialog.show();
                             },
                             Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } catch (Exception ex) {
             logger.error("Failed to do shohousen.", ex);
             AlertDialog.alert("処方箋ダイアログの表示に失敗しました。", ex, this);
@@ -382,7 +382,7 @@ public class MainPane extends BorderPane {
                             visits.forEach(v -> recordsPane.addRecord(v, local.shinryouAttrMap,
                                     local.drugAttrMap, shoukiMap)));
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private Node createRecords() {
@@ -420,11 +420,11 @@ public class MainPane extends BorderPane {
                     dialog.setCallback(patient -> {
                         helper.startPatient(patient)
                                 .thenAcceptAsync(v -> dialog.close(), Platform::runLater)
-                                .exceptionally(HandlerFX::exceptionally);
+                                .exceptionally(HandlerFX.exceptionally(this));
                     });
                     dialog.show();
                 })
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private String createTitle(PatientDTO patient) {

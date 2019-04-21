@@ -32,7 +32,7 @@ class ByPatientNavHandler implements NavHandler {
                         pageCallback.accept(result.visits);
                         cb.accept(result.page, result.totalPages);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally());
         } else {
             pageCallback.accept(Collections.emptyList());
         }

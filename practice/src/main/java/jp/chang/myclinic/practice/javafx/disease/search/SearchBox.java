@@ -49,7 +49,7 @@ public class SearchBox extends VBox {
                             }
                             resultList.setList(result);
                         }))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             } else {
                 GuiUtil.alertError("開始日の設定が不適切です。");
             }
@@ -100,10 +100,10 @@ public class SearchBox extends VBox {
             if( example.byoumei != null ){
                 Context.frontend.getByoumeiMasterByName(example.byoumei, dateResult.getValue())
                         .thenAccept(byoumeiMaster -> Platform.runLater(() -> triggerByoumeiSelect(byoumeiMaster)))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
             CFUtil.forEach(example.adjList, this::handleAdj)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         } else {
             GuiUtil.alertError("開始日の設定が不適切です。");
         }

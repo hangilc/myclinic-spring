@@ -72,7 +72,7 @@ class ConductKizaiForm extends WorkForm {
                 .thenCompose(frontend::getConductKizaiFull)
                 .thenAcceptAsync(entered -> onEnteredHandler.accept(entered),
                         Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

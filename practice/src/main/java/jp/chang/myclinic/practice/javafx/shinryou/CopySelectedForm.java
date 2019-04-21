@@ -43,7 +43,7 @@ public class CopySelectedForm extends HandleSelectedForm {
         ShinryouCopier copier = new ShinryouCopier(targetVisitId);
         copier.copy(selection)
                 .thenAcceptAsync(result -> onEnteredHandler.accept(result), Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

@@ -20,6 +20,7 @@ import jp.chang.myclinic.hotline.tracker.DispatchAction;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.util.logic.LogicValue;
 import jp.chang.myclinic.util.logic.Validators;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +111,7 @@ public class MainScene extends VBox implements DispatchAction {
                     menu.getItems().addAll(items);
                     menu.show(anchor, event.getScreenX(), event.getScreenY());
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private ContextMenu createFreqContextMenu(){

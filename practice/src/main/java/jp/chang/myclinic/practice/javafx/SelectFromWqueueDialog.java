@@ -104,7 +104,7 @@ public class SelectFromWqueueDialog extends Stage {
                         );
                         close();
                     }, Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

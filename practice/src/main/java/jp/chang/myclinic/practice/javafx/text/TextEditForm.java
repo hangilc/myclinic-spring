@@ -45,7 +45,7 @@ public class TextEditForm extends VBox {
             TextDTO textDTO = deriveTextDTO();
             Context.frontend.updateText(textDTO)
                     .thenAcceptAsync(ok -> onUpdateCallback.accept(textDTO), Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         });
         deleteLink.setOnAction(event -> {
             if (ConfirmDialog.confirm("この文章を削除しますか？", this)) {
@@ -55,7 +55,7 @@ public class TextEditForm extends VBox {
                                 onDeletedCallback.run();
                             }
                         }, Platform::runLater)
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
         });
         shohousenLink.setOnAction(event -> doShohousen(text));
@@ -150,7 +150,7 @@ public class TextEditForm extends VBox {
                     preview.showAndWait();
                     done();
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doCopy(){
@@ -175,7 +175,7 @@ public class TextEditForm extends VBox {
                     Context.integrationService.broadcastNewText(newText);
                     done();
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

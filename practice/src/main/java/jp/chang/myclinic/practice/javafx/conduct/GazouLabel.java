@@ -42,7 +42,7 @@ abstract class GazouLabel extends StackPane {
                             GazouLabel.this.getChildren().setAll(createDisp());
                             onModified(value);
                         }))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
 
             @Override
@@ -59,7 +59,7 @@ abstract class GazouLabel extends StackPane {
                                 GazouLabel.this.getChildren().setAll(createDisp());
                                 onModified(null);
                            }, Platform::runLater)
-                            .exceptionally(HandlerFX::exceptionally);
+                            .exceptionally(HandlerFX.exceptionally(this));
                 }
             }
         };

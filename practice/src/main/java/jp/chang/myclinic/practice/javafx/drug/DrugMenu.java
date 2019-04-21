@@ -173,7 +173,7 @@ public class DrugMenu extends VBox {
                         };
                         Platform.runLater(() -> showWorkarea(form));
                     })
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         });
         return item;
     }
@@ -260,7 +260,7 @@ public class DrugMenu extends VBox {
                         String text = String.join("", lines);
                         Platform.runLater(() -> GuiUtil.copyToClipboard(text));
                     })
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         });
         return menuItem;
     }

@@ -48,7 +48,7 @@ public class DiseasesPane extends VBox {
                             showCurrent();
                             setVisible(true);
                         }))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
             }
         });
     }
@@ -112,7 +112,7 @@ public class DiseasesPane extends VBox {
                     selector.setOnSelectCallback(this::showEdit);
                     setWorkarea(selector);
                 }))
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void showEdit(DiseaseFullDTO disease){
@@ -124,7 +124,7 @@ public class DiseasesPane extends VBox {
                             DiseasesPane.this.currentDiseases = list;
                             showCurrent();
                         }))
-                        .exceptionally(HandlerFX::exceptionally);
+                        .exceptionally(HandlerFX.exceptionally(this));
 
             }
         };

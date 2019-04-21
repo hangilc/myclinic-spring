@@ -63,7 +63,7 @@ class ByoumeiDialog extends Stage {
                 diseases = CompletableFuture.completedFuture(Collections.emptyList());
             }
             diseases.thenAccept(diseaseTable::setRows)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
 
         });
         hbox.getChildren().addAll(

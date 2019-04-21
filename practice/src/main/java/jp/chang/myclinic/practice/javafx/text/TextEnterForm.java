@@ -35,7 +35,7 @@ public class TextEnterForm extends VBox {
                         textDTO.textId = textId;
                         onEnterCallback.accept(textDTO);
                     }, Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         });
         cancelLink.setOnAction(evt -> onCancelCallback.run());
         getChildren().addAll(

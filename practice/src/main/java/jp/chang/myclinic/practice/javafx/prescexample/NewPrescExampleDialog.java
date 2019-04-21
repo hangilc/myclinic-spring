@@ -56,7 +56,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
                 .thenAcceptAsync(master -> {
                     getInput().setMaster(master);
                 }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
     private void doEnter() {
@@ -65,7 +65,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
             ex.prescExampleId = 0;
             Context.frontend.enterPrescExample(ex)
                     .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 

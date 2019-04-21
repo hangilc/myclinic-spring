@@ -38,7 +38,7 @@ class RecordCharge extends StackPane {
                                             chargeDTO.charge = chargeValue;
                                             RecordCharge.this.getChildren().setAll(createDisp());
                                         }))
-                                        .exceptionally(HandlerFX::exceptionally);
+                                        .exceptionally(HandlerFX.exceptionally(this));
                             }
 
                             @Override
@@ -48,7 +48,7 @@ class RecordCharge extends StackPane {
                         };
                         getChildren().setAll(form);
                     }))
-                    .exceptionally(HandlerFX::exceptionally);
+                    .exceptionally(HandlerFX.exceptionally(this));
         }
     }
 
