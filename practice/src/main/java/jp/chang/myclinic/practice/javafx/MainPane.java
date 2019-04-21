@@ -285,7 +285,7 @@ public class MainPane extends BorderPane {
         if (cancelEndPatient()) {
             return;
         }
-        int visitId = PracticeEnv.INSTANCE.getCurrentVisitId();
+        int visitId = Context.currentPatientService.getCurrentVisitId();
         if (visitId > 0) {
             Context.frontend.getMeisai(visitId)
                     .thenAccept(meisai -> Platform.runLater(() -> {
@@ -327,7 +327,7 @@ public class MainPane extends BorderPane {
 
     private void doShohousen() {
         try {
-            PrinterEnv printerEnv = PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+            PrinterEnv printerEnv = Context.printerEnv;
             ShohousenDialog dialog = new ShohousenDialog();
             dialog.setPrinterEnv(printerEnv);
             Context.frontend.getClinicInfo()

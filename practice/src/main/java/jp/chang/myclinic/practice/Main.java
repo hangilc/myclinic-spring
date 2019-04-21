@@ -85,20 +85,21 @@ public class Main extends Application {
             ss.kizaicodeResolver = new KizaicodeFileResolver(new File("config/kizaicodes.yml"));
             ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml"));
             setupFrontend(ss);
-            Context.configService = new ConfigPropertyFile(Paths.get(
+            Context.setConfigService(new ConfigPropertyFile(Paths.get(
                     System.getProperty("user.home"),
                     "myclinic-env",
                     "practice.properties"
-            ));
+            )));
+            Context.referService = new ReferServiceFile(Paths.get("config", "refer-list.yml"));
             Context.integrationService = new IntegrationServiceImpl();
-            if( opts.guiTest ) {
+            if (opts.guiTest) {
                 confirmTestDatabase();
                 StackPane main = setupStageForComponentTest(stage);
                 new Thread(() -> {
                     new GuiTestRunner(stage, main).testAll();
                     System.out.println("done");
                 }).start();
-            } else if( opts.guiTestOne != null ){
+            } else if (opts.guiTestOne != null) {
                 if (opts.guiTestOne.length == 0 || opts.guiTestOne.length >= 3) {
                     System.out.println(opts.guiTestOne.length);
                     Arrays.asList(opts.guiTestOne).forEach(System.out::println);
@@ -166,7 +167,7 @@ public class Main extends Application {
         String param = opts.serverUrl;
         if (param != null && param.startsWith("sqlite-temp:")) {
             String dbFile = param.split(":", 2)[1];
-            if( dbFile.isEmpty() ){
+            if (dbFile.isEmpty()) {
                 dbFile = Paths.get(System.getProperty("user.home"),
                         "sqlite-data", "myclinic-test-sqlite.db").toString();
             }
@@ -178,9 +179,9 @@ public class Main extends Application {
         }
     }
 
-    private void confirmTestDatabase(){
+    private void confirmTestDatabase() {
         PatientDTO patient = Context.frontend.getPatient(1).join();
-        if( patient != null && patient.lastName.equals("試験") && patient.firstName.equals("データ") ){
+        if (patient != null && patient.lastName.equals("試験") && patient.firstName.equals("データ")) {
             // nop
         } else {
             System.err.println("Test database is required for testing.");

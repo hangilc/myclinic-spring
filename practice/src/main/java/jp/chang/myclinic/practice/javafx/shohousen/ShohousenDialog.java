@@ -10,7 +10,7 @@ import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
@@ -197,7 +197,7 @@ public class ShohousenDialog extends Stage {
                 return;
             }
             setDrugs(drawer);
-            String settingName = PracticeEnv.INSTANCE.getAppProperty(PracticeEnv.SHOHOUSEN_PRINTER_SETTING_KEY);
+            String settingName = Context.getShohousenPrinterSetting();
             DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(printerEnv){
                 @Override
                 protected void onDefaultSettingChange(String newSettingName) {

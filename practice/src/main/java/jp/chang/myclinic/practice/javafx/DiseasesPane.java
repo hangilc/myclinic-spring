@@ -10,7 +10,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
-import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.disease.*;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
@@ -34,14 +33,14 @@ public class DiseasesPane extends VBox {
                 createControls()
         );
         setVisible(false);
-        PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
+        Context.currentPatientService.addOnChangeHandler((patient, currentVisitId) -> {
             clearWorkarea();
             currentDiseases = Collections.emptyList();
-            if( newValue == null ){
+            if( patient == null ){
                 setVisible(false);
                 this.patientId = 0;
             } else {
-                this.patientId = newValue.patientId;
+                this.patientId = patient.patientId;
                 Context.frontend.listCurrentDiseaseFull(patientId)
                         .thenAccept(result -> Platform.runLater(() -> {
                             this.currentDiseases = result;
@@ -50,6 +49,7 @@ public class DiseasesPane extends VBox {
                         }))
                         .exceptionally(HandlerFX.exceptionally(this));
             }
+
         });
     }
 

@@ -1,7 +1,6 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.PracticeEnv;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +44,7 @@ public class RegularShinryou {
     private static String[] rightItems;
 
     static {
-        String kouhatsuKasan = Context.configService.getValue("kouhatsu-kasan");
+        String kouhatsuKasan = Context.getKouhatsuKasanSetting();
         List<String> items = new ArrayList<>(Arrays.asList(rightUpperItems));
         if( kouhatsuKasan != null && !kouhatsuKasan.isEmpty() ){
             items.add(kouhatsuKasan);

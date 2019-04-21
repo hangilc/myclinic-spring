@@ -10,12 +10,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ReferItemDTO;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
@@ -199,7 +197,7 @@ public class ReferDialog extends Stage {
                                 @Override
                                 protected void onDefaultSettingChange(String newSettingName) {
                                     ReferDialog.this.defaultPrinterSetting = newSettingName;
-                                    ReferUtil.changeDefaultPrinterSetting(newSettingName);
+                                    Context.setReferPrinterSetting(newSettingName);
                                 }
                             };
                             previewDialog.setPrinterEnv(printerEnv);
@@ -215,7 +213,7 @@ public class ReferDialog extends Stage {
     }
 
     private void doRegistered() {
-        List<ReferItemDTO> referList = PracticeEnv.INSTANCE.getReferList();
+        List<ReferItemDTO> referList = Context.referService.listRefer();
         if (referList != null) {
             RegisteredDialog dialog = new RegisteredDialog(referList) {
                 @Override

@@ -6,7 +6,6 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.CurrentPatientService;
 import jp.chang.myclinic.practice.IntegrationService;
-import jp.chang.myclinic.practice.PracticeEnv;
 
 import java.util.List;
 import java.util.Map;

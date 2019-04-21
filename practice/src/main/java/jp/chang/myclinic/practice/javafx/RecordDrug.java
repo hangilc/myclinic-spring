@@ -11,7 +11,7 @@ import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.drug.DrugEditForm;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -92,7 +92,7 @@ public class RecordDrug extends StackPane {
         if (event.isPopupTrigger()) {
             doContextMenu(event);
         } else {
-            if (!PracticeEnv.INSTANCE.isCurrentOrTempVisitId(visit.visitId)) {
+            if (!Context.currentPatientService.isCurrentOrTempVisitId(visit.visitId)) {
                 if (!GuiUtil.confirm("現在診察中でありませんが、この薬剤を編集しますか？")) {
                     return;
                 }

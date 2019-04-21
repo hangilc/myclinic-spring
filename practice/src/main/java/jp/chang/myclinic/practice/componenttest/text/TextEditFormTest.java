@@ -167,7 +167,7 @@ public class TextEditFormTest extends ComponentTestBase {
                 return value(info);
             }
         };
-        Context.configService = new ConfigTemp();
+        Context.setConfigService(new ConfigTemp());
         Context.currentPatientService = new CurrentPatientService();
         TextEditForm form = prepareForm(text);
         gui(form::simulateClickShohousenButton);

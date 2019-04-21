@@ -12,7 +12,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
@@ -74,7 +73,7 @@ public class AddRegularForm extends VBox {
     }
 
     private String getKouhatsuKasan() {
-        String kasan = Context.configService.getValue("kouhatsu-kasan");
+        String kasan = Context.getKouhatsuKasanSetting();
         if (kasan != null && kasan.isEmpty()) {
             kasan = null;
         }

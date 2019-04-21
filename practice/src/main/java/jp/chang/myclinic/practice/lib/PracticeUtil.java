@@ -6,9 +6,7 @@ import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.time.LocalDate;

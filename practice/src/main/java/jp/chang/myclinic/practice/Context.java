@@ -9,20 +9,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
+import java.util.Collections;
 
 public class Context {
 
     public static CmdOpts cmdOpts;
     public static Frontend frontend;
-    public static MainPane mainPane;
     public static CurrentPatientService currentPatientService;
     public static MainStageService mainStageService;
     public static IntegrationService integrationService;
-    public static ConfigService configService;
+    private static ConfigService configService;
     public static PrinterEnv printerEnv = new PrinterEnv(Paths.get(
             System.getProperty("user.home"),
             "myclinic-env",
             "printer-settings"));
+    public static ReferService referService = new ReferServiceData(Collections.emptyList());
+
+    public static void setConfigService(ConfigService configService){
+        Context.configService = configService;
+    }
 
     private static String shohousenPrinterSettingKey = "shohousen-printer-setting";
 
@@ -34,16 +39,6 @@ public class Context {
         configService.setValue(shohousenPrinterSettingKey, settingName);
     }
 
-    private static String defaultPrinterSettingKey = "default-printer-setting";
-
-    public static String getDefaultPrinterSetting(){
-        return configService.getValue(defaultPrinterSettingKey);
-    }
-
-    public static void setDefaultPrinterSetting(String settingName){
-        configService.setValue(defaultPrinterSettingKey, settingName);
-    }
-
     private static String referPrinterSettingKey = "refer-printer-setting";
 
     public static String getReferPrinterSetting(){
@@ -52,6 +47,16 @@ public class Context {
 
     public static void setReferPrinterSetting(String settingName){
         configService.setValue(referPrinterSettingKey, settingName);
+    }
+
+    private static String kouhatsuKasanKey = "kouhatsu-kasan";
+
+    public static String getKouhatsuKasanSetting(){
+        return configService.getValue(kouhatsuKasanKey);
+    }
+
+    public static void setKouhatsuKasanSetting(String newSetting){
+        configService.setValue(kouhatsuKasanKey, newSetting);
     }
 
 }

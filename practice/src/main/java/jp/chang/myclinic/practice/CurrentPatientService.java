@@ -50,6 +50,10 @@ public class CurrentPatientService {
         return id != 0 ? id : getTempVisitId();
     }
 
+    public boolean isCurrentOrTempVisitId(int visitId){
+        return getCurrentVisitId() == visitId || getTempVisitId() == visitId;
+    }
+
     public void setOnTempVisitIdChangedHandler(Consumer<TempVisitIdChange> onTempVisitIdChangedHandler) {
         this.onTempVisitIdChangedHandler = onTempVisitIdChangedHandler;
     }

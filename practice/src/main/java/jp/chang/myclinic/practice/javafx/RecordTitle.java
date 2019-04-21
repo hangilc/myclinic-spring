@@ -13,12 +13,10 @@ import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.ShoukiDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.CurrentPatientService;
-import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
-import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDateTime;
@@ -27,7 +25,8 @@ public class RecordTitle extends TextFlow {
 
     private int visitId;
     private ObjectProperty<ShoukiDTO> shoukiProperty;
-    private Runnable onDeletedHandler = () -> {};
+    private Runnable onDeletedHandler = () -> {
+    };
 
     RecordTitle(VisitDTO visit, ObjectProperty<ShoukiDTO> shoukiProperty) {
         this.visitId = visit.visitId;
@@ -42,29 +41,29 @@ public class RecordTitle extends TextFlow {
         this.onDeletedHandler = onDeletedHandler;
     }
 
-    void styleAsCurrentVisit(){
+    void styleAsCurrentVisit() {
         removeStyles();
         getStyleClass().add("current-visit");
     }
 
-    void styleAsTempVisit(){
+    void styleAsTempVisit() {
         removeStyles();
         getStyleClass().add("temp-visit");
     }
 
-    void styleAsRegular(){
+    void styleAsRegular() {
         removeStyles();
     }
 
-    private void removeStyles(){
+    private void removeStyles() {
         getStyleClass().removeAll("current-visit", "temp-visit");
     }
 
     private void adaptToEnv() {
         getStyleClass().removeAll("current-visit", "temp-visit");
-        if (PracticeEnv.INSTANCE.getCurrentVisitId() == visitId) {
+        if (Context.currentPatientService.getCurrentVisitId() == visitId) {
             getStyleClass().add("current-visit");
-        } else if (PracticeEnv.INSTANCE.getTempVisitId() == visitId) {
+        } else if (Context.currentPatientService.getTempVisitId() == visitId) {
             getStyleClass().add("temp-visit");
         }
     }
@@ -143,10 +142,10 @@ public class RecordTitle extends TextFlow {
                 .exceptionally(HandlerFX.exceptionally(this));
     }
 
-    private void doModifyShouki(){
-        for(Window w: Window.getWindows()){
-            if( w instanceof ShoukiForm ){
-                ((ShoukiForm)w).toFront();
+    private void doModifyShouki() {
+        for (Window w : Window.getWindows()) {
+            if (w instanceof ShoukiForm) {
+                ((ShoukiForm) w).toFront();
                 return;
             }
         }
