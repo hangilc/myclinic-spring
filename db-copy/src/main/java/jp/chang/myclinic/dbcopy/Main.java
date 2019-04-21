@@ -1,20 +1,13 @@
 package jp.chang.myclinic.dbcopy;
 
 import jp.chang.myclinic.backenddb.*;
-import jp.chang.myclinic.backendmysql.MysqlDataSource;
+import jp.chang.myclinic.backendmysql.MysqlDataSourceProvider;
 import jp.chang.myclinic.backendmysql.MysqlTableSet;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
-import org.sqlite.SQLiteDataSource;
 import picocli.CommandLine;
 
 import javax.sql.DataSource;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -108,7 +101,7 @@ public class Main implements Runnable {
     private DataSource getDataSource(String db) {
         switch (db) {
             case "mysql":
-                return MysqlDataSource.create();
+                return MysqlDataSourceProvider.create();
             case "sqlite":
                 return SqliteDataSource.createFromDbFile("work/copied.db");
             default:

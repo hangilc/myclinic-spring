@@ -64,7 +64,7 @@ public class DiseaseTableBase extends Table<DiseaseDTO> {
                 "endReason",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setObject(i, dto.endReason),
+                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.endReason)),
                 (rs, i, dto) -> dto.endReason = rs.getString(i).charAt(0)));
   }
 

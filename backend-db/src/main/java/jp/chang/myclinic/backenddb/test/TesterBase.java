@@ -1,6 +1,5 @@
 package jp.chang.myclinic.backenddb.test;
 
-import jp.chang.myclinic.backenddb.Backend;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 import jp.chang.myclinic.dto.PatientDTO;
@@ -25,9 +24,9 @@ class TesterBase {
         try {
             for (Method method : this.getClass().getMethods()) {
                 if (method.isAnnotationPresent(DbTest.class)) {
+                    System.out.printf("%s:%s\n", clsName, method.getName());
                     dbBackend.txProc(backend -> {
                         try {
-                            System.out.printf("%s:%s\n", clsName, method.getName());
                             method.invoke(this, backend);
                         } catch(Exception e){
                             throw new RuntimeException(e);

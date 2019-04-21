@@ -742,7 +742,7 @@ public class Backend {
 
     private int countVisitByPatient(int patientId) {
         String sql = xlate("select count(*) from Visit where patientId = ?",
-                ts.patientTable);
+                ts.visitTable);
         return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), patientId);
     }
 

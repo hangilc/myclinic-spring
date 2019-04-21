@@ -189,9 +189,8 @@ public class MysqlSpecifics implements DatabaseSpecifics {
             case Types.INTEGER: case Types.TINYINT:
                 return Integer.class;
             case Types.DOUBLE: return Double.class;
-            case Types.VARCHAR: case Types.LONGVARCHAR:
+            case Types.VARCHAR: case Types.LONGVARCHAR: case Types.CHAR:
                 return String.class;
-            case Types.CHAR: return Character.class;
             case Types.TIMESTAMP: return LocalDateTime.class;
             default: return null;
         }

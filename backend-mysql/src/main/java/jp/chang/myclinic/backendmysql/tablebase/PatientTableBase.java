@@ -60,7 +60,7 @@ public class PatientTableBase extends Table<PatientDTO> {
                 "sex",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setObject(i, dto.sex.charAt(0)),
+                (stmt, i, dto) -> stmt.setString(i, dto.sex),
                 (rs, i, dto) -> dto.sex = rs.getString(i)),
             new Column<>(
                 "birth_day",

@@ -51,6 +51,9 @@ public class MysqlConfig extends MysqlSpecifics implements Config {
         if (dtoFieldClass == Integer.class && dbColumnClass == ShinryouTensuu.class) {
             return helper.methodCall("String", "valueOf", fieldAccess);
         }
+        if( dtoFieldClass == Character.class && dbColumnClass == String.class) {
+            return helper.methodCall("String", "valueOf", fieldAccess);
+        }
         if (dbColumnClass == dtoFieldClass) {
             return fieldAccess;
         }
@@ -104,6 +107,12 @@ public class MysqlConfig extends MysqlSpecifics implements Config {
             return new DtoFieldSetterCreator(
                     "getString",
                     colValue -> helper.methodCall("TableBaseHelper", "tensuuToInteger", colValue)
+            );
+        }
+        if( dbColumnClass == String.class && dtoFieldClass == Character.class ){
+            return new DtoFieldSetterCreator(
+                    "getString",
+                    colValue -> helper.methodCall(colValue, "charAt", new IntegerLiteralExpr(0))
             );
         }
         if (dbColumnClass == dtoFieldClass) {

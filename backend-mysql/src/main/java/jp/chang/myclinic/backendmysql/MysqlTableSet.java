@@ -46,6 +46,8 @@ public class MysqlTableSet {
         ts.textTable = new TextTable(query);
         ts.visitTable = new VisitTable(query);
         ts.wqueueTable = new WqueueTable(query);
+
+        ts.dialect = new MysqlDialect();
         return ts;
     }
 

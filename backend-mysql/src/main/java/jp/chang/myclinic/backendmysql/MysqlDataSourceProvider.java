@@ -9,10 +9,10 @@ import javax.sql.DataSource;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class MysqlDataSource {
+public class MysqlDataSourceProvider {
 
     public static class MysqlDataSourceConfig {
-        private String host = getenv("MYCLINCI_DB_HOST", "localhost");
+        private String host = getenv("MYCLINIC_DB_HOST", "localhost");
         private int port = 3306;
         private String database = "myclinic";
         private boolean useSSL = false;
@@ -43,6 +43,18 @@ public class MysqlDataSource {
             this.password = password;
             return this;
         }
+
+        @Override
+        public String toString() {
+            return "MysqlDataSourceConfig{" +
+                    "host='" + host + '\'' +
+                    ", port=" + port +
+                    ", database='" + database + '\'' +
+                    ", useSSL=" + useSSL +
+                    ", user='" + user + '\'' +
+                    ", password='" + password + '\'' +
+                    '}';
+        }
     }
 
     private static String getenv(String envName, String defaultValue){
@@ -54,7 +66,7 @@ public class MysqlDataSource {
         }
     }
 
-    private MysqlDataSource() { }
+    private MysqlDataSourceProvider() { }
 
     public static DataSource create(){
         return create(new MysqlDataSourceConfig());
