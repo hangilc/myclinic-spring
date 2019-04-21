@@ -12,12 +12,12 @@ import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearcher;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 public class EditPrescExampleDialog extends PrescExampleBaseDialog {
-
-    //private static Logger logger = LoggerFactory.getLogger(EditPrescExampleDialog.class);
 
     public EditPrescExampleDialog() {
         super(new SearchModeChooser(DrugSearchMode.Example));
@@ -27,7 +27,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
     }
 
     @Override
-    Node createCommands(){
+    Node createCommands() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         Button enterButton = new Button("適用");
@@ -47,25 +47,25 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
         return hbox;
     }
 
-    private Node createListAllLink(){
+    private Node createListAllLink() {
         Hyperlink listAllLink = new Hyperlink("全リスト");
         listAllLink.setOnAction(evt -> doListAll());
         return listAllLink;
     }
 
-    private void doListAll(){
+    private void doListAll() {
         DrugSearcher.listAllExamples(ex -> getInput().setPrescExample(ex))
                 .thenAcceptAsync(result -> getSearchResult().setItems(result), Platform::runLater)
                 .exceptionally(HandlerFX.exceptionally(this));
     }
 
-    private void doDelete(){
+    private void doDelete() {
         int prescExampleId = getPrescExampleId();
-        if( prescExampleId == 0 ){
+        if (prescExampleId == 0) {
             GuiUtil.alertError("削除する処方例が選択されていません。");
             return;
         }
-        if( !GuiUtil.confirm("この処方例を削除しますか？") ){
+        if (!GuiUtil.confirm("この処方例を削除しますか？")) {
             return;
         }
         Context.frontend.deletePrescExample(prescExampleId)
@@ -73,22 +73,16 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
                 .exceptionally(HandlerFX.exceptionally(this));
     }
 
-    private void doUpdate(){
-//        PrescExampleDTO ex = createPrescExample();
-//        if( ex != null && ex.prescExampleId == 0 ){
-//            GuiUtil.alertError("prescExampleId is zero.");
-//            return;
-//        }
-//        if( ex != null ){
-//            Context.frontend.resolveStockDrug(ex.iyakuhincode, getLocalDate())
-//                    .thenCompose(master -> {
-//                        ex.masterValidFrom = master.validFrom;
-//                        return Context.frontend.updatePrescExample(ex);
-//                    })
-//                    .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
-//                    .exceptionally(HandlerFX.exceptionally(this));
-//
-//        }
+    private void doUpdate() {
+        Validated<PrescExampleDTO> validated = getInput().getValidatedToUpdate();
+        if (validated.isFailure()) {
+            AlertDialog.alert(validated.getErrorsAsString(), this);
+            return;
+        }
+        PrescExampleDTO ex = validated.getValue();
+        Context.frontend.updatePrescExample(ex)
+                .thenAcceptAsync(result -> doClear(), Platform::runLater)
+                .exceptionally(HandlerFX.exceptionally(this));
     }
 
 }

@@ -99,4 +99,17 @@ public class PrescExampleInput extends DrugInputBase {
                 .validate();
     }
 
+    public Validated<PrescExampleDTO> getValidatedToUpdate(){
+        return new PrescExampleValidator()
+                .validatePrescExampleId(getPrescExampleId())
+                .validateIyakuhincode(getIyakuhincode())
+                .validateAmount(getAmount())
+                .validateUsage(getUsage())
+                .validateCategory(getCategory().getCode())
+                .validateComment(getComment())
+                .validateDays(getDays())
+                .validateMasterValidFrom(masterValidFrom)
+                .validate();
+    }
+
 }

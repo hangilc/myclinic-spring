@@ -19,7 +19,6 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 
 class ConvertToPrescExampleDialog extends Stage {
 
-    //private static Logger logger = LoggerFactory.getLogger(ConvertToPrescExampleDialog.class);
     private PrescExampleInput input = new PrescExampleInput();
 
     ConvertToPrescExampleDialog(DrugFullDTO drugFull) {
