@@ -55,7 +55,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
         }
         Context.frontend.resolveStockDrug(iyakuhincode, LocalDate.now())
                 .thenAcceptAsync(master -> {
-                    getInput().setMaster(master);
+                    getInput().updateMaster(master);
                 }, Platform::runLater)
                 .exceptionally(HandlerFX.exceptionally(this));
     }

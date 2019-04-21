@@ -352,6 +352,12 @@ class DrugInputBase extends VBox {
         setData(master, category, "", "", "", "");
     }
 
+    public void updateMaster(IyakuhinMasterDTO master){
+        setIyakuhincode(master.iyakuhincode);
+        setDrugName(master.name);
+        setAmountUnit(master.unit);
+    }
+
     public void setPrescExample(PrescExampleFullDTO exampleFull) {
         PrescExampleDTO example = exampleFull.prescExample;
         DrugCategory exampleCategory = DrugCategory.fromCode(example.category);
