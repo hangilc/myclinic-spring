@@ -13,10 +13,10 @@ import javax.ws.rs.core.MediaType;
 @Path("/api")
 public class RestServer {
 
-    @Inject
     private DbBackend dbBackend;
 
-    public RestServer() {
+    RestServer(DbBackend dbBackend) {
+        this.dbBackend = dbBackend;
     }
 
     @GET

@@ -44,26 +44,15 @@ public class Main {
                     "sqlite-data", "myclinic-test-sqlite.db").toString();
         DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
         DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
-        ResourceConfig resource = new ResourceConfig();
-        resource.register(new AbstractBinder(){
-
-            @Override
-            protected void configure() {
-                bind(dbBackend).to(DbBackend.class);
-            }
-        });
+        ResourceConfig jerseyConfig = new ResourceConfig();
+        jerseyConfig.register(new RestServer(dbBackend));
         Server server = new Server(cmdOpts.port);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
-        ServletContainer container = new ServletContainer(resource);
-        //ServletContainer container = new ServletContainer();
-        //ServletHolder jersey = context.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
+        ServletContainer container = new ServletContainer(jerseyConfig);
         ServletHolder jersey = new ServletHolder(container);
         jersey.setInitOrder(0);
-        jersey.setInitParameter(ServerProperties.PROVIDER_PACKAGES, "jp.chang.myclinic.backendserver");
-//        jersey.setInitParameter("jersey.config.server.provider.classnames",
-//                RestServer.class.getCanonicalName());
         context.addServlet(jersey, "/*");
         server.start();
         System.out.printf("Server listening to port %d\n", cmdOpts.port);
