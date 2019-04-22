@@ -1,6 +1,5 @@
 package jp.chang.myclinic.practice;
 
-import picocli.CommandLine;
 import picocli.CommandLine.*;
 
 @Command(name = "practice")
