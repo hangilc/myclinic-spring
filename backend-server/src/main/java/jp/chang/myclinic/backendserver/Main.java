@@ -44,13 +44,13 @@ public class Main {
                     "sqlite-data", "myclinic-test-sqlite.db").toString();
         DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
         DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
-        ResourceConfig jerseyConfig = new ResourceConfig();
-        jerseyConfig.register(new RestServer(dbBackend));
+//        ResourceConfig jerseyConfig = new ResourceConfig();
+//        jerseyConfig.register(new RestServer(dbBackend));
         Server server = new Server(cmdOpts.port);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
-        ServletContainer container = new ServletContainer(jerseyConfig);
+        ServletContainer container = new ServletContainer(new JerseyConfig(dbBackend));
         ServletHolder jersey = new ServletHolder(container);
         jersey.setInitOrder(0);
         context.addServlet(jersey, "/*");

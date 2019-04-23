@@ -4,6 +4,7 @@ import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
@@ -12,12 +13,20 @@ import java.util.List;
 import java.util.Map;
 
 @Path("/api")
+//@Singleton
 public class RestServer {
 
     private DbBackend dbBackend;
 
+    @Inject
     RestServer(DbBackend dbBackend) {
         this.dbBackend = dbBackend;
+    }
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String root(){
+        return "Hello, world";
     }
 
     @GET
@@ -44,48 +53,48 @@ public class RestServer {
         dbBackend.txProc(backend -> backend.updatePatient(patient));
     }
 
-//    @Path("search-patient-by-keyword")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @GET
-//    public List<PatientDTO> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword) {
-//        return dbBackend.query(backend -> backend.searchPatientByKeyword(lastNameKeyword, firstNameKeyword));
-//    }
-//
-//    @Path("search-patient-by-keyword")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @GET
-//    public List<PatientDTO> searchPatientByKeyword(String keyword) {
-//        return dbBackend.query(backend -> backend.searchPatientByKeyword(keyword));
-//    }
-//
-//    @Path("search-patient")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @GET
-//    public List<PatientDTO> searchPatient(String text) {
-//        return dbBackend.query(backend -> backend.searchPatient(text));
-//    }
-//
-//    @Path("find-available-shahokokuho")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @GET
-//    public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
-//        return dbBackend.query(backend -> backend.findAvailableShahokokuho(patientId, at));
-//    }
-//
-//    @Path("find-available-koukikourei")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @GET
-//    public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
-//        return dbBackend.query(backend -> backend.findAvailableKoukikourei(patientId, at));
-//    }
-//
-//    @Path("find-available-roujin")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @GET
-//    public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
-//        return dbBackend.query(backend -> backend.findAvailableRoujin(patientId, at));
-//    }
-//
+    @Path("search-patient-by-keyword")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<PatientDTO> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword) {
+        return dbBackend.query(backend -> backend.searchPatientByKeyword(lastNameKeyword, firstNameKeyword));
+    }
+
+    @Path("search-patient-by-keyword")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<PatientDTO> searchPatientByKeyword(String keyword) {
+        return dbBackend.query(backend -> backend.searchPatientByKeyword(keyword));
+    }
+
+    @Path("search-patient")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<PatientDTO> searchPatient(String text) {
+        return dbBackend.query(backend -> backend.searchPatient(text));
+    }
+
+    @Path("find-available-shahokokuho")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
+        return dbBackend.query(backend -> backend.findAvailableShahokokuho(patientId, at));
+    }
+
+    @Path("find-available-koukikourei")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
+        return dbBackend.query(backend -> backend.findAvailableKoukikourei(patientId, at));
+    }
+
+    @Path("find-available-roujin")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
+        return dbBackend.query(backend -> backend.findAvailableRoujin(patientId, at));
+    }
+
 //    @Path("find-available-kouhi")
 //    @Produces(MediaType.APPLICATION_JSON)
 //    @GET
