@@ -1,6 +1,9 @@
 package jp.chang.myclinic.apitool.lib;
 
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
@@ -20,6 +23,7 @@ import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -43,7 +47,7 @@ public class Helper {
     }
 
     public String capitalize(String s) {
-        return s.substring(0, 1).toUpperCase() + s.substring(1, s.length());
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
     public String snakeToCapital(String s) {
@@ -58,7 +62,7 @@ public class Helper {
     }
 
     public String toSnake(String s) {
-        s = s.substring(0, 1).toLowerCase() + s.substring(1, s.length());
+        s = s.substring(0, 1).toLowerCase() + s.substring(1);
         StringBuilder sb = new StringBuilder();
         for (char c : s.toCharArray()) {
             if (Character.isUpperCase(c)) {
@@ -69,6 +73,10 @@ public class Helper {
             }
         }
         return sb.toString();
+    }
+
+    public String toHyphenChain(String s) {
+        return toSnake(s).replaceAll("_", "-");
     }
 
     private static NumberFormat numberFormat = NumberFormat.getNumberInstance();
@@ -101,6 +109,10 @@ public class Helper {
 
     public ClassOrInterfaceType createGenericType(String name, String paramType1, String paramType2) {
         return createGenericType(name, createGenericType(paramType1, paramType2));
+    }
+
+    public Parameter createSingleLambdaParameter(String name){
+        return new Parameter(new UnknownType(), name);
     }
 
     public NodeList<Parameter> createParameters(String... paramNames) {
@@ -207,6 +219,41 @@ public class Helper {
             default:
                 throw new RuntimeException("Cannot find database specifics: " + database);
         }
+    }
+
+    public Path getBackendSourcePath() throws IOException {
+        return Paths.get("backend-db/src/main/java/jp/chang/myclinic/backenddb", "Backend.java");
+    }
+
+    public Path getFrontendBackendSourcePath() throws IOException {
+        return Paths.get("frontend/src/main/java/jp/chang/myclinic/frontend", "FrontendBackend.java");
+    }
+
+    public Path getBackendServerSourcePath() throws IOException {
+        return Paths.get("backend-server/src/main/java/jp/chang/myclinic/backendserver", "RestServer.java");
+    }
+
+    public List<MethodDeclaration> listUnimplementedMethods(ClassOrInterfaceDeclaration backend,
+                                                             ClassOrInterfaceDeclaration target) {
+        List<MethodDeclaration> result = new ArrayList<>();
+        for (MethodDeclaration backendMethod : backend.getMethods()) {
+            if (!backendMethod.isPublic() || backendMethod.isAnnotationPresent("ExcludeFromFrontend")) {
+                continue;
+            }
+            CallableDeclaration.Signature backendSig = backendMethod.getSignature();
+            if (target.getCallablesWithSignature(backendSig).size() == 0) {
+                result.add(backendMethod);
+            }
+        }
+        return result;
+    }
+
+    public Class<?> getDtoClassNamed(String name){
+        return DtoClassList.getDtoClassByName(name);
+    }
+
+    public boolean isDtoClassName(String name){
+        return getDtoClassNamed(name) != null;
     }
 
 }
