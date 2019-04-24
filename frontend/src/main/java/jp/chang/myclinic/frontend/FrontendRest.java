@@ -7,10 +7,7 @@ import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonP
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import java.util.concurrent.CompletableFuture;
@@ -33,8 +30,7 @@ public class FrontendRest {
         void set(String name, Object value);
     }
 
-    private <T> CompletableFuture<T> get(String path, Consumer<ParamSetter> paramSetter,
-                                         Class<T> returnType) {
+    private CompletionStageRxInvoker call(String path, Consumer<ParamSetter> paramSetter) {
         class Local {
             private WebTarget target;
         }
@@ -46,15 +42,32 @@ public class FrontendRest {
             local.target = local.target.queryParam(name, value);
         });
         return local.target.request(MediaType.APPLICATION_JSON)
-                .rx()
+                .rx();
+    }
+
+    private <T> CompletableFuture<T> get(String path, Consumer<ParamSetter> paramSetter,
+                                         Class<T> returnType) {
+        return call(path, paramSetter)
                 //.post(null, new GenericType<T>(returnType){})
                 .get(new GenericType<T>(returnType) {})
+                .toCompletableFuture();
+    }
+
+    private <T> CompletableFuture<T> post(String path, Consumer<ParamSetter> paramSetter,
+                                          Object body, Class<?> returnType){
+        return call(path, paramSetter)
+                .post(Entity.entity(body, MediaType.APPLICATION_JSON),
+                        new GenericType<T>(returnType){})
                 .toCompletableFuture();
     }
 
     public CompletableFuture<PatientDTO> getPatient(int patientId) {
         return get("get-patient", setter -> setter.set("patient-id", patientId),
                 PatientDTO.class);
+    }
+
+    public CompletableFuture<Void> testVoid() {
+        return post("void", setter -> {}, null, Void.class);
     }
 
 }

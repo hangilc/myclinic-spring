@@ -1318,4 +1318,9 @@ public class RestServer {
     public LocalDateTime now(){
         return LocalDateTime.now();
     }
+
+    @Path("void")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void doVoid(){}
 }

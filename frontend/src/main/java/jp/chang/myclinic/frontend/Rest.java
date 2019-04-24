@@ -8,8 +8,7 @@ public class Rest {
     public static void main(String[] args){
         FrontendRest rest = new FrontendRest();
         System.out.println(rest.getPatient(1).join());
-        System.out.println(rest.getPatient(1).join());
-        System.out.println(rest.getPatient(1).join());
+        rest.testVoid().thenAccept(ignore -> System.out.println("void success"));
         FrontendRest.executorService.shutdown();
     }
 }
