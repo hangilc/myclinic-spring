@@ -48,7 +48,6 @@ public class FrontendRest {
     private <T> CompletableFuture<T> get(String path, Consumer<ParamSetter> paramSetter,
                                          Class<T> returnType) {
         return call(path, paramSetter)
-                //.post(null, new GenericType<T>(returnType){})
                 .get(new GenericType<T>(returnType) {})
                 .toCompletableFuture();
     }

@@ -180,8 +180,29 @@ public class Helper {
             return Double.class;
         } else if (c == char.class) {
             return Character.class;
+        } else if( c == void.class) {
+            return Void.class;
         } else {
             return c;
+        }
+    }
+
+    public Type getBoxedType(Type t){
+        if( t.isPrimitiveType() ) {
+            switch (t.toString()) {
+                case "int":
+                    return new ClassOrInterfaceType(null, "Integer");
+                case "double":
+                    return new ClassOrInterfaceType(null, "Double");
+                case "char":
+                    return new ClassOrInterfaceType(null, "Character");
+                default:
+                    throw new RuntimeException("Cannot convert to boxed type: " + t);
+            }
+        } else if( t.isVoidType() ){
+            return new ClassOrInterfaceType(null, "Void");
+        } else {
+            return t;
         }
     }
 
@@ -225,12 +246,12 @@ public class Helper {
         return Paths.get("backend-db/src/main/java/jp/chang/myclinic/backenddb", "Backend.java");
     }
 
-    public Path getFrontendBackendSourcePath() throws IOException {
-        return Paths.get("frontend/src/main/java/jp/chang/myclinic/frontend", "FrontendBackend.java");
-    }
-
     public Path getBackendServerSourcePath() throws IOException {
         return Paths.get("backend-server/src/main/java/jp/chang/myclinic/backendserver", "RestServer.java");
+    }
+
+    public Path getFrontendRestSourcePath() throws IOException {
+        return Paths.get("frontend/src/main/java/jp/chang/myclinic/frontend", "FrontendRest.java");
     }
 
     public List<MethodDeclaration> listUnimplementedMethods(ClassOrInterfaceDeclaration backend,

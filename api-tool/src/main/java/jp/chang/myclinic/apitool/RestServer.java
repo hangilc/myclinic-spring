@@ -23,8 +23,8 @@ import java.util.List;
 import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.toList;
 
-@Command(name = "rest")
-public class Rest implements Runnable {
+@Command(name = "rest-server", description = "updates RestServer according to Backend")
+public class RestServer implements Runnable {
 
     @Option(names = "--save")
     private boolean save;
