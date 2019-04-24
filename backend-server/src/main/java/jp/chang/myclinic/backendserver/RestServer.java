@@ -9,8 +9,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 @Path("/api")
 public class RestServer {
@@ -1323,4 +1326,12 @@ public class RestServer {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     public void doVoid(){}
+
+    @Path("echo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    public List<PatientDTO> echo(List<PatientDTO> value){
+        return value;
+    }
 }

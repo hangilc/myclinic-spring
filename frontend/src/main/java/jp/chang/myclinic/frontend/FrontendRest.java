@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,28 +48,24 @@ public class FrontendRest {
                 .rx();
     }
 
-    private <T> CompletableFuture<T> get(String path, Consumer<ParamSetter> paramSetter,
-                                         Class<T> returnType) {
-        return call(path, paramSetter)
-                .get(new GenericType<T>(returnType) {})
-                .toCompletableFuture();
-    }
-
-    private <T> CompletableFuture<T> post(String path, Consumer<ParamSetter> paramSetter,
-                                          Object body, Class<?> returnType){
-        return call(path, paramSetter)
-                .post(Entity.entity(body, MediaType.APPLICATION_JSON),
-                        new GenericType<T>(returnType){})
-                .toCompletableFuture();
-    }
-
     public CompletableFuture<PatientDTO> getPatient(int patientId) {
-        return get("get-patient", setter -> setter.set("patient-id", patientId),
-                PatientDTO.class);
+        return call("get-patient", setter -> setter.set("patient-id", patientId))
+                .get(new GenericType<PatientDTO>(){})
+                .toCompletableFuture();
     }
 
     public CompletableFuture<Void> testVoid() {
-        return post("void", setter -> {}, null, Void.class);
+        return call("void", setter -> {})
+                .post(Entity.entity(null, MediaType.APPLICATION_JSON),
+                        new GenericType<Void>(){})
+                .toCompletableFuture();
+    }
+
+    public CompletableFuture<List<PatientDTO>> testEcho(List<PatientDTO> values){
+        return call("echo", setter -> {})
+                .post(Entity.entity(values, MediaType.APPLICATION_JSON),
+                        new GenericType<List<PatientDTO>>(){})
+                .toCompletableFuture();
     }
 
 }
