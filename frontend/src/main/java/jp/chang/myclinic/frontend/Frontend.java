@@ -17,7 +17,7 @@ public interface Frontend {
 
     CompletableFuture<Void> updatePatient(PatientDTO patient);
 
-    CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword);
+    CompletableFuture<List<PatientDTO>> searchPatientByKeyword2(String lastNameKeyword, String firstNameKeyword);
 
     CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String keyword);
 
@@ -131,7 +131,7 @@ public interface Frontend {
 
     CompletableFuture<List<Integer>> listRepresentativeGaiyouDrugId(String text, int patientId);
 
-    CompletableFuture<List<DrugFullDTO>> searchPrevDrug(int patientId);
+    CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId);
 
     CompletableFuture<List<DrugFullDTO>> searchPrevDrug(String text, int patientId);
 

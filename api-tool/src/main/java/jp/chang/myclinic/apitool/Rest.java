@@ -2,27 +2,22 @@ package jp.chang.myclinic.apitool;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.Modifier.*;
-import com.github.javaparser.ast.body.AnnotationDeclaration;
+import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.Type;
 import jp.chang.myclinic.apitool.lib.Helper;
-import picocli.CommandLine.*;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
@@ -51,17 +46,74 @@ public class Rest implements Runnable {
             for (MethodDeclaration backendMethodDecl : unimplementedMethods) {
                 MethodDeclaration serverMethod = createServerMethod(backendMethodDecl);
                 serverDecl.addMember(serverMethod);
-                if( !save ) {
+                if (!save) {
                     System.out.println(serverMethod);
                 }
             }
-            if( save ){
+            if (save) {
                 helper.saveToFile(serverSource, serverUnit.toString(), true);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(1);
         }
+    }
+
+    private MethodDeclaration createServerMethod(MethodDeclaration backendMethod) {
+        MethodDeclaration method = new MethodDeclaration();
+        method.addModifier(Keyword.PUBLIC);
+        method.setType(backendMethod.getType());
+        method.setName(backendMethod.getName());
+        ParamsInfo paramsInfo = addParamsToMethod(method, backendMethod.getParameters());
+        String name = backendMethod.getNameAsString();
+        method.addAnnotation(createPathAnnotation(name));
+        method.addAnnotation(createProducesAnnotation());
+        if (paramsInfo.bodyParam != null) {
+            method.addAnnotation(createConsumesAnnotation());
+        }
+        if (name.startsWith("enter")) {
+            method.addAnnotation(new MarkerAnnotationExpr("POST"));
+            AutoIncInfo autoIncInfo = new AutoIncInfo();
+            if (paramsInfo.bodyParam != null && isAutoIncMethod(method, paramsInfo.bodyParam, autoIncInfo)) {
+                method.setType(autoIncInfo.autoIncField.getType().getSimpleName());
+                method.setBody(createAutoIncBlock(name, paramsInfo.bodyParam.getNameAsString(),
+                        autoIncInfo.autoIncField.getName()));
+            } else {
+                if (method.getType().isVoidType()) {
+                    method.setBody(createVoidBlock(name, method.getParameters()));
+                } else {
+                    method.setBody(createBlock("tx", name, method.getParameters()));
+                }
+            }
+        } else if (name.startsWith("get") || name.startsWith("list") ||
+                name.startsWith("search") || name.startsWith("find") ||
+                name.startsWith("count") || name.startsWith("resolve") ||
+                name.startsWith("batchResolve")) {
+            if (paramsInfo.bodyParam != null) {
+                method.addAnnotation(new MarkerAnnotationExpr("POST"));
+            } else {
+                method.addAnnotation(new MarkerAnnotationExpr("GET"));
+            }
+            method.setBody(createBlock("query", name, method.getParameters()));
+        } else {
+            if (name.startsWith("delete") || name.startsWith("update") ||
+                    method.getType().isVoidType() ||
+                    backendMethod.isAnnotationPresent("ServerMethodPost")) {
+                method.addAnnotation(new MarkerAnnotationExpr("POST"));
+            } else {
+                if (paramsInfo.bodyParam != null) {
+                    method.addAnnotation(new MarkerAnnotationExpr("POST"));
+                } else {
+                    method.addAnnotation(new MarkerAnnotationExpr("GET"));
+                }
+            }
+            if (method.getType().isVoidType()) {
+                method.setBody(createVoidBlock(name, method.getParameters()));
+            } else {
+                method.setBody(createBlock("tx", name, method.getParameters()));
+            }
+        }
+        return method;
     }
 
     private boolean isComplexType(Type type) {
@@ -83,58 +135,28 @@ public class Rest implements Runnable {
         }
     }
 
-    private MethodDeclaration createServerMethod(MethodDeclaration backendMethod) {
-        MethodDeclaration method = new MethodDeclaration();
-        method.addModifier(Keyword.PUBLIC);
-        method.setType(backendMethod.getType());
-        method.setName(backendMethod.getName());
-        Parameter complexParam = null;
-        for (Parameter param : backendMethod.getParameters()) {
+    private static class ParamsInfo {
+        Parameter bodyParam = null;
+    }
+
+    private ParamsInfo addParamsToMethod(MethodDeclaration method, Collection<Parameter> parameters) {
+        ParamsInfo info = new ParamsInfo();
+        for (Parameter param : parameters) {
             Parameter p = new Parameter(param.getType(), param.getName());
-            method.addParameter(p);
-            Type t = p.getType();
-            if (isComplexType(t)) {
-                if (complexParam != null) {
-                    System.err.println("Cannot handle method: " + backendMethod);
+            if (isComplexType(param.getType())) {
+                if (info.bodyParam != null) {
+                    System.err.println("Cannot add parameters: " + method.toString() + " ; " + parameters);
                     System.exit(1);
-                } else {
-                    complexParam = p;
                 }
-            }
-        }
-        String name = backendMethod.getNameAsString();
-        method.addAnnotation(createPathAnnotation(name));
-        method.addAnnotation(createProducesAnnotation());
-        if (name.startsWith("enter")) {
-            method.addAnnotation(new MarkerAnnotationExpr("POST"));
-            AutoIncInfo autoIncInfo = new AutoIncInfo();
-            if (isAutoIncMethod(method, complexParam, autoIncInfo)) {
-                method.addAnnotation(createConsumesAnnotation());
-                method.setType(autoIncInfo.autoIncField.getType().getSimpleName());
-                method.setBody(createAutoIncBlock(name, complexParam.getNameAsString(),
-                        autoIncInfo.autoIncField.getName()));
+                info.bodyParam = p;
             } else {
-                if (method.getType().isVoidType()) {
-                    method.setBody(createVoidBlock("txProc", name, method.getParameters()));
-                } else {
-                    method.setBody(createBlock("tx", name, method.getParameters()));
-                }
+                AnnotationExpr paramAnnot = new SingleMemberAnnotationExpr(new Name("QueryParam"),
+                        new StringLiteralExpr(helper.toHyphenChain(param.getNameAsString())));
+                p.addAnnotation(paramAnnot);
             }
-        } else if(name.startsWith("get") || name.startsWith("list") ||
-                name.startsWith("search") || name.startsWith("find") ||
-                name.startsWith("count") || name.startsWith("resolve") ||
-                name.startsWith("batchResolve")){
-            method.addAnnotation(new MarkerAnnotationExpr("GET"));
-            method.setBody(createBlock("query", name, method.getParameters()));
-        } else {
-            method.addAnnotation(new MarkerAnnotationExpr("GET"));
-            if( method.getType().isVoidType() ){
-                method.setBody(createVoidBlock("txProc", name, method.getParameters()));
-            } else {
-                method.setBody(createBlock("tx", name, method.getParameters()));
-            }
+            method.addParameter(p);
         }
-        return method;
+        return info;
     }
 
     private AnnotationExpr createPathAnnotation(String methodName) {
@@ -153,7 +175,7 @@ public class Rest implements Runnable {
     }
 
     private static class AutoIncInfo {
-        private Class<?> dtoClass;
+        //private Class<?> dtoClass;
         private Field autoIncField;
     }
 
@@ -166,7 +188,7 @@ public class Rest implements Runnable {
                     System.err.println("Too many autoinc fields: " + m);
                     System.exit(1);
                 } else if (autoIncFields.size() == 1) {
-                    info.dtoClass = dtoClass;
+                    //info.dtoClass = dtoClass;
                     info.autoIncField = autoIncFields.get(0);
                     return true;
                 } else {
@@ -192,7 +214,7 @@ public class Rest implements Runnable {
         ))));
     }
 
-    private BlockStmt createBlock(String backendFunc, String methodName, List<Parameter> params){
+    private BlockStmt createBlock(String backendFunc, String methodName, List<Parameter> params) {
         Expression backendCallExpr = new MethodCallExpr(new NameExpr("backend"), methodName,
                 nodeList(params.stream().map(para -> new NameExpr(para.getNameAsString())).collect(toList())));
         LambdaExpr lambda = new LambdaExpr(helper.createSingleLambdaParameter("backend"),
@@ -204,14 +226,14 @@ public class Rest implements Runnable {
         ))));
     }
 
-    private BlockStmt createVoidBlock(String backendFunc, String methodName, List<Parameter> params){
+    private BlockStmt createVoidBlock(String methodName, List<Parameter> params) {
         Expression backendCallExpr = new MethodCallExpr(new NameExpr("backend"), methodName,
                 nodeList(params.stream().map(para -> new NameExpr(para.getNameAsString())).collect(toList())));
         LambdaExpr lambda = new LambdaExpr(helper.createSingleLambdaParameter("backend"),
                 backendCallExpr);
         return new BlockStmt(nodeList(new ExpressionStmt(new MethodCallExpr(
                 new NameExpr("dbBackend"),
-                backendFunc,
+                "txProc",
                 nodeList(lambda)
         ))));
     }

@@ -32,7 +32,7 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword) {
+    public CompletableFuture<List<PatientDTO>> searchPatientByKeyword2(String lastNameKeyword, String firstNameKeyword) {
         throw new RuntimeException("not implemented");
     }
 
@@ -317,7 +317,7 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(int patientId) {
+    public CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId) {
         throw new RuntimeException("not implemented");
     }
 

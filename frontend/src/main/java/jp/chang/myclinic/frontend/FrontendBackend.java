@@ -97,8 +97,8 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword) {
-        return query(backend -> backend.searchPatientByKeyword(lastNameKeyword, firstNameKeyword));
+    public CompletableFuture<List<PatientDTO>> searchPatientByKeyword2(String lastNameKeyword, String firstNameKeyword) {
+        return query(backend -> backend.searchPatientByKeyword2(lastNameKeyword, firstNameKeyword));
     }
 
     @Override
@@ -363,8 +363,8 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(int patientId) {
-        return query(backend -> backend.searchPrevDrug(patientId));
+    public CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId) {
+        return query(backend -> backend.listPrevDrugByPatient(patientId));
     }
 
     @Override

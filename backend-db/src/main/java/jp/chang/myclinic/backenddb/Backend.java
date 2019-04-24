@@ -10,8 +10,6 @@ import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -123,7 +121,7 @@ public class Backend {
         practiceLogger.logPatientUpdated(prev, patient);
     }
 
-    public List<PatientDTO> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword) {
+    public List<PatientDTO> searchPatientByKeyword2(String lastNameKeyword, String firstNameKeyword) {
         String sql = xlate("select * from Patient where " +
                         " (lastName like ? or lastNameYomi like ?) and " +
                         " (firstName like ? or firstNameYomi like ?) ",
@@ -153,7 +151,7 @@ public class Backend {
         } else {
             String last = "%" + parts[0] + "%";
             String first = "%" + parts[1] + "%";
-            return searchPatientByKeyword(last, first);
+            return searchPatientByKeyword2(last, first);
         }
     }
 
@@ -583,7 +581,7 @@ public class Backend {
                 patientId, searchText);
     }
 
-    public List<DrugFullDTO> searchPrevDrug(int patientId) {
+    public List<DrugFullDTO> listPrevDrugByPatient(int patientId) {
         return Stream.concat(
                 listRepresentativeNaifukuTonpukuDrugId(patientId).stream(),
                 listRepresentativeGaiyouDrugId(patientId).stream()

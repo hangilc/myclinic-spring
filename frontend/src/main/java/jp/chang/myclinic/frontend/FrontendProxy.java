@@ -34,8 +34,8 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword) {
-        return delegate.searchPatientByKeyword(lastNameKeyword, firstNameKeyword);
+    public CompletableFuture<List<PatientDTO>> searchPatientByKeyword2(String lastNameKeyword, String firstNameKeyword) {
+        return delegate.searchPatientByKeyword2(lastNameKeyword, firstNameKeyword);
     }
 
     @Override
@@ -319,8 +319,8 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(int patientId) {
-        return delegate.searchPrevDrug(patientId);
+    public CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId) {
+        return delegate.listPrevDrugByPatient(patientId);
     }
 
     @Override
