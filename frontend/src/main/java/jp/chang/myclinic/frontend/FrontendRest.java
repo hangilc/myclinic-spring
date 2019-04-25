@@ -54,18 +54,4 @@ public class FrontendRest {
                 .toCompletableFuture();
     }
 
-    public CompletableFuture<Void> testVoid() {
-        return call("void", setter -> {})
-                .post(Entity.entity(null, MediaType.APPLICATION_JSON),
-                        new GenericType<Void>(){})
-                .toCompletableFuture();
-    }
-
-    public CompletableFuture<List<PatientDTO>> testEcho(List<PatientDTO> values){
-        return call("echo", setter -> {})
-                .post(Entity.entity(values, MediaType.APPLICATION_JSON),
-                        new GenericType<List<PatientDTO>>(){})
-                .toCompletableFuture();
-    }
-
 }

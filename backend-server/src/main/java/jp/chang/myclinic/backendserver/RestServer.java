@@ -1309,23 +1309,4 @@ public class RestServer {
         return dbBackend.query(backend -> backend.listPracticeLogSince(afterThisId));
     }
 
-    @Path("now")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public LocalDateTime now(){
-        return LocalDateTime.now();
-    }
-
-    @Path("void")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void doVoid(){}
-
-    @Path("echo")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public List<PatientDTO> echo(List<PatientDTO> value){
-        return value;
-    }
 }
