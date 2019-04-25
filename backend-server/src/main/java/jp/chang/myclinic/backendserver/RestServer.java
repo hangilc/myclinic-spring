@@ -26,12 +26,6 @@ public class RestServer {
     }
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String root() {
-        return "Hello, world";
-    }
-
-    @GET
     @Path("get-patient")
     @Produces(MediaType.APPLICATION_JSON)
     public PatientDTO getPatient(@QueryParam("patient-id") int patientId) {
