@@ -79,25 +79,25 @@ public class RestClient implements Runnable {
         return method;
     }
 
-    private String extractAnnotationValue(AnnotationExpr annotExpr){
-        if( annotExpr == null ){
+    private String extractAnnotationValue(AnnotationExpr annotExpr) {
+        if (annotExpr == null) {
             return null;
         }
         if (annotExpr instanceof SingleMemberAnnotationExpr) {
             SingleMemberAnnotationExpr annot = (SingleMemberAnnotationExpr) annotExpr;
             Expression value = annot.getMemberValue();
-            if( value instanceof StringLiteralExpr ){
+            if (value instanceof StringLiteralExpr) {
                 return ((StringLiteralExpr) value).getValue();
             }
         }
         return null;
     }
 
-    private String extractAnnotationValue(MethodDeclaration method, String name){
+    private String extractAnnotationValue(MethodDeclaration method, String name) {
         return extractAnnotationValue(method.getAnnotationByName(name).orElse(null));
     }
 
-    private String extractAnnotationValue(Parameter parameter, String name){
+    private String extractAnnotationValue(Parameter parameter, String name) {
         return extractAnnotationValue(parameter.getAnnotationByName(name).orElse(null));
     }
 
@@ -106,14 +106,14 @@ public class RestClient implements Runnable {
         Parameter bodyParam;
     }
 
-    private ParamsData createParamsData(Collection<Parameter> parameters){
+    private ParamsData createParamsData(Collection<Parameter> parameters) {
         ParamsData data = new ParamsData();
         List<String> paramNames = new ArrayList<>();
-        for(Parameter p: parameters){
-            if( p.isAnnotationPresent("QueryParam") ){
+        for (Parameter p : parameters) {
+            if (p.isAnnotationPresent("QueryParam")) {
                 data.queryParams.add(p);
             } else {
-                if( data.bodyParam != null ){
+                if (data.bodyParam != null) {
                     System.err.println("Multiple body params: " + parameters);
                     System.exit(1);
                 }
@@ -123,11 +123,11 @@ public class RestClient implements Runnable {
         return data;
     }
 
-    private Expression createSetterLambda(Collection<Parameter> parameters){
+    private Expression createSetterLambda(Collection<Parameter> parameters) {
         List<Expression> assigns = new ArrayList<>();
-        for(Parameter param: parameters){
+        for (Parameter param : parameters) {
             String query = extractAnnotationValue(param, "QueryParam");
-            if( query == null ){
+            if (query == null) {
                 System.err.println("Cannot find @QueryParam: " + parameters);
                 System.exit(1);
                 return null;
@@ -138,7 +138,7 @@ public class RestClient implements Runnable {
                     nodeList(new StringLiteralExpr(query), new NameExpr(param.getNameAsString()))
             ));
         }
-        if( assigns.size() == 1 ){
+        if (assigns.size() == 1) {
             return new LambdaExpr(helper.createSingleLambdaParameter("setter"), assigns.get(0));
         } else {
             BlockStmt block = new BlockStmt(nodeList(
@@ -150,13 +150,13 @@ public class RestClient implements Runnable {
 
     private BlockStmt createGetBody(MethodDeclaration backendMethod) {
         String path = extractAnnotationValue(backendMethod, "Path");
-        if( path == null ){
+        if (path == null) {
             System.err.println("Cannot find @Path annotation: " + backendMethod);
             System.exit(1);
             return null;
         }
         ParamsData paramsData = createParamsData(backendMethod.getParameters());
-        if( paramsData.bodyParam != null ){
+        if (paramsData.bodyParam != null) {
             System.err.println("Body param encountered in GET method: " + backendMethod);
             System.exit(1);
         }
@@ -175,6 +175,30 @@ public class RestClient implements Runnable {
     }
 
     private BlockStmt createPostBody(MethodDeclaration backendMethod) {
-        return new BlockStmt();
+        String path = extractAnnotationValue(backendMethod, "Path");
+        if (path == null) {
+            System.err.println("Cannot find @Path annotation: " + backendMethod);
+            System.exit(1);
+            return null;
+        }
+        ParamsData paramsData = createParamsData(backendMethod.getParameters());
+        Expression setterLambda = createSetterLambda(paramsData.queryParams);
+        Expression call = new MethodCallExpr(null, "call", nodeList(
+                new StringLiteralExpr(path), setterLambda));
+        Type retType = helper.getBoxedType(backendMethod.getType());
+        Expression entity = new MethodCallExpr(new NameExpr("Entity"), "entity",
+                nodeList(paramsData.bodyParam == null ? new NullLiteralExpr() :
+                                new NameExpr(paramsData.bodyParam.getNameAsString()),
+                        new FieldAccessExpr(new NameExpr("MediaType"), "APPLICATION_JSON")));
+        call = new MethodCallExpr(call, "post", nodeList(
+                entity,
+                new ObjectCreationExpr(
+                        null,
+                        helper.createGenericType("GenericType", retType),
+                        nodeList(),
+                        nodeList(),
+                        nodeList())));
+        call = new MethodCallExpr(call, "toCompletableFuture()");
+        return new BlockStmt(nodeList(new ReturnStmt(call)));
     }
 }
