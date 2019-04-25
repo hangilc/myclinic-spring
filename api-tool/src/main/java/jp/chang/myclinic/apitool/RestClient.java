@@ -148,6 +148,15 @@ public class RestClient implements Runnable {
         }
     }
 
+    private Expression createGenericType(Type retType) {
+        return new ObjectCreationExpr(
+                null,
+                helper.createGenericType("GenericType", retType),
+                nodeList(),
+                nodeList(),
+                nodeList());
+    }
+
     private BlockStmt createGetBody(MethodDeclaration backendMethod) {
         String path = extractAnnotationValue(backendMethod, "Path");
         if (path == null) {
@@ -161,16 +170,11 @@ public class RestClient implements Runnable {
             System.exit(1);
         }
         Expression setterLambda = createSetterLambda(paramsData.queryParams);
-        Expression call = new MethodCallExpr(null, "call", nodeList(
-                new StringLiteralExpr(path), setterLambda));
         Type retType = helper.getBoxedType(backendMethod.getType());
-        call = new MethodCallExpr(call, "get", nodeList(new ObjectCreationExpr(
-                null,
-                helper.createGenericType("GenericType", retType),
-                nodeList(),
-                nodeList(),
-                nodeList())));
-        call = new MethodCallExpr(call, "toCompletableFuture()");
+        Expression call = new MethodCallExpr(null, "get", nodeList(
+                new StringLiteralExpr(path),
+                setterLambda,
+                createGenericType(retType)));
         return new BlockStmt(nodeList(new ReturnStmt(call)));
     }
 
@@ -183,22 +187,16 @@ public class RestClient implements Runnable {
         }
         ParamsData paramsData = createParamsData(backendMethod.getParameters());
         Expression setterLambda = createSetterLambda(paramsData.queryParams);
-        Expression call = new MethodCallExpr(null, "call", nodeList(
-                new StringLiteralExpr(path), setterLambda));
-        Type retType = helper.getBoxedType(backendMethod.getType());
         Expression entity = new MethodCallExpr(new NameExpr("Entity"), "entity",
                 nodeList(paramsData.bodyParam == null ? new NullLiteralExpr() :
                                 new NameExpr(paramsData.bodyParam.getNameAsString()),
                         new FieldAccessExpr(new NameExpr("MediaType"), "APPLICATION_JSON")));
-        call = new MethodCallExpr(call, "post", nodeList(
+        Type retType = helper.getBoxedType(backendMethod.getType());
+        Expression call = new MethodCallExpr(null, "post", nodeList(
+                new StringLiteralExpr(path),
+                setterLambda,
                 entity,
-                new ObjectCreationExpr(
-                        null,
-                        helper.createGenericType("GenericType", retType),
-                        nodeList(),
-                        nodeList(),
-                        nodeList())));
-        call = new MethodCallExpr(call, "toCompletableFuture()");
+                createGenericType(retType)));
         return new BlockStmt(nodeList(new ReturnStmt(call)));
     }
 }

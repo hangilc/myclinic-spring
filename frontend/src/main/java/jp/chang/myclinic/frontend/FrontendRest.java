@@ -48,10 +48,23 @@ public class FrontendRest {
                 .rx();
     }
 
-    public CompletableFuture<PatientDTO> getPatient(int patientId) {
-        return call("get-patient", setter -> setter.set("patient-id", patientId))
-                .get(new GenericType<PatientDTO>(){})
+    private <T> CompletableFuture<T> get(String path, Consumer<ParamSetter> paramSetter,
+                                         GenericType<T> returnType){
+        return call(path, paramSetter)
+                .get(returnType)
                 .toCompletableFuture();
+    }
+
+    private <T> CompletableFuture<T> post(String path, Consumer<ParamSetter> paramSetter,
+                                          Object body, GenericType<T> returnType){
+        return call(path, paramSetter)
+                .post(Entity.entity(body, MediaType.APPLICATION_JSON), returnType)
+                .toCompletableFuture();
+    }
+
+    public CompletableFuture<PatientDTO> getPatient(int patientId) {
+        return get("get-patient", setter -> setter.set("patient-id", patientId),
+                new GenericType<PatientDTO>(){});
     }
 
 }
