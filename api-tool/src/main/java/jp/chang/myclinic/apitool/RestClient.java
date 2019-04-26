@@ -154,11 +154,11 @@ public class RestClient implements Runnable {
         }
     }
 
-    private Expression createGenericType() {
+    private Expression createGenericType(Type retType) {
 
         return new ObjectCreationExpr(
                 null,
-                new ClassOrInterfaceType(null, new SimpleName("GenericType"), nodeList()),
+                new ClassOrInterfaceType(null, new SimpleName("GenericType"), nodeList(retType)),
                 nodeList(),
                 nodeList(),
                 nodeList());
@@ -181,7 +181,7 @@ public class RestClient implements Runnable {
         Expression call = new MethodCallExpr(null, "get", nodeList(
                 new StringLiteralExpr(path),
                 setterLambda,
-                createGenericType()));
+                createGenericType(retType)));
         return new BlockStmt(nodeList(new ReturnStmt(call)));
     }
 
@@ -203,7 +203,7 @@ public class RestClient implements Runnable {
                 new StringLiteralExpr(path),
                 setterLambda,
                 entity,
-                createGenericType()));
+                createGenericType(retType)));
         return new BlockStmt(nodeList(new ReturnStmt(call)));
     }
 }
