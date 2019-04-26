@@ -51,7 +51,13 @@ public class RestClient implements Runnable {
             List<MethodDeclaration> unimplementedMethods = helper.listUnimplementedMethods(serverDecl, clientDecl);
             for (MethodDeclaration backendMethod : unimplementedMethods) {
                 MethodDeclaration clientMethod = createClientMethod(backendMethod);
-                System.out.println(clientMethod);
+                clientDecl.addMember(clientMethod);
+                if( !save ) {
+                    System.out.println(clientMethod);
+                }
+            }
+            if( save ){
+                helper.saveToFile(clientSource, helper.formatSource(clientUnit.toString()), true);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

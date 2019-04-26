@@ -9,6 +9,8 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnknownType;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import jp.chang.myclinic.apitool.MysqlConnectionProvider;
 import jp.chang.myclinic.apitool.PgsqlConnectionProvider;
 import jp.chang.myclinic.apitool.SqliteConnectionProvider;
@@ -96,6 +98,15 @@ public class Helper {
         }
     }
 
+    public String formatSource(String source){
+        Formatter formatter = new Formatter();
+        try {
+            return formatter.formatSource(source);
+        } catch (FormatterException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     public ClassOrInterfaceType createGenericType(String name, String paramType) {
         return new ClassOrInterfaceType(null, new SimpleName(name),
