@@ -75,7 +75,7 @@ public class FrontendRest {
     return get(
         "get-patient",
         setter -> setter.set("patient-id", patientId),
-        new GenericType<>() {});
+        new GenericType<PatientDTO>() {});
   }
 
   public CompletableFuture<Integer> enterPatient(PatientDTO patient) {
