@@ -5,13 +5,13 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import javax.ws.rs.client.*;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.CompletionStageRxInvoker;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,13 +21,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+@SuppressWarnings("unused")
 public class FrontendRest {
 
   static ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-  static ObjectMapper mapper = new ObjectMapper();
+  static private ObjectMapper mapper = new ObjectMapper();
 
-  static ClientConfig clientConfig = new ClientConfig();
+  static private ClientConfig clientConfig = new ClientConfig();
 
   static {
     clientConfig.executorService(executorService);
@@ -40,18 +41,22 @@ public class FrontendRest {
     void set(String name, Object value);
   }
 
+  private String serverUrl;
+
+  @SuppressWarnings("WeakerAccess")
+  public FrontendRest(String serverUrl) {
+    this.serverUrl = serverUrl;
+  }
+
   private CompletionStageRxInvoker call(String path, Consumer<ParamSetter> paramSetter) {
     class Local {
 
       private WebTarget target;
     }
     Local local = new Local();
-    local.target =
-        ClientBuilder.newClient(clientConfig).target("http://localhost:38080/api").path(path);
+    local.target = ClientBuilder.newClient(clientConfig).target(serverUrl).path(path);
     paramSetter.accept(
-        (name, value) -> {
-          local.target = local.target.queryParam(name, value);
-        });
+        (name, value) -> local.target = local.target.queryParam(name, value));
     return local.target.request(MediaType.APPLICATION_JSON).rx();
   }
 
@@ -69,9 +74,7 @@ public class FrontendRest {
 
   public CompletableFuture<PatientDTO> getPatient(int patientId) {
     return get(
-        "get-patient",
-        setter -> setter.set("patient-id", patientId),
-        new GenericType<PatientDTO>() {});
+        "get-patient", setter -> setter.set("patient-id", patientId), new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterPatient(PatientDTO patient) {
@@ -79,7 +82,7 @@ public class FrontendRest {
         "enter-patient",
         setter -> {},
         Entity.entity(patient, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> updatePatient(PatientDTO patient) {
@@ -87,7 +90,7 @@ public class FrontendRest {
         "update-patient",
         setter -> {},
         Entity.entity(patient, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<PatientDTO>> searchPatientByKeyword2(
@@ -98,21 +101,18 @@ public class FrontendRest {
           setter.set("last-name-keyword", lastNameKeyword);
           setter.set("first-name-keyword", firstNameKeyword);
         },
-        new GenericType<List<PatientDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String keyword) {
     return get(
         "search-patient-by-keyword",
         setter -> setter.set("keyword", keyword),
-        new GenericType<List<PatientDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<PatientDTO>> searchPatient(String text) {
-    return get(
-        "search-patient",
-        setter -> setter.set("text", text),
-        new GenericType<List<PatientDTO>>() {});
+    return get("search-patient", setter -> setter.set("text", text), new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(
@@ -123,7 +123,7 @@ public class FrontendRest {
           setter.set("patient-id", patientId);
           setter.set("at", at);
         },
-        new GenericType<List<ShahokokuhoDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(
@@ -134,7 +134,7 @@ public class FrontendRest {
           setter.set("patient-id", patientId);
           setter.set("at", at);
         },
-        new GenericType<List<KoukikoureiDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at) {
@@ -144,7 +144,7 @@ public class FrontendRest {
           setter.set("patient-id", patientId);
           setter.set("at", at);
         },
-        new GenericType<List<RoujinDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at) {
@@ -154,7 +154,7 @@ public class FrontendRest {
           setter.set("patient-id", patientId);
           setter.set("at", at);
         },
-        new GenericType<List<KouhiDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at) {
@@ -164,7 +164,7 @@ public class FrontendRest {
           setter.set("patient-id", patientId);
           setter.set("at", at);
         },
-        new GenericType<VisitDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> startExam(int visitId) {
@@ -172,7 +172,7 @@ public class FrontendRest {
         "start-exam",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> suspendExam(int visitId) {
@@ -180,7 +180,7 @@ public class FrontendRest {
         "suspend-exam",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> endExam(int visitId, int charge) {
@@ -191,7 +191,7 @@ public class FrontendRest {
           setter.set("charge", charge);
         },
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> enterCharge(ChargeDTO charge) {
@@ -199,7 +199,7 @@ public class FrontendRest {
         "enter-charge",
         setter -> {},
         Entity.entity(charge, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> setChargeOfVisit(int visitId, int charge) {
@@ -210,24 +210,19 @@ public class FrontendRest {
           setter.set("charge", charge);
         },
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ChargeDTO> getCharge(int visitId) {
-    return get(
-        "get-charge", setter -> setter.set("visit-id", visitId), new GenericType<ChargeDTO>() {});
+    return get("get-charge", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<PaymentDTO>> listPayment(int visitId) {
-    return get(
-        "list-payment",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<List<PaymentDTO>>() {});
+    return get("list-payment", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<WqueueDTO> getWqueue(int visitId) {
-    return get(
-        "get-wqueue", setter -> setter.set("visit-id", visitId), new GenericType<WqueueDTO>() {});
+    return get("get-wqueue", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteWqueue(int visitId) {
@@ -235,25 +230,23 @@ public class FrontendRest {
         "delete-wqueue",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<WqueueDTO>> listWqueue() {
-    return get("list-wqueue", setter -> {}, new GenericType<List<WqueueDTO>>() {});
+    return get("list-wqueue", setter -> {}, new GenericType<>() {});
   }
 
   public CompletableFuture<List<WqueueFullDTO>> listWqueueFull() {
-    return get("list-wqueue-full", setter -> {}, new GenericType<List<WqueueFullDTO>>() {});
+    return get("list-wqueue-full", setter -> {}, new GenericType<>() {});
   }
 
   public CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam() {
-    return get(
-        "list-wqueue-full-for-exam", setter -> {}, new GenericType<List<WqueueFullDTO>>() {});
+    return get("list-wqueue-full-for-exam", setter -> {}, new GenericType<>() {});
   }
 
   public CompletableFuture<HokenDTO> getHoken(int visitId) {
-    return get(
-        "get-hoken", setter -> setter.set("visit-id", visitId), new GenericType<HokenDTO>() {});
+    return get("get-hoken", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
@@ -263,7 +256,7 @@ public class FrontendRest {
           setter.set("patient-id", patientId);
           setter.set("visited-at", visitedAt);
         },
-        new GenericType<HokenDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> updateHoken(VisitDTO visit) {
@@ -271,18 +264,16 @@ public class FrontendRest {
         "update-hoken",
         setter -> {},
         Entity.entity(visit, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<DrugDTO> getDrug(int drugId) {
-    return get("get-drug", setter -> setter.set("drug-id", drugId), new GenericType<DrugDTO>() {});
+    return get("get-drug", setter -> setter.set("drug-id", drugId), new GenericType<>() {});
   }
 
   public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
     return get(
-        "get-drug-with-attr",
-        setter -> setter.set("drug-id", drugId),
-        new GenericType<DrugWithAttrDTO>() {});
+        "get-drug-with-attr", setter -> setter.set("drug-id", drugId), new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterDrug(DrugDTO drug) {
@@ -290,7 +281,7 @@ public class FrontendRest {
         "enter-drug",
         setter -> {},
         Entity.entity(drug, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> updateDrug(DrugDTO drug) {
@@ -298,7 +289,7 @@ public class FrontendRest {
         "update-drug",
         setter -> {},
         Entity.entity(drug, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> batchUpdateDrugDays(List<Integer> drugIds, int days) {
@@ -306,7 +297,7 @@ public class FrontendRest {
         "batch-update-drug-days",
         setter -> setter.set("days", days),
         Entity.entity(drugIds, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteDrug(int drugId) {
@@ -314,7 +305,7 @@ public class FrontendRest {
         "delete-drug",
         setter -> setter.set("drug-id", drugId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteDrugCascading(int drugId) {
@@ -322,7 +313,7 @@ public class FrontendRest {
         "delete-drug-cascading",
         setter -> setter.set("drug-id", drugId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
@@ -330,35 +321,25 @@ public class FrontendRest {
         "batch-delete-drugs",
         setter -> {},
         Entity.entity(drugIds, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<DrugFullDTO> getDrugFull(int drugId) {
-    return get(
-        "get-drug-full",
-        setter -> setter.set("drug-id", drugId),
-        new GenericType<DrugFullDTO>() {});
+    return get("get-drug-full", setter -> setter.set("drug-id", drugId), new GenericType<>() {});
   }
 
   public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
     return get(
-        "get-drug-full-with-attr",
-        setter -> setter.set("drug-id", drugId),
-        new GenericType<DrugFullWithAttrDTO>() {});
+        "get-drug-full-with-attr", setter -> setter.set("drug-id", drugId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<DrugWithAttrDTO>> listDrugWithAttr(int visitId) {
     return get(
-        "list-drug-with-attr",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<List<DrugWithAttrDTO>>() {});
+        "list-drug-with-attr", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId) {
-    return get(
-        "list-drug-full",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<List<DrugFullDTO>>() {});
+    return get("list-drug-full", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<Integer>> listRepresentativeGaiyouDrugId(
@@ -369,14 +350,14 @@ public class FrontendRest {
           setter.set("text", text);
           setter.set("patient-id", patientId);
         },
-        new GenericType<List<Integer>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId) {
     return get(
         "list-prev-drug-by-patient",
         setter -> setter.set("patient-id", patientId),
-        new GenericType<List<DrugFullDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(String text, int patientId) {
@@ -386,14 +367,14 @@ public class FrontendRest {
           setter.set("text", text);
           setter.set("patient-id", patientId);
         },
-        new GenericType<List<DrugFullDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> countUnprescribedDrug(int visitId) {
     return get(
         "count-unprescribed-drug",
         setter -> setter.set("visit-id", visitId),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> markDrugsAsPrescribed(int visitId) {
@@ -401,14 +382,11 @@ public class FrontendRest {
         "mark-drugs-as-prescribed",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId) {
-    return get(
-        "get-drug-attr",
-        setter -> setter.set("drug-id", drugId),
-        new GenericType<DrugAttrDTO>() {});
+    return get("get-drug-attr", setter -> setter.set("drug-id", drugId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr) {
@@ -416,7 +394,7 @@ public class FrontendRest {
         "enter-drug-attr",
         setter -> {},
         Entity.entity(drugAttr, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
@@ -424,7 +402,7 @@ public class FrontendRest {
         "update-drug-attr",
         setter -> {},
         Entity.entity(drugAttr, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteDrugAttr(int drugId) {
@@ -432,7 +410,7 @@ public class FrontendRest {
         "delete-drug-attr",
         setter -> setter.set("drug-id", drugId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
@@ -440,7 +418,7 @@ public class FrontendRest {
         "batch-get-drug-attr",
         setter -> {},
         Entity.entity(drugIds, MediaType.APPLICATION_JSON),
-        new GenericType<List<DrugAttrDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou) {
@@ -450,7 +428,7 @@ public class FrontendRest {
           setter.set("drug-id", drugId);
           setter.set("tekiyou", tekiyou);
         },
-        new GenericType<DrugAttrDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteDrugTekiyou(int drugId) {
@@ -458,12 +436,11 @@ public class FrontendRest {
         "delete-drug-tekiyou",
         setter -> setter.set("drug-id", drugId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<VisitDTO> getVisit(int visitId) {
-    return get(
-        "get-visit", setter -> setter.set("visit-id", visitId), new GenericType<VisitDTO>() {});
+    return get("get-visit", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteVisitSafely(int visitId) {
@@ -471,7 +448,7 @@ public class FrontendRest {
         "delete-visit-safely",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<VisitPatientDTO>> listRecentVisitWithPatient(
@@ -482,11 +459,11 @@ public class FrontendRest {
           setter.set("page", page);
           setter.set("items-per-page", itemsPerPage);
         },
-        new GenericType<List<VisitPatientDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<VisitPatientDTO>> listTodaysVisit() {
-    return get("list-todays-visit", setter -> {}, new GenericType<List<VisitPatientDTO>>() {});
+    return get("list-todays-visit", setter -> {}, new GenericType<>() {});
   }
 
   public CompletableFuture<VisitFull2PageDTO> listVisitFull2(int patientId, int page) {
@@ -496,21 +473,16 @@ public class FrontendRest {
           setter.set("patient-id", patientId);
           setter.set("page", page);
         },
-        new GenericType<VisitFull2PageDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<VisitFullDTO> getVisitFull(int visitId) {
-    return get(
-        "get-visit-full",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<VisitFullDTO>() {});
+    return get("get-visit-full", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<VisitFull2DTO> getVisitFull2(int visitId) {
     return get(
-        "get-visit-full2",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<VisitFull2DTO>() {});
+        "get-visit-full2", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds) {
@@ -518,7 +490,7 @@ public class FrontendRest {
         "batch-get-shouki",
         setter -> {},
         Entity.entity(visitIds, MediaType.APPLICATION_JSON),
-        new GenericType<List<ShoukiDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> updateShouki(ShoukiDTO shouki) {
@@ -526,7 +498,7 @@ public class FrontendRest {
         "update-shouki",
         setter -> {},
         Entity.entity(shouki, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteShouki(int visitId) {
@@ -534,7 +506,7 @@ public class FrontendRest {
         "delete-shouki",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterText(TextDTO text) {
@@ -542,11 +514,11 @@ public class FrontendRest {
         "enter-text",
         setter -> {},
         Entity.entity(text, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<TextDTO> getText(int textId) {
-    return get("get-text", setter -> setter.set("text-id", textId), new GenericType<TextDTO>() {});
+    return get("get-text", setter -> setter.set("text-id", textId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> updateText(TextDTO text) {
@@ -554,7 +526,7 @@ public class FrontendRest {
         "update-text",
         setter -> {},
         Entity.entity(text, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteText(int textId) {
@@ -562,14 +534,11 @@ public class FrontendRest {
         "delete-text",
         setter -> setter.set("text-id", textId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<TextDTO>> listText(int visitId) {
-    return get(
-        "list-text",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<List<TextDTO>>() {});
+    return get("list-text", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<TextVisitPageDTO> searchText(int patientId, String text, int page) {
@@ -580,7 +549,7 @@ public class FrontendRest {
           setter.set("text", text);
           setter.set("page", page);
         },
-        new GenericType<TextVisitPageDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(String text, int page) {
@@ -590,21 +559,19 @@ public class FrontendRest {
           setter.set("text", text);
           setter.set("page", page);
         },
-        new GenericType<TextVisitPatientPageDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouDTO> getShinryou(int shinryouId) {
     return get(
-        "get-shinryou",
-        setter -> setter.set("shinryou-id", shinryouId),
-        new GenericType<ShinryouDTO>() {});
+        "get-shinryou", setter -> setter.set("shinryou-id", shinryouId), new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
     return get(
         "get-shinryou-with-attr",
         setter -> setter.set("shinryou-id", shinryouId),
-        new GenericType<ShinryouWithAttrDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou) {
@@ -612,7 +579,7 @@ public class FrontendRest {
         "enter-shinryou",
         setter -> {},
         Entity.entity(shinryou, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name) {
@@ -623,7 +590,7 @@ public class FrontendRest {
           setter.set("name", name);
         },
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<ShinryouDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteShinryou(int shinryouId) {
@@ -631,7 +598,7 @@ public class FrontendRest {
         "delete-shinryou",
         setter -> setter.set("shinryou-id", shinryouId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
@@ -639,7 +606,7 @@ public class FrontendRest {
         "delete-shinryou-cascading",
         setter -> setter.set("shinryou-id", shinryouId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
@@ -647,21 +614,21 @@ public class FrontendRest {
         "batch-delete-shinryou-cascading",
         setter -> {},
         Entity.entity(shinryouIds, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouFullDTO> getShinryouFull(int shinryouId) {
     return get(
         "get-shinryou-full",
         setter -> setter.set("shinryou-id", shinryouId),
-        new GenericType<ShinryouFullDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
     return get(
         "get-shinryou-full-with-attr",
         setter -> setter.set("shinryou-id", shinryouId),
-        new GenericType<ShinryouFullWithAttrDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
@@ -669,7 +636,7 @@ public class FrontendRest {
         "batch-enter-shinryou",
         setter -> {},
         Entity.entity(shinryouList, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(List<Integer> shinryouIds) {
@@ -677,7 +644,7 @@ public class FrontendRest {
         "list-shinryou-full-by-ids",
         setter -> {},
         Entity.entity(shinryouIds, MediaType.APPLICATION_JSON),
-        new GenericType<List<ShinryouFullDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(
@@ -686,35 +653,30 @@ public class FrontendRest {
         "list-shinryou-full-with-attr-by-ids",
         setter -> {},
         Entity.entity(shinryouIds, MediaType.APPLICATION_JSON),
-        new GenericType<List<ShinryouFullWithAttrDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
-    return get(
-        "list-shinryou",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<List<ShinryouDTO>>() {});
+    return get("list-shinryou", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
     return get(
         "list-shinryou-with-attr",
         setter -> setter.set("visit-id", visitId),
-        new GenericType<List<ShinryouWithAttrDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShinryouFullDTO>> listShinryouFull(int visitId) {
     return get(
-        "list-shinryou-full",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<List<ShinryouFullDTO>>() {});
+        "list-shinryou-full", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
     return get(
         "list-shinryou-full-with-attr",
         setter -> setter.set("visit-id", visitId),
-        new GenericType<List<ShinryouFullWithAttrDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId) {
@@ -722,7 +684,7 @@ public class FrontendRest {
         "delete-duplicate-shinryou",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<List<Integer>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(List<Integer> shinryouIds) {
@@ -730,14 +692,14 @@ public class FrontendRest {
         "batch-get-shinryou-attr",
         setter -> {},
         Entity.entity(shinryouIds, MediaType.APPLICATION_JSON),
-        new GenericType<List<ShinryouAttrDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouAttrDTO> getShinryouAttr(int shinryouId) {
     return get(
         "get-shinryou-attr",
         setter -> setter.set("shinryou-id", shinryouId),
-        new GenericType<ShinryouAttrDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> enterShinryouAttr(ShinryouAttrDTO shinryouAttr) {
@@ -745,7 +707,7 @@ public class FrontendRest {
         "enter-shinryou-attr",
         setter -> {},
         Entity.entity(shinryouAttr, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
@@ -753,7 +715,7 @@ public class FrontendRest {
         "set-shinryou-attr",
         setter -> setter.set("shinryou-id", shinryouId),
         Entity.entity(attr, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterConduct(ConductDTO conduct) {
@@ -761,7 +723,7 @@ public class FrontendRest {
         "enter-conduct",
         setter -> {},
         Entity.entity(conduct, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req) {
@@ -769,14 +731,12 @@ public class FrontendRest {
         "enter-conduct-full",
         setter -> {},
         Entity.entity(req, MediaType.APPLICATION_JSON),
-        new GenericType<ConductFullDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ConductDTO> getConduct(int conductId) {
     return get(
-        "get-conduct",
-        setter -> setter.set("conduct-id", conductId),
-        new GenericType<ConductDTO>() {});
+        "get-conduct", setter -> setter.set("conduct-id", conductId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteConductCascading(int conductId) {
@@ -784,7 +744,7 @@ public class FrontendRest {
         "delete-conduct-cascading",
         setter -> setter.set("conduct-id", conductId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> modifyConductKind(int conductId, int conductKind) {
@@ -795,14 +755,11 @@ public class FrontendRest {
           setter.set("conduct-kind", conductKind);
         },
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ConductDTO>> listConduct(int visitId) {
-    return get(
-        "list-conduct",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<List<ConductDTO>>() {});
+    return get("list-conduct", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<ConductFullDTO>> listConductFullByIds(List<Integer> conductIds) {
@@ -810,21 +767,17 @@ public class FrontendRest {
         "list-conduct-full-by-ids",
         setter -> {},
         Entity.entity(conductIds, MediaType.APPLICATION_JSON),
-        new GenericType<List<ConductFullDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ConductFullDTO> getConductFull(int conductId) {
     return get(
-        "get-conduct-full",
-        setter -> setter.set("conduct-id", conductId),
-        new GenericType<ConductFullDTO>() {});
+        "get-conduct-full", setter -> setter.set("conduct-id", conductId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<ConductFullDTO>> listConductFull(int visitId) {
     return get(
-        "list-conduct-full",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<List<ConductFullDTO>>() {});
+        "list-conduct-full", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> enterGazouLabel(GazouLabelDTO gazouLabel) {
@@ -832,14 +785,12 @@ public class FrontendRest {
         "enter-gazou-label",
         setter -> {},
         Entity.entity(gazouLabel, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<GazouLabelDTO> getGazouLabel(int conductId) {
     return get(
-        "get-gazou-label",
-        setter -> setter.set("conduct-id", conductId),
-        new GenericType<GazouLabelDTO>() {});
+        "get-gazou-label", setter -> setter.set("conduct-id", conductId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteGazouLabel(int conductId) {
@@ -847,7 +798,7 @@ public class FrontendRest {
         "delete-gazou-label",
         setter -> setter.set("conduct-id", conductId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
@@ -855,7 +806,7 @@ public class FrontendRest {
         "update-gazou-label",
         setter -> {},
         Entity.entity(gazouLabel, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> modifyGazouLabel(int conductId, String label) {
@@ -866,7 +817,7 @@ public class FrontendRest {
           setter.set("label", label);
         },
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterConductShinryou(ConductShinryouDTO shinryou) {
@@ -874,14 +825,14 @@ public class FrontendRest {
         "enter-conduct-shinryou",
         setter -> {},
         Entity.entity(shinryou, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ConductShinryouDTO> getConductShinryou(int conductShinryouId) {
     return get(
         "get-conduct-shinryou",
         setter -> setter.set("conduct-shinryou-id", conductShinryouId),
-        new GenericType<ConductShinryouDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteConductShinryou(int conductShinryouId) {
@@ -889,28 +840,28 @@ public class FrontendRest {
         "delete-conduct-shinryou",
         setter -> setter.set("conduct-shinryou-id", conductShinryouId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ConductShinryouDTO>> listConductShinryou(int conductId) {
     return get(
         "list-conduct-shinryou",
         setter -> setter.set("conduct-id", conductId),
-        new GenericType<List<ConductShinryouDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ConductShinryouFullDTO> getConductShinryouFull(int conductShinryouId) {
     return get(
         "get-conduct-shinryou-full",
         setter -> setter.set("conduct-shinryou-id", conductShinryouId),
-        new GenericType<ConductShinryouFullDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ConductShinryouFullDTO>> listConductShinryouFull(int conductId) {
     return get(
         "list-conduct-shinryou-full",
         setter -> setter.set("conduct-id", conductId),
-        new GenericType<List<ConductShinryouFullDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterConductDrug(ConductDrugDTO drug) {
@@ -918,14 +869,14 @@ public class FrontendRest {
         "enter-conduct-drug",
         setter -> {},
         Entity.entity(drug, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ConductDrugDTO> getConductDrug(int conductDrugId) {
     return get(
         "get-conduct-drug",
         setter -> setter.set("conduct-drug-id", conductDrugId),
-        new GenericType<ConductDrugDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteConductDrug(int conductDrugId) {
@@ -933,28 +884,26 @@ public class FrontendRest {
         "delete-conduct-drug",
         setter -> setter.set("conduct-drug-id", conductDrugId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ConductDrugDTO>> listConductDrug(int conductId) {
     return get(
-        "list-conduct-drug",
-        setter -> setter.set("conduct-id", conductId),
-        new GenericType<List<ConductDrugDTO>>() {});
+        "list-conduct-drug", setter -> setter.set("conduct-id", conductId), new GenericType<>() {});
   }
 
   public CompletableFuture<ConductDrugFullDTO> getConductDrugFull(int conductDrugId) {
     return get(
         "get-conduct-drug-full",
         setter -> setter.set("conduct-drug-id", conductDrugId),
-        new GenericType<ConductDrugFullDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ConductDrugFullDTO>> listConductDrugFull(int conductId) {
     return get(
         "list-conduct-drug-full",
         setter -> setter.set("conduct-id", conductId),
-        new GenericType<List<ConductDrugFullDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterConductKizai(ConductKizaiDTO kizai) {
@@ -962,14 +911,14 @@ public class FrontendRest {
         "enter-conduct-kizai",
         setter -> {},
         Entity.entity(kizai, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ConductKizaiDTO> getConductKizai(int conductKizaiId) {
     return get(
         "get-conduct-kizai",
         setter -> setter.set("conduct-kizai-id", conductKizaiId),
-        new GenericType<ConductKizaiDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteConductKizai(int conductKizaiId) {
@@ -977,28 +926,28 @@ public class FrontendRest {
         "delete-conduct-kizai",
         setter -> setter.set("conduct-kizai-id", conductKizaiId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ConductKizaiDTO>> listConductKizai(int conductId) {
     return get(
         "list-conduct-kizai",
         setter -> setter.set("conduct-id", conductId),
-        new GenericType<List<ConductKizaiDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ConductKizaiFullDTO> getConductKizaiFull(int conductKizaiId) {
     return get(
         "get-conduct-kizai-full",
         setter -> setter.set("conduct-kizai-id", conductKizaiId),
-        new GenericType<ConductKizaiFullDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ConductKizaiFullDTO>> listConductKizaiFull(int conductId) {
     return get(
         "list-conduct-kizai-full",
         setter -> setter.set("conduct-id", conductId),
-        new GenericType<List<ConductKizaiFullDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
@@ -1006,14 +955,14 @@ public class FrontendRest {
         "finish-cashier",
         setter -> {},
         Entity.entity(payment, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShahokokuhoDTO> getShahokokuho(int shahokokuhoId) {
     return get(
         "get-shahokokuho",
         setter -> setter.set("shahokokuho-id", shahokokuhoId),
-        new GenericType<ShahokokuhoDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
@@ -1021,24 +970,22 @@ public class FrontendRest {
         "enter-shahokokuho",
         setter -> {},
         Entity.entity(shahokokuho, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<KoukikoureiDTO> getKoukikourei(int koukikoureiId) {
     return get(
         "get-koukikourei",
         setter -> setter.set("koukikourei-id", koukikoureiId),
-        new GenericType<KoukikoureiDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<RoujinDTO> getRoujin(int roujinId) {
-    return get(
-        "get-roujin", setter -> setter.set("roujin-id", roujinId), new GenericType<RoujinDTO>() {});
+    return get("get-roujin", setter -> setter.set("roujin-id", roujinId), new GenericType<>() {});
   }
 
   public CompletableFuture<KouhiDTO> getKouhi(int kouhiId) {
-    return get(
-        "get-kouhi", setter -> setter.set("kouhi-id", kouhiId), new GenericType<KouhiDTO>() {});
+    return get("get-kouhi", setter -> setter.set("kouhi-id", kouhiId), new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterDisease(DiseaseDTO disease) {
@@ -1046,7 +993,7 @@ public class FrontendRest {
         "enter-disease",
         setter -> {},
         Entity.entity(disease, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> enterNewDisease(DiseaseNewDTO disease) {
@@ -1054,14 +1001,12 @@ public class FrontendRest {
         "enter-new-disease",
         setter -> {},
         Entity.entity(disease, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<DiseaseDTO> getDisease(int diseaseId) {
     return get(
-        "get-disease",
-        setter -> setter.set("disease-id", diseaseId),
-        new GenericType<DiseaseDTO>() {});
+        "get-disease", setter -> setter.set("disease-id", diseaseId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> updateDisease(DiseaseDTO disease) {
@@ -1069,7 +1014,7 @@ public class FrontendRest {
         "update-disease",
         setter -> {},
         Entity.entity(disease, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deleteDisease(int diseaseId) {
@@ -1077,28 +1022,24 @@ public class FrontendRest {
         "delete-disease",
         setter -> setter.set("disease-id", diseaseId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<DiseaseFullDTO> getDiseaseFull(int diseaseId) {
     return get(
-        "get-disease-full",
-        setter -> setter.set("disease-id", diseaseId),
-        new GenericType<DiseaseFullDTO>() {});
+        "get-disease-full", setter -> setter.set("disease-id", diseaseId), new GenericType<>() {});
   }
 
   public CompletableFuture<List<DiseaseFullDTO>> listCurrentDiseaseFull(int patientId) {
     return get(
         "list-current-disease-full",
         setter -> setter.set("patient-id", patientId),
-        new GenericType<List<DiseaseFullDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<DiseaseFullDTO>> listDiseaseFull(int patientId) {
     return get(
-        "list-disease-full",
-        setter -> setter.set("patient-id", patientId),
-        new GenericType<List<DiseaseFullDTO>>() {});
+        "list-disease-full", setter -> setter.set("patient-id", patientId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> batchUpdateDiseaseEndReason(
@@ -1107,7 +1048,7 @@ public class FrontendRest {
         "batch-update-disease-end-reason",
         setter -> {},
         Entity.entity(modifications, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
@@ -1115,14 +1056,12 @@ public class FrontendRest {
         "modify-disease",
         setter -> {},
         Entity.entity(diseaseModifyDTO, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<PharmaQueueDTO> getPharmaQueue(int visitId) {
     return get(
-        "get-pharma-queue",
-        setter -> setter.set("visit-id", visitId),
-        new GenericType<PharmaQueueDTO>() {});
+        "get-pharma-queue", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deletePharmaQueue(int visitId) {
@@ -1130,7 +1069,7 @@ public class FrontendRest {
         "delete-pharma-queue",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouMasterDTO> findShinryouMasterByName(String name, LocalDate at) {
@@ -1140,7 +1079,7 @@ public class FrontendRest {
           setter.set("name", name);
           setter.set("at", at);
         },
-        new GenericType<ShinryouMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByName(
@@ -1149,7 +1088,7 @@ public class FrontendRest {
         "resolve-shinryou-master-by-name",
         setter -> setter.set("at", at),
         Entity.entity(nameCandidates, MediaType.APPLICATION_JSON),
-        new GenericType<ShinryouMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
@@ -1159,7 +1098,7 @@ public class FrontendRest {
           setter.set("key", key);
           setter.set("at", at);
         },
-        new GenericType<ShinryouMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Map<String, Integer>> batchResolveShinryouNames(
@@ -1168,7 +1107,7 @@ public class FrontendRest {
         "batch-resolve-shinryou-names",
         setter -> setter.set("at", at),
         Entity.entity(args, MediaType.APPLICATION_JSON),
-        new GenericType<Map<String, Integer>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(
@@ -1179,7 +1118,7 @@ public class FrontendRest {
           setter.set("text", text);
           setter.set("at", at);
         },
-        new GenericType<List<ShinryouMasterDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at) {
@@ -1189,7 +1128,7 @@ public class FrontendRest {
           setter.set("shinryoucode", shinryoucode);
           setter.set("at", at);
         },
-        new GenericType<ShinryouMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
@@ -1199,7 +1138,7 @@ public class FrontendRest {
           setter.set("iyakuhincode", iyakuhincode);
           setter.set("at", at);
         },
-        new GenericType<IyakuhinMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(
@@ -1210,7 +1149,7 @@ public class FrontendRest {
           setter.set("text", text);
           setter.set("at", at);
         },
-        new GenericType<List<IyakuhinMasterDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
@@ -1220,7 +1159,7 @@ public class FrontendRest {
           setter.set("kizaicode", kizaicode);
           setter.set("at", at);
         },
-        new GenericType<KizaiMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at) {
@@ -1230,7 +1169,7 @@ public class FrontendRest {
           setter.set("name", name);
           setter.set("at", at);
         },
-        new GenericType<KizaiMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByName(
@@ -1239,7 +1178,7 @@ public class FrontendRest {
         "resolve-kizai-master-by-name",
         setter -> setter.set("at", at),
         Entity.entity(nameCandidates, MediaType.APPLICATION_JSON),
-        new GenericType<KizaiMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
@@ -1249,7 +1188,7 @@ public class FrontendRest {
           setter.set("key", key);
           setter.set("at", at);
         },
-        new GenericType<KizaiMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Map<String, Integer>> batchResolveKizaiNames(
@@ -1258,7 +1197,7 @@ public class FrontendRest {
         "batch-resolve-kizai-names",
         setter -> setter.set("at", at),
         Entity.entity(args, MediaType.APPLICATION_JSON),
-        new GenericType<Map<String, Integer>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<KizaiMasterDTO>> searchKizaiMaster(String text, LocalDate at) {
@@ -1268,7 +1207,7 @@ public class FrontendRest {
           setter.set("text", text);
           setter.set("at", at);
         },
-        new GenericType<List<KizaiMasterDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ByoumeiMasterDTO>> searchByoumeiMaster(String text, LocalDate at) {
@@ -1278,7 +1217,7 @@ public class FrontendRest {
           setter.set("text", text);
           setter.set("at", at);
         },
-        new GenericType<List<ByoumeiMasterDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ByoumeiMasterDTO> getByoumeiMasterByName(String name, LocalDate at) {
@@ -1288,7 +1227,7 @@ public class FrontendRest {
           setter.set("name", name);
           setter.set("at", at);
         },
-        new GenericType<ByoumeiMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ShuushokugoMasterDTO>> searchShuushokugoMaster(
@@ -1299,14 +1238,14 @@ public class FrontendRest {
           setter.set("text", text);
           setter.set("at", at);
         },
-        new GenericType<List<ShuushokugoMasterDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ShuushokugoMasterDTO> getShuushokugoMasterByName(String name) {
     return get(
         "get-shuushokugo-master-by-name",
         setter -> setter.set("name", name),
-        new GenericType<ShuushokugoMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> enterPrescExample(PrescExampleDTO prescExample) {
@@ -1314,7 +1253,7 @@ public class FrontendRest {
         "enter-presc-example",
         setter -> {},
         Entity.entity(prescExample, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> deletePrescExample(int prescExampleId) {
@@ -1322,7 +1261,7 @@ public class FrontendRest {
         "delete-presc-example",
         setter -> setter.set("presc-example-id", prescExampleId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> updatePrescExample(PrescExampleDTO prescExample) {
@@ -1330,19 +1269,15 @@ public class FrontendRest {
         "update-presc-example",
         setter -> {},
         Entity.entity(prescExample, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<PrescExampleFullDTO>> searchPrescExample(String text) {
-    return get(
-        "search-presc-example",
-        setter -> setter.set("text", text),
-        new GenericType<List<PrescExampleFullDTO>>() {});
+    return get("search-presc-example", setter -> setter.set("text", text), new GenericType<>() {});
   }
 
   public CompletableFuture<List<PrescExampleFullDTO>> listAllPrescExample() {
-    return get(
-        "list-all-presc-example", setter -> {}, new GenericType<List<PrescExampleFullDTO>>() {});
+    return get("list-all-presc-example", setter -> {}, new GenericType<>() {});
   }
 
   public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req) {
@@ -1350,7 +1285,7 @@ public class FrontendRest {
         "batch-enter",
         setter -> {},
         Entity.entity(req, MediaType.APPLICATION_JSON),
-        new GenericType<BatchEnterResultDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(
@@ -1359,7 +1294,7 @@ public class FrontendRest {
         "batch-enter-by-names",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(req, MediaType.APPLICATION_JSON),
-        new GenericType<BatchEnterResultDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<Void> prescDone(int visitId) {
@@ -1367,16 +1302,15 @@ public class FrontendRest {
         "presc-done",
         setter -> setter.set("visit-id", visitId),
         Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
-    return get("list-disease-example", setter -> {}, new GenericType<List<DiseaseExampleDTO>>() {});
+    return get("list-disease-example", setter -> {}, new GenericType<>() {});
   }
 
   public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
-    return get(
-        "get-meisai", setter -> setter.set("visit-id", visitId), new GenericType<MeisaiDTO>() {});
+    return get("get-meisai", setter -> setter.set("visit-id", visitId), new GenericType<>() {});
   }
 
   public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
@@ -1386,7 +1320,7 @@ public class FrontendRest {
           setter.set("iyakuhincode", iyakuhincode);
           setter.set("at", at);
         },
-        new GenericType<IyakuhinMasterDTO>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(
@@ -1395,25 +1329,25 @@ public class FrontendRest {
         "batch-resolve-stock-drug",
         setter -> setter.set("at", at),
         Entity.entity(iyakuhincodes, MediaType.APPLICATION_JSON),
-        new GenericType<List<ResolvedStockDrugDTO>>() {});
+        new GenericType<>() {});
   }
 
   public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
-    return get("get-clinic-info", setter -> {}, new GenericType<ClinicInfoDTO>() {});
+    return get("get-clinic-info", setter -> {}, new GenericType<>() {});
   }
 
   public CompletableFuture<PracticeLogDTO> getLastPracticeLog() {
-    return get("get-last-practice-log", setter -> {}, new GenericType<PracticeLogDTO>() {});
+    return get("get-last-practice-log", setter -> {}, new GenericType<>() {});
   }
 
   public CompletableFuture<Integer> getLastPracticeLogId() {
-    return get("get-last-practice-log-id", setter -> {}, new GenericType<Integer>() {});
+    return get("get-last-practice-log-id", setter -> {}, new GenericType<>() {});
   }
 
   public CompletableFuture<List<PracticeLogDTO>> listPracticeLogSince(int afterThisId) {
     return get(
         "list-practice-log-since",
         setter -> setter.set("after-this-id", afterThisId),
-        new GenericType<List<PracticeLogDTO>>() {});
+        new GenericType<>() {});
   }
 }
