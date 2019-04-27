@@ -46,8 +46,8 @@ class UpdateFrontend implements Runnable {
         try {
             updateFrontend();
             updateFrontendBackend();
-//            updateFrontendAdapter();
-//            updateFrontendProxy();
+            updateFrontendAdapter();
+            updateFrontendProxy();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -156,21 +156,16 @@ class UpdateFrontend implements Runnable {
         List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendInterface,
                 adapterClass);
         if (unimplementedBackendMethods.size() > 0) {
-            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
-                backendMethod.removeBody();
-                backendMethod.setType(wrapWithCompletableFuture(backendMethod.getType()));
-                backendMethod.addAnnotation(new MarkerAnnotationExpr("Override"));
-                Statement throwStmt = new ThrowStmt(new ObjectCreationExpr(
-                        null,
-                        new ClassOrInterfaceType(null, "RuntimeException"),
-                        nodeList(new StringLiteralExpr("not implemented"))
-                ));
-                backendMethod.setBody(new BlockStmt(nodeList(
-                        throwStmt
-                )));
+            if( !save ){
                 System.out.println("*** FrontendAdapter");
-                System.out.println(backendMethod);
-                adapterClass.addMember(backendMethod);
+            }
+            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
+                FrontendMethod fm = FrontendMethods.createFrontendMethod(backendMethod);
+                MethodDeclaration method = fm.createFrontendAdapterMethod();
+                adapterClass.addMember(method);
+                if( !save ) {
+                    System.out.println(method);
+                }
             }
             if (save) {
                 saveToFile(frontendAdapterSrcPath.toString(), adapterUnit.toString());
@@ -190,21 +185,16 @@ class UpdateFrontend implements Runnable {
         List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendInterface,
                 proxyClass);
         if (unimplementedBackendMethods.size() > 0) {
-            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
-                backendMethod.removeBody();
-                backendMethod.setType(wrapWithCompletableFuture(backendMethod.getType()));
-                backendMethod.addAnnotation(new MarkerAnnotationExpr("Override"));
-                Statement returnStmt = new ReturnStmt(new MethodCallExpr(new NameExpr("delegate"),
-                        backendMethod.getNameAsString(),
-                        nodeList(backendMethod.getParameters().stream()
-                                .map(NodeWithSimpleName::getNameAsExpression)
-                                .collect(toList()))));
-                backendMethod.setBody(new BlockStmt(nodeList(
-                        returnStmt
-                )));
+            if( !save ){
                 System.out.println("*** FrontendProxy");
-                System.out.println(backendMethod);
-                proxyClass.addMember(backendMethod);
+            }
+            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
+                FrontendMethod fm = FrontendMethods.createFrontendMethod(backendMethod);
+                MethodDeclaration method = fm.createFrontendProxyMethod();
+                proxyClass.addMember(method);
+                if( !save ) {
+                    System.out.println(method);
+                }
             }
             if (save) {
                 saveToFile(frontendProxySrcPath.toString(), proxyUnit.toString());

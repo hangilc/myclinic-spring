@@ -3,8 +3,12 @@ package jp.chang.myclinic.apitool.lib.frontend;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.ThrowStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnknownType;
 import jp.chang.myclinic.apitool.lib.Helper;
@@ -84,7 +88,32 @@ abstract class FrontendMethodBase implements FrontendMethod {
         MethodDeclaration method = createMethodHeadForFrontendBackend();
         method.setBody(blockStmt);
         return method;
+    }
 
+    @Override
+    public MethodDeclaration createFrontendAdapterMethod(){
+        MethodDeclaration method = createMethodHead();
+        method.setPublic(true);
+        method.addAnnotation(new MarkerAnnotationExpr("Override"));
+        Statement throwStmt = new ThrowStmt(new ObjectCreationExpr(
+                null,
+                new ClassOrInterfaceType(null, "RuntimeException"),
+                nodeList(new StringLiteralExpr("not implemented"))
+        ));
+        method.setBody(new BlockStmt(nodeList(throwStmt)));
+        return method;
+    }
+
+    @Override
+    public MethodDeclaration createFrontendProxyMethod(){
+        MethodDeclaration method = createMethodHead();
+        method.setPublic(true);
+        method.addAnnotation(new MarkerAnnotationExpr("Override"));
+        Statement returnStmt = new ReturnStmt(new MethodCallExpr(new NameExpr("delegate"),
+                getMethodName(),
+                nodeList(getParameterValues())));
+        method.setBody(new BlockStmt(nodeList(returnStmt)));
+        return method;
     }
 
 }

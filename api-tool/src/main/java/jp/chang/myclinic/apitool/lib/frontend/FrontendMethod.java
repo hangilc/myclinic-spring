@@ -7,5 +7,7 @@ public interface FrontendMethod {
 
     MethodDeclaration createFrontendMethod();
     MethodDeclaration createFrontendBackendMethod();
+    MethodDeclaration createFrontendAdapterMethod();
+    MethodDeclaration createFrontendProxyMethod();
 
 }
