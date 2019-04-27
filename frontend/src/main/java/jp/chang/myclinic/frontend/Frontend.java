@@ -354,4 +354,8 @@ public interface Frontend {
     CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at);
 
     CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name);
+
+    CompletableFuture<Integer> enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr);
+
+    CompletableFuture<Void> updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr);
 }

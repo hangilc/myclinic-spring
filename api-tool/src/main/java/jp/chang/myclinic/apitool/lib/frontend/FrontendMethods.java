@@ -22,18 +22,20 @@ public class FrontendMethods {
     public static FrontendMethod createFrontendMethod(MethodDeclaration backendMethod) {
         String methodName = backendMethod.getNameAsString();
         if (methodName.startsWith("enter")) {
-            Class<?> dtoClass = null;
             Field autoIncField = null;
+            Parameter dtoParameter = null;
+            Class<?> dtoClass = null;
             for (Parameter param : backendMethod.getParameters()) {
-                Class<?> cls = nameToDtoClassMap.get(param.getNameAsString());
+                Class<?> cls = nameToDtoClassMap.get(param.getTypeAsString());
                 if (cls != null) {
                     List<Field> autoIncs = helper.getAutoIncs(cls);
-                    for (Field autoInc : helper.getAutoIncs(cls)) {
+                    for (Field autoInc : autoIncs) {
                         if (autoIncField != null) {
                             System.err.println("Too many aoto inc fields: " + backendMethod);
                             System.exit(1);
                         }
                         autoIncField = autoInc;
+                        dtoParameter = param;
                         dtoClass = cls;
                     }
                 }
@@ -44,7 +46,7 @@ public class FrontendMethods {
                             backendMethod);
                     System.exit(1);
                 }
-                return new FrontendMethodAutoInc(backendMethod, dtoClass, autoIncField);
+                return new FrontendMethodAutoInc(backendMethod, autoIncField, dtoParameter, dtoClass);
             } else {
                 if (backendMethod.getType().isVoidType()) {
                     return new FrontendMethodTxProc(backendMethod);

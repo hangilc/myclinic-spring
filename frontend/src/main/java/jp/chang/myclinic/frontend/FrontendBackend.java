@@ -3,6 +3,7 @@ package jp.chang.myclinic.frontend;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -924,5 +925,18 @@ public class FrontendBackend implements Frontend {
     @Override
     public CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name) {
         return tx(backend -> backend.enterShinryouByName(visitId, name));
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
+        return tx(backend -> {
+            backend.enterDrugWithAttr(drug, attr);
+            return drug.drugId;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
+        return txProc(backend -> backend.updateDrugWithAttr(drug, attr));
     }
 }

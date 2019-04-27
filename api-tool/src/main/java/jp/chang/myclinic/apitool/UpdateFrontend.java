@@ -16,6 +16,8 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnknownType;
 import jp.chang.myclinic.apitool.lib.DtoClassList;
 import jp.chang.myclinic.apitool.lib.Helper;
+import jp.chang.myclinic.apitool.lib.frontend.FrontendMethod;
+import jp.chang.myclinic.apitool.lib.frontend.FrontendMethods;
 import picocli.CommandLine;
 
 import java.io.IOException;
@@ -44,8 +46,8 @@ class UpdateFrontend implements Runnable {
         try {
             updateFrontend();
             updateFrontendBackend();
-            updateFrontendAdapter();
-            updateFrontendProxy();
+//            updateFrontendAdapter();
+//            updateFrontendProxy();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -62,13 +64,16 @@ class UpdateFrontend implements Runnable {
         backendDecl.getOrphanComments().forEach(backendDecl::removeOrphanComment);
         List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendDecl, frontendDecl);
         if (unimplementedBackendMethods.size() > 0) {
-            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
-                backendMethod.removeBody();
-                backendMethod.setType(makeFrontendReturnType(backendMethod));
-                backendMethod.removeModifier(Keyword.PUBLIC);
+            if( !save ){
                 System.out.println("*** Frontend");
-                System.out.println(backendMethod);
-                frontendDecl.addMember(backendMethod);
+            }
+            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
+                FrontendMethod fm = FrontendMethods.createFrontendMethod(backendMethod);
+                MethodDeclaration frontendMethod = fm.createFrontendMethod();
+                frontendDecl.addMember(frontendMethod);
+                if( !save ) {
+                    System.out.println(frontendMethod);
+                }
             }
             if (save) {
                 saveToFile(frontendSourceFile.toString(), frontendUnit.toString());
@@ -90,14 +95,16 @@ class UpdateFrontend implements Runnable {
         List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendDecl,
                 frontendBackendDecl);
         if (unimplementedBackendMethods.size() > 0) {
-            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
-                backendMethod.removeBody();
-                backendMethod.setType(makeFrontendReturnType(backendMethod));
-                backendMethod.removeModifier(Keyword.PUBLIC);
-                MethodDeclaration impl = implementFrontendBackendMethod(backendMethod);
+            if( !save ){
                 System.out.println("*** FrontendBackend");
-                System.out.println(impl);
-                frontendBackendDecl.addMember(impl);
+            }
+            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
+                FrontendMethod fm = FrontendMethods.createFrontendMethod(backendMethod);
+                MethodDeclaration method = fm.createFrontendBackendMethod();
+                frontendBackendDecl.addMember(method);
+                if( !save ){
+                    System.out.println(method);
+                }
             }
             if (save) {
                 saveToFile(frontendBackendSourceFile.toString(), frontendBackendUnit.toString());
