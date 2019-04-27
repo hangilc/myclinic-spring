@@ -295,34 +295,6 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Integer> enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
-        return tx(backend -> {
-            backend.enterDrug(drug);
-            if (attr != null) {
-                backend.enterDrugAttr(attr);
-            }
-            return drug.drugId;
-        });
-    }
-
-    @Override
-    public CompletableFuture<Void> updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
-        return txProc(backend -> {
-            backend.updateDrug(drug);
-            if (attr == null) {
-                backend.deleteDrugAttr(drug.drugId);
-            } else {
-                DrugAttrDTO curr = backend.getDrugAttr(attr.drugId);
-                if (curr != null) {
-                    backend.updateDrugAttr(attr);
-                } else {
-                    backend.enterDrugAttr(attr);
-                }
-            }
-        });
-    }
-
-    @Override
     public CompletableFuture<Void> updateDrug(DrugDTO drug) {
         return txProc(backend -> backend.updateDrug(drug));
     }

@@ -23,10 +23,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.toList;
@@ -114,12 +111,12 @@ class UpdateFrontend implements Runnable {
         backendMethod.addMarkerAnnotation("Override");
         backendMethod.setModifiers(Keyword.PUBLIC);
         if (name.startsWith("enter")) {
-            String paramType = backendMethod.getParameter(0).getTypeAsString();
-            Class<?> dtoClass = nameToDtoClassMap.get(paramType);
-            List<Field> autoIncs = Collections.emptyList();
-            if (dtoClass != null) {
-                autoIncs = helper.getAutoIncs(dtoClass);
-            }
+            List<Class<?>> dtoClasses = backendMethod.getParameters().stream()
+                    .map(p -> nameToDtoClassMap.get(p.getNameAsString()))
+                    .filter(Objects::nonNull)
+                    .collect(toList());
+            List<Field> autoIncs = dtoClasses.stream().flatMap(c -> helper.getAutoIncs(c).stream())
+                    .collect(toList());
             if (autoIncs.size() == 1) {
                 Field autoInc = autoIncs.get(0);
                 backendMethod.setBody(makeEnterWithAutoIncBody(

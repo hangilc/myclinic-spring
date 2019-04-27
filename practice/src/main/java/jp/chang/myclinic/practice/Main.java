@@ -13,6 +13,7 @@ import jp.chang.myclinic.backendsqlite.SqliteTableSet;
 import jp.chang.myclinic.client.Client;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.frontend.FrontendBackend;
+import jp.chang.myclinic.frontend.FrontendRest;
 import jp.chang.myclinic.practice.componenttest.ComponentTest;
 import jp.chang.myclinic.practice.guitest.GuiTestRunner;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
@@ -175,7 +176,9 @@ public class Main extends Application {
             DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
             Context.frontend = new FrontendBackend(dbBackend);
         } else {
-            throw new RuntimeException("Access to REST server is not implemented.");
+            String serverUrl = "http://localhost:38080/api";
+            FrontendRest rest = new FrontendRest(serverUrl);
+            Context.frontend = rest;
         }
     }
 

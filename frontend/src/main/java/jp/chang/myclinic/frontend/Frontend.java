@@ -111,11 +111,7 @@ public interface Frontend {
 
     CompletableFuture<Integer> enterDrug(DrugDTO drug);
 
-    CompletableFuture<Integer> enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr);
-
     CompletableFuture<Void> updateDrug(DrugDTO drug);
-
-    CompletableFuture<Void> updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr);
 
     CompletableFuture<Void> batchUpdateDrugDays(List<Integer> drugIds, int days);
 

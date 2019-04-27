@@ -269,16 +269,6 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Integer> enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
-        return delegate.enterDrugWithAttr(drug, attr);
-    }
-
-    @Override
-    public CompletableFuture<Void> updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
-        return delegate.updateDrugWithAttr(drug, attr);
-    }
-
-    @Override
     public CompletableFuture<Void> updateDrug(DrugDTO drug) {
         return delegate.updateDrug(drug);
     }

@@ -13,6 +13,7 @@ import jp.chang.myclinic.util.DateTimeUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -461,10 +462,32 @@ public class Backend {
         practiceLogger.logDrugCreated(drug);
     }
 
+    public void enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
+        enterDrug(drug);
+        if( attr != null ) {
+            attr.drugId = drug.drugId;
+            enterDrugAttr(attr);
+        }
+    }
+
     public void updateDrug(DrugDTO drug) {
         DrugDTO prev = getDrug(drug.drugId);
         ts.drugTable.update(drug);
         practiceLogger.logDrugUpdated(prev, drug);
+    }
+
+    public void updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
+        updateDrug(drug);
+        if (attr == null) {
+            deleteDrugAttr(drug.drugId);
+        } else {
+            DrugAttrDTO curr = getDrugAttr(attr.drugId);
+            if (curr != null) {
+                updateDrugAttr(attr);
+            } else {
+                enterDrugAttr(attr);
+            }
+        }
     }
 
     public void batchUpdateDrugDays(List<Integer> drugIds, int days) {
