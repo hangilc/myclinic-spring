@@ -355,7 +355,7 @@ public interface Frontend {
 
     CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name);
 
-    CompletableFuture<Integer> enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr);
+    CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr);
 
-    CompletableFuture<Void> updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr);
+    CompletableFuture<Void> updateDrugWithAttr(DrugWithAttrDTO drugWithAttr);
 }

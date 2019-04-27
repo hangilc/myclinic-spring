@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -83,7 +84,9 @@ public class Helper {
 
     private static NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
-    public static String formatNumber(double number){ return numberFormat.format(number); }
+    public static String formatNumber(double number) {
+        return numberFormat.format(number);
+    }
 
     public void saveToFile(Path path, String src, boolean override) {
         if (Files.exists(path)) {
@@ -98,7 +101,7 @@ public class Helper {
         }
     }
 
-    public String formatSource(String source){
+    public String formatSource(String source) {
         Formatter formatter = new Formatter();
         try {
             return formatter.formatSource(source);
@@ -122,7 +125,7 @@ public class Helper {
         return createGenericType(name, createGenericType(paramType1, paramType2));
     }
 
-    public Parameter createSingleLambdaParameter(String name){
+    public Parameter createSingleLambdaParameter(String name) {
         return new Parameter(new UnknownType(), name);
     }
 
@@ -145,11 +148,11 @@ public class Helper {
     }
 
     // Integer -> Integer.class
-    public Expression classLiteral(String className){
+    public Expression classLiteral(String className) {
         return new FieldAccessExpr(new NameExpr(className), "class");
     }
 
-    public Expression classLiteral(Class<?> cls){
+    public Expression classLiteral(Class<?> cls) {
         return classLiteral(cls.getSimpleName());
     }
 
@@ -184,22 +187,22 @@ public class Helper {
         }
     }
 
-    public Class<?> getBoxedClass(Class<?> c){
+    public Class<?> getBoxedClass(Class<?> c) {
         if (c == int.class) {
             return Integer.class;
         } else if (c == double.class) {
             return Double.class;
         } else if (c == char.class) {
             return Character.class;
-        } else if( c == void.class) {
+        } else if (c == void.class) {
             return Void.class;
         } else {
             return c;
         }
     }
 
-    public Type getBoxedType(Type t){
-        if( t.isPrimitiveType() ) {
+    public Type getBoxedType(Type t) {
+        if (t.isPrimitiveType()) {
             switch (t.toString()) {
                 case "int":
                     return new ClassOrInterfaceType(null, "Integer");
@@ -210,21 +213,51 @@ public class Helper {
                 default:
                     throw new RuntimeException("Cannot convert to boxed type: " + t);
             }
-        } else if( t.isVoidType() ){
+        } else if (t.isVoidType()) {
             return new ClassOrInterfaceType(null, "Void");
         } else {
             return t;
         }
     }
 
-    public List<Field> getAutoIncs(Class<?> dtoClass){
-        List<Field> autoIncs = new ArrayList<>();
-        for(Field field: dtoClass.getFields()){
-            if( field.isAnnotationPresent(AutoInc.class)){
-                autoIncs.add(field);
+    public static class AutoIncInfo {
+        List<String> fieldNames = new ArrayList<>();
+        Class<?> autoIncClass;
+        Collection<Parameter> origParameters;
+    }
+
+    public AutoIncInfo scanAutoInc(Collection<Parameter> parameters) {
+        AutoIncInfo info = new AutoIncInfo();
+        info.origParameters = parameters;
+        scanAutoInc(parameters, info);
+        return info;
+    }
+
+    private void scanAutoInc(Collection<Parameter> parameters, AutoIncInfo info) {
+        for (Parameter param : parameters) {
+            String name = param.getNameAsString();
+            Class<?> c = DtoClassList.getDtoClassByName(name);
+            if (c != null) {
+                scanAutoInc(c, info);
             }
         }
-        return autoIncs;
+    }
+
+    private void scanAutoInc(Class<?> cls, AutoIncInfo info) {
+        for (Field field : cls.getFields()) {
+            if (field.isAnnotationPresent(AutoInc.class)) {
+                if (info.autoIncClass != null) {
+                    System.err.println("Multiple auto incs: " + info.origParameters);
+                    System.exit(1);
+                }
+                info.fieldNames.add(field.getName());
+                info.autoIncClass = field.getType();
+                Class<?> fc = DtoClassList.getDtoClassByName(field.getType().getSimpleName());
+                if( fc != null ){
+                    scanAutoInc(fc, info);
+                }
+            }
+        }
     }
 
     public Config getSpecifics(String database) {
@@ -266,7 +299,7 @@ public class Helper {
     }
 
     public List<MethodDeclaration> listUnimplementedMethods(ClassOrInterfaceDeclaration backend,
-                                                             ClassOrInterfaceDeclaration target) {
+                                                            ClassOrInterfaceDeclaration target) {
         List<MethodDeclaration> result = new ArrayList<>();
         for (MethodDeclaration backendMethod : backend.getMethods()) {
             if (!backendMethod.isPublic() || backendMethod.isAnnotationPresent("ExcludeFromFrontend")) {
@@ -280,11 +313,11 @@ public class Helper {
         return result;
     }
 
-    public Class<?> getDtoClassNamed(String name){
+    public Class<?> getDtoClassNamed(String name) {
         return DtoClassList.getDtoClassByName(name);
     }
 
-    public boolean isDtoClassName(String name){
+    public boolean isDtoClassName(String name) {
         return getDtoClassNamed(name) != null;
     }
 

@@ -927,16 +927,4 @@ public class FrontendBackend implements Frontend {
         return tx(backend -> backend.enterShinryouByName(visitId, name));
     }
 
-    @Override
-    public CompletableFuture<Integer> enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
-        return tx(backend -> {
-            backend.enterDrugWithAttr(drug, attr);
-            return drug.drugId;
-        });
-    }
-
-    @Override
-    public CompletableFuture<Void> updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
-        return txProc(backend -> backend.updateDrugWithAttr(drug, attr));
-    }
 }

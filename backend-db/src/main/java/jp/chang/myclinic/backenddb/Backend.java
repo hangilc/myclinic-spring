@@ -462,9 +462,11 @@ public class Backend {
         practiceLogger.logDrugCreated(drug);
     }
 
-    public void enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
+    public void enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        DrugDTO drug = drugWithAttr.drug;
+        DrugAttrDTO attr = drugWithAttr.attr;
         enterDrug(drug);
-        if( attr != null ) {
+        if (attr != null) {
             attr.drugId = drug.drugId;
             enterDrugAttr(attr);
         }
@@ -476,7 +478,9 @@ public class Backend {
         practiceLogger.logDrugUpdated(prev, drug);
     }
 
-    public void updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
+    public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        DrugDTO drug = drugWithAttr.drug;
+        DrugAttrDTO attr = drugWithAttr.attr;
         updateDrug(drug);
         if (attr == null) {
             deleteDrugAttr(drug.drugId);
@@ -927,15 +931,15 @@ public class Backend {
         practiceLogger.logShinryouCreated(shinryou);
     }
 
-    public ShinryouDTO enterShinryouByName(int visitId, String name){
+    public ShinryouDTO enterShinryouByName(int visitId, String name) {
         int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(name);
-        if( shinryoucode == 0 ){
+        if (shinryoucode == 0) {
             throw new RuntimeException("Cannot find shinryou: " + name);
         }
         VisitDTO visit = getVisit(visitId);
         LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
         ShinryouMasterDTO master = getShinryouMaster(shinryoucode, at);
-        if( master == null ){
+        if (master == null) {
             throw new RuntimeException(String.format("Shinryou (%s) is not available at %s", name, at.toString()));
         }
         ShinryouDTO shinryou = new ShinryouDTO();
