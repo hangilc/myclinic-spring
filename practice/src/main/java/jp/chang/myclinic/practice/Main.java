@@ -16,6 +16,7 @@ import jp.chang.myclinic.frontend.FrontendBackend;
 import jp.chang.myclinic.frontend.FrontendRest;
 import jp.chang.myclinic.practice.componenttest.ComponentTest;
 import jp.chang.myclinic.practice.guitest.GuiTestRunner;
+import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
 import jp.chang.myclinic.support.config.ConfigPropertyFile;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
@@ -36,7 +37,6 @@ import java.util.Arrays;
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
-    private Client client;
 
     public static void main(String[] args) {
         CmdOpts cmdOpts = new CmdOpts();
@@ -93,6 +93,8 @@ public class Main extends Application {
             )));
             Context.referService = new ReferServiceFile(Paths.get("config", "refer-list.yml"));
             Context.integrationService = new IntegrationServiceImpl();
+            Context.currentPatientService = new CurrentPatientService();
+            Context.mainStageService = new MainStageServiceImpl(stage);
             if (opts.guiTest) {
                 confirmTestDatabase();
                 StackPane main = setupStageForComponentTest(stage);
@@ -121,46 +123,16 @@ public class Main extends Application {
                     }
                 }).start();
             } else {
-                Platform.exit();
+                stage.setTitle("診療");
+                MainPane root = new MainPane();
+                Context.mainStageService = new MainStageServiceImpl(stage);
+                root.getStylesheets().addAll(
+                        "css/Practice.css"
+                );
+                stage.setScene(new Scene(root));
+               stage.show();
             }
         }
-
-//            if (opts.sqliteTemp != null) {
-//            String dbFile = opts.sqliteTemp;
-//            DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-//            SupportSet ss = new SupportSet();
-//            ss.stockDrugService = new StockDrugFile(Paths.get("config/stock-drug.txt"));
-//            ss.houkatsuKensaService = new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml"));
-//            ss.meisaiService = new MeisaiServiceImpl();
-//            ss.diseaseExampleProvider = new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml"));
-//            ss.shinryouNamesService = new ShinryouNamesFile(Paths.get("config/shinryou-names.yml"));
-//            ss.kizaiNamesService = new KizaiNamesFile(Paths.get("config/kizai-names.yml"));
-//            ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info-yml"));
-//            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
-//            Context.frontend = new FrontendBackend(dbBackend);
-//            Context.configService = new ConfigPropertyFile(Paths.get(
-//                    System.getenv("user.home"),
-//                    "practice.properties"
-//            ));
-//        } else {
-//            setupPracticeEnv();
-//            stage.setTitle("診療");
-//            PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
-//                    updateTitle(stage, newValue));
-//            MainPane root = new MainPane();
-//            Context.mainPane = root;
-//            Context.mainStageService = new MainStageServiceImpl(stage);
-//            root.getStylesheets().addAll(
-//                    "css/Practice.css"
-//            );
-//            stage.setScene(new Scene(root));
-//            stage.showingProperty().addListener((obs, oldVaue, newValue) -> {
-//                if (!newValue) {
-//                    PracticeEnv.INSTANCE.closeRemainingWindows();
-//                }
-//            });
-//            stage.show();
-//        }
     }
 
     private void setupFrontend(SupportSet ss) {
@@ -176,9 +148,7 @@ public class Main extends Application {
             DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
             Context.frontend = new FrontendBackend(dbBackend);
         } else {
-            String serverUrl = "http://localhost:38080/api";
-            FrontendRest rest = new FrontendRest(serverUrl);
-            Context.frontend = rest;
+            Context.frontend = new FrontendRest(param);
         }
     }
 
@@ -200,39 +170,6 @@ public class Main extends Application {
         stage.setScene(new Scene(main));
         stage.show();
         return main;
-    }
-
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-//        {
-//            OkHttpClient client = Service.client;
-//            if (client != null) {
-//                client.dispatcher().executorService().shutdown();
-//                client.connectionPool().evictAll();
-//                Cache cache = client.cache();
-//                if (cache != null) {
-//                    cache.close();
-//                }
-//            }
-//        }
-        {
-            if (client != null) {
-                this.client.stop();
-            }
-        }
-    }
-
-    private static void setupPracticeEnv() {
-//        CompletableFuture.allOf(
-//                Context.frontend.getClinicInfo().thenAccept(PracticeEnv.INSTANCE::setClinicInfo),
-//                Context.frontend.getReferList().thenAccept(PracticeEnv.INSTANCE::setReferList),
-//                Context.frontend.getPracticeConfig().thenAccept(c -> PracticeEnv.INSTANCE.setKouhatsuKasan(c.kouhatsuKasan))
-//        ).exceptionally(t -> {
-//            logger.error("setupPracticeEnv failed. {}", t);
-//            System.exit(1);
-//            return null;
-//        }).join();
     }
 
     private void updateTitle(Stage stage, PatientDTO patient) {

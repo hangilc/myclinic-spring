@@ -4,11 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import org.glassfish.jersey.logging.LoggingFeature;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
@@ -19,9 +24,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 @SuppressWarnings("unused")
 public class FrontendRest implements Frontend {
+  private static java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrontendRest.class.getName());
 
   static ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -33,6 +40,9 @@ public class FrontendRest implements Frontend {
     clientConfig.executorService(executorService);
     clientConfig.register(
         new JacksonJaxbJsonProvider(mapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
+    Feature feature = new LoggingFeature(logger, Level.INFO, null, null);
+    clientConfig.register(feature);
+    clientConfig.register(new JacksonFeature());
   }
 
   interface ParamSetter {
@@ -64,9 +74,9 @@ public class FrontendRest implements Frontend {
   }
 
   private <T> CompletableFuture<T> post(
-      String path, Consumer<ParamSetter> paramSetter, Object body, GenericType<T> returnType) {
+      String path, Consumer<ParamSetter> paramSetter, Entity body, GenericType<T> returnType) {
     return call(path, paramSetter)
-        .post(Entity.entity(body, MediaType.APPLICATION_JSON), returnType)
+        .post(body, returnType)
         .toCompletableFuture();
   }
 
@@ -817,7 +827,7 @@ public class FrontendRest implements Frontend {
     return post(
         "batch-get-shinryou-attr",
         setter -> {},
-        Entity.entity(shinryouIds, MediaType.APPLICATION_JSON),
+        Entity.json(shinryouIds.toArray(new Integer[]{})),
         new GenericType<List<ShinryouAttrDTO>>() {});
   }
 

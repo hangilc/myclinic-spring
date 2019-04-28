@@ -189,7 +189,10 @@ public class DrugEditForm extends DrugForm {
         }
         DrugDTO drug = validatedDrug.getValue();
         drug.prescribed = 0;
-        Context.frontend.updateDrugWithAttr(drug, attr)
+        DrugWithAttrDTO drugWithAttr = new DrugWithAttrDTO();
+        drugWithAttr.drug = drug;
+        drugWithAttr.attr = attr;
+        Context.frontend.updateDrugWithAttr(drugWithAttr)
                 .thenAccept(ok -> closeForm())
                 .exceptionally(HandlerFX.exceptionally(this));
     }
