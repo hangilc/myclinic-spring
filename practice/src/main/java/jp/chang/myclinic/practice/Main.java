@@ -36,8 +36,6 @@ import java.util.Arrays;
 
 public class Main extends Application {
 
-    private static Logger logger = LoggerFactory.getLogger(Main.class);
-
     public static void main(String[] args) {
         CmdOpts cmdOpts = new CmdOpts();
         CommandLine commandLine = new CommandLine(cmdOpts);
@@ -123,7 +121,8 @@ public class Main extends Application {
                     }
                 }).start();
             } else {
-                stage.setTitle("診療");
+                Context.currentPatientService.addOnChangeHandler(this::updateStageTitle);
+                updateStageTitle(null, 0);
                 MainPane root = new MainPane();
                 Context.mainStageService = new MainStageServiceImpl(stage);
                 root.getStylesheets().addAll(
@@ -136,7 +135,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         if( Context.frontend != null ){
             Context.frontend.shutdown();
         }
@@ -179,15 +178,15 @@ public class Main extends Application {
         return main;
     }
 
-    private void updateTitle(Stage stage, PatientDTO patient) {
+    private void updateStageTitle(PatientDTO patient, int visitId) {
         if (patient == null) {
-            stage.setTitle("診察");
+            Context.mainStageService.setTitle("診察");
         } else {
             String title = String.format("診察 (%d) %s%s",
                     patient.patientId,
                     patient.lastName,
                     patient.firstName);
-            stage.setTitle(title);
+            Context.mainStageService.setTitle(title);
         }
     }
 }
