@@ -1,5 +1,7 @@
 package jp.chang.myclinic.frontend;
 
+import java.time.LocalDateTime;
+
 public class Rest {
 
     public static void main(String[] args){
@@ -8,7 +10,11 @@ public class Rest {
             serverUrl = args[0];
         }
         FrontendRest rest = new FrontendRest(serverUrl);
-        System.out.println(rest.getPatient(1).join());
-        rest.shutdown();
+        rest.dumpHttp();
+        try {
+            System.out.println(rest.startVisit(1, LocalDateTime.now()).join());
+        } finally {
+            rest.shutdown();
+        }
     }
 }
