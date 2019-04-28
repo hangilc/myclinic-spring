@@ -135,6 +135,13 @@ public class Main extends Application {
         }
     }
 
+    @Override
+    public void stop() throws Exception {
+        if( Context.frontend != null ){
+            Context.frontend.shutdown();
+        }
+    }
+
     private void setupFrontend(SupportSet ss) {
         CmdOpts opts = Context.cmdOpts;
         String param = opts.serverUrl;

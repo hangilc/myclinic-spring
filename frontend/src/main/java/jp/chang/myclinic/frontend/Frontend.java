@@ -11,6 +11,8 @@ import java.util.function.Consumer;
 
 public interface Frontend {
 
+    default void shutdown(){}
+
     CompletableFuture<Integer> enterPatient(PatientDTO patient);
 
     CompletableFuture<PatientDTO> getPatient(int patientId);
