@@ -53,13 +53,8 @@ public class KouhiTableBase extends Table<KouhiDTO> {
                 "validUpto",
                 false,
                 false,
-                (stmt, i, dto) ->
-                    stmt.setObject(
-                        i, TableBaseHelper.validUptoFromStringToLocalDate(dto.validUpto)),
-                (rs, i, dto) ->
-                    dto.validUpto =
-                        TableBaseHelper.validUptoFromLocalDateToString(
-                            rs.getObject(i, LocalDate.class))),
+                (stmt, i, dto) -> stmt.setObject(i, dto.validUpto),
+                (rs, i, dto) -> dto.validUpto = rs.getString(i)),
             new Column<>(
                 "patient_id",
                 "patientId",

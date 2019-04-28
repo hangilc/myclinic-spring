@@ -36,6 +36,7 @@ public class MockData {
     private int serialShahokokuhoId = 1;
     private int serialKoukikoureiId = 1;
     private int serialKouhiId = 1;
+    private int serialTextId = 1;
 
     public MockData() {
         this.lastNames = loadNames("/last-names.txt");
@@ -60,7 +61,7 @@ public class MockData {
         return dto;
     }
 
-    public PatientDTO pickPatientWithPatientId(){
+    public PatientDTO pickPatientWithPatientId() {
         PatientDTO patient = pickPatient();
         patient.patientId = serialPatientId++;
         return patient;
@@ -137,40 +138,40 @@ public class MockData {
         return String.format("%s-%04d-%04d", d, random.nextInt(10000), random.nextInt(10000));
     }
 
-    int pickInt(int low, int high){
+    int pickInt(int low, int high) {
         return low + random.nextInt(high + 1 - low);
     }
 
-    int pickDigits(int nDigit){
-        if( nDigit <= 0 ){
+    int pickDigits(int nDigit) {
+        if (nDigit <= 0) {
             return 0;
         }
         int ival = random.nextInt(9) + 1;
-        while( --nDigit > 0 ){
+        while (--nDigit > 0) {
             int d = random.nextInt(10);
             ival = ival * 10 + d;
         }
         return ival;
     }
 
-    private int addCheckingDigit(int ival){
+    private int addCheckingDigit(int ival) {
         return ival * 10 + HokenLib.calcCheckingDigit(ival);
     }
 
-    int pickHokenshaBangou(int nDigits){
-        return addCheckingDigit(pickDigits(nDigits-1));
+    int pickHokenshaBangou(int nDigits) {
+        return addCheckingDigit(pickDigits(nDigits - 1));
     }
 
-    private int pickShahokokuhoHokenshaBangou(){
+    private int pickShahokokuhoHokenshaBangou() {
         return pickHokenshaBangou(8);
     }
 
-    private TodoufukenCode pickTodofukenCode(){
+    private TodoufukenCode pickTodofukenCode() {
         int i = random.nextInt(todoufukenCodes.size());
         return todoufukenCodes.get(i);
     }
 
-    private int pickKouhiFutanshaBangou(){
+    private int pickKouhiFutanshaBangou() {
         int houbetsu = pickInt(10, 99);
         TodoufukenCode todoufukenCode = pickTodofukenCode();
         int hokensha = pickDigits(3);
@@ -180,11 +181,11 @@ public class MockData {
         return addCheckingDigit(bangou);
     }
 
-    public ShahokokuhoDTO pickShahokokuho(int patientId){
-        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
+    public ShahokokuhoDTO pickShahokokuho(int patientId) {
+        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30 * 6), ChronoUnit.DAYS);
         String validUptoRep;
         int span = random.nextInt(3);
-        if( span == 0 ){
+        if (span == 0) {
             validUptoRep = "0000-00-00";
         } else {
             validUptoRep = validFrom.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS).toString();
@@ -201,19 +202,19 @@ public class MockData {
         return dto;
     }
 
-    public ShahokokuhoDTO pickShahokokuhoWithShahokokuhoId(int patientId){
+    public ShahokokuhoDTO pickShahokokuhoWithShahokokuhoId(int patientId) {
         ShahokokuhoDTO result = pickShahokokuho(patientId);
         result.shahokokuhoId = serialShahokokuhoId++;
         return result;
     }
 
-    public int pickKoukikoureiHokenshaBangou(){
+    public int pickKoukikoureiHokenshaBangou() {
         int housei = 39;
         return addCheckingDigit(housei * 100000 + pickDigits(5));
     }
 
-    public KoukikoureiDTO pickKoukikourei(int patientId){
-        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
+    public KoukikoureiDTO pickKoukikourei(int patientId) {
+        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30 * 6), ChronoUnit.DAYS);
         LocalDate validUpto = validFrom.plus(2, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);
         int hokenshaBangou = pickKoukikoureiHokenshaBangou();
         int hihokenshaBangou = pickHokenshaBangou(8);
@@ -227,14 +228,14 @@ public class MockData {
         return dto;
     }
 
-    public KoukikoureiDTO pickKoukikoureiWithKoukikoureiId(int patientId){
+    public KoukikoureiDTO pickKoukikoureiWithKoukikoureiId(int patientId) {
         KoukikoureiDTO result = pickKoukikourei(patientId);
         result.koukikoureiId = serialKoukikoureiId++;
         return result;
     }
 
-    public KouhiDTO pickKouhi(int patientId){
-        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
+    public KouhiDTO pickKouhi(int patientId) {
+        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30 * 6), ChronoUnit.DAYS);
         LocalDate validUpto = validFrom.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);
         KouhiDTO dto = new KouhiDTO();
         dto.patientId = patientId;
@@ -245,23 +246,39 @@ public class MockData {
         return dto;
     }
 
-    public KouhiDTO pickKouhiWithKouhiId(int patientId){
+    public KouhiDTO pickKouhiWithKouhiId(int patientId) {
         KouhiDTO result = pickKouhi(patientId);
         result.kouhiId = serialKouhiId++;
         return result;
     }
 
-    public VisitDTO pickVisit(int patientId, LocalDateTime at){
+    public VisitDTO pickVisit(int patientId, LocalDateTime at) {
         VisitDTO visit = new VisitDTO();
         visit.patientId = patientId;
         visit.visitedAt = DateTimeUtil.toSqlDateTime(at);
         return visit;
     }
 
-    public VisitDTO pickVisitWithVisitId(int patientId, LocalDateTime at){
+    public VisitDTO pickVisitWithVisitId(int patientId, LocalDateTime at) {
         VisitDTO visit = pickVisit(patientId, at);
         visit.visitId = serialVisitId++;
         return visit;
+    }
+
+    private static List<String> sampleTexts = List.of(
+            "朝から、のどの痛みがある。",
+            "頭痛がする。",
+            "健診で高血圧を指摘された。",
+            "既往歴：なし\n薬剤アレルギー：なし\n常用薬：なし"
+    );
+
+    public TextDTO pickText(int visitId) {
+        String content = pickFromList(sampleTexts);
+        TextDTO text = new TextDTO();
+        text.textId = 0;
+        text.visitId = visitId;
+        text.content = content;
+        return text;
     }
 
 

@@ -44,8 +44,6 @@ public class Main {
                     "sqlite-data", "myclinic-test-sqlite.db").toString();
         DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
         DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
-//        ResourceConfig jerseyConfig = new ResourceConfig();
-//        jerseyConfig.register(new RestServer(dbBackend));
         Server server = new Server(cmdOpts.port);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
         context.setContextPath("/");

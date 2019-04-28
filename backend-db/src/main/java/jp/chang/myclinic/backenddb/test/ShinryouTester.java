@@ -33,7 +33,6 @@ class ShinryouTester extends TesterBase {
     public void testFindShinryouMasterByName(Backend backend){
         Map<String, Integer> map = backend.batchResolveShinryouNames(
                 List.of(List.of("初診", "初診", "初診料"), List.of("再診料")), LocalDate.of(2019, 3, 31));
-        System.out.println(map);
     }
 
     @DbTest

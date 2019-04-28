@@ -90,12 +90,18 @@ public class VisitTester extends TesterBase {
 
     @DbTest
     public void testGetVisitFull(Backend backend){
-        backend.getVisitFull(19888);
+        VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
+        TextDTO text = mock.pickText(visit.visitId);
+        backend.enterText(text);
+        VisitFullDTO visitFull = backend.getVisitFull(visit.visitId);
+        confirm(visitFull.texts.size() == 1);
+        confirm(visitFull.texts.get(0).visitId == visit.visitId);
+        confirm(visitFull.texts.get(0).content.equals(text.content));
     }
 
     @DbTest
     public void testGetVisitFull2(Backend backend){
-        backend.listVisitFull2(19888, 0);
+
     }
 
     @DbTest

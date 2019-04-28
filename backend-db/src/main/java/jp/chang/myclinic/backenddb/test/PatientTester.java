@@ -45,9 +45,7 @@ class PatientTester extends TesterBase {
     public void testSeachPatient(Backend backend){
         List<PatientDTO> patients;
         patients = backend.searchPatient("鈴木");
-        System.out.println(patients.size());
         patients = backend.searchPatient("鈴木 子");
-        System.out.println(patients.size());
     }
 
 }

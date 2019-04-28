@@ -53,12 +53,8 @@ public class DiseaseTableBase extends Table<DiseaseDTO> {
                 "endDate",
                 false,
                 false,
-                (stmt, i, dto) ->
-                    stmt.setObject(i, TableBaseHelper.validUptoFromStringToLocalDate(dto.endDate)),
-                (rs, i, dto) ->
-                    dto.endDate =
-                        TableBaseHelper.validUptoFromLocalDateToString(
-                            rs.getObject(i, LocalDate.class))),
+                (stmt, i, dto) -> stmt.setObject(i, dto.endDate),
+                (rs, i, dto) -> dto.endDate = rs.getString(i)),
             new Column<>(
                 "end_reason",
                 "endReason",

@@ -1,8 +1,11 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.NotInDatabase;
+
 import java.util.List;
 import java.util.Objects;
 
+@NotInDatabase
 public class DiseaseNewDTO {
     public DiseaseDTO disease;
     public List<DiseaseAdjDTO> adjList;

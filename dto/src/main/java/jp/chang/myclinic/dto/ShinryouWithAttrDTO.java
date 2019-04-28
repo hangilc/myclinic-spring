@@ -1,5 +1,8 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.NotInDatabase;
+
+@NotInDatabase
 public class ShinryouWithAttrDTO {
 
     public ShinryouDTO shinryou;

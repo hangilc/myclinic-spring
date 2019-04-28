@@ -20,6 +20,7 @@ import com.google.googlejavaformat.java.Formatter;
 import jp.chang.myclinic.apitool.lib.DtoClassList;
 import jp.chang.myclinic.apitool.lib.Helper;
 import jp.chang.myclinic.apitool.lib.tables.*;
+import jp.chang.myclinic.dto.annotation.NotInDatabase;
 import picocli.CommandLine;
 
 import java.io.IOException;
@@ -51,7 +52,7 @@ class Tables implements Runnable {
     @CommandLine.Option(names = {"--tables-only"}, description = "Outputs only Table.java")
     private boolean tablesOnly;
 
-    @CommandLine.Parameters(paramLabel = "databse", arity = "1")
+    @CommandLine.Parameters(paramLabel = "database", arity = "1")
     private String database;
 
     private Formatter formatter = new Formatter();
@@ -70,6 +71,8 @@ class Tables implements Runnable {
         } else {
             dtoClasses = DtoClassList.getList();
         }
+        dtoClasses = dtoClasses.stream().filter(c -> !c.isAnnotationPresent(NotInDatabase.class))
+                .collect(toList());
         Config config = helper.getSpecifics(database);
         Supplier<Connection> connSupplier = helper.getConnectionProvider(database);
         try (Connection conn = connSupplier.get()) {

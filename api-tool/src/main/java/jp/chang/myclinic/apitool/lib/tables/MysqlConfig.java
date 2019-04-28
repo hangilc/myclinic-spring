@@ -37,7 +37,7 @@ public class MysqlConfig extends MysqlSpecifics implements Config {
             return helper.methodCall("LocalDate", "parse", fieldAccess);
         }
         if (dtoFieldClass == String.class && dbColumnClass == ValidUptoDate.class) {
-            return helper.methodCall("TableBaseHelper", "validUptoFromStringToLocalDate", fieldAccess);
+            return fieldAccess;
         }
         if (dtoFieldClass == Double.class && dbColumnClass == String.class) {
             return helper.methodCall("String", "valueOf", fieldAccess);
@@ -73,9 +73,8 @@ public class MysqlConfig extends MysqlSpecifics implements Config {
         }
         if (dbColumnClass == ValidUptoDate.class && dtoFieldClass == String.class) {
             return new DtoFieldSetterCreator(
-                    "getObject",
-                    List.of(helper.classLiteral(LocalDate.class)),
-                    colValue -> helper.methodCall("TableBaseHelper", "validUptoFromLocalDateToString", colValue)
+                    "getString",
+                    colValue -> colValue
             );
         }
         if (dbColumnClass == String.class && dtoFieldClass == Double.class) {
