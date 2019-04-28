@@ -8,7 +8,6 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.slf4j.LoggerFactory;
-
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.CompletionStageRxInvoker;
 import javax.ws.rs.client.Entity;
@@ -28,7 +27,9 @@ import java.util.logging.Level;
 
 @SuppressWarnings("unused")
 public class FrontendRest implements Frontend {
-  private static java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrontendRest.class.getName());
+
+  private static java.util.logging.Logger logger =
+      java.util.logging.Logger.getLogger(FrontendRest.class.getName());
 
   static ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -42,7 +43,6 @@ public class FrontendRest implements Frontend {
         new JacksonJaxbJsonProvider(mapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
     Feature feature = new LoggingFeature(logger, Level.INFO, null, null);
     clientConfig.register(feature);
-    clientConfig.register(new JacksonFeature());
   }
 
   interface ParamSetter {
@@ -74,10 +74,8 @@ public class FrontendRest implements Frontend {
   }
 
   private <T> CompletableFuture<T> post(
-      String path, Consumer<ParamSetter> paramSetter, Entity body, GenericType<T> returnType) {
-    return call(path, paramSetter)
-        .post(body, returnType)
-        .toCompletableFuture();
+      String path, Consumer<ParamSetter> paramSetter, Object body, GenericType<T> returnType) {
+    return call(path, paramSetter).post(Entity.json(body), returnType).toCompletableFuture();
   }
 
   @Override
@@ -90,20 +88,12 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Integer> enterPatient(PatientDTO patient) {
-    return post(
-        "enter-patient",
-        setter -> {},
-        Entity.entity(patient, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-patient", setter -> {}, patient, new GenericType<Integer>() {});
   }
 
   @Override
   public CompletableFuture<Void> updatePatient(PatientDTO patient) {
-    return post(
-        "update-patient",
-        setter -> {},
-        Entity.entity(patient, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-patient", setter -> {}, patient, new GenericType<Void>() {});
   }
 
   @Override
@@ -194,10 +184,7 @@ public class FrontendRest implements Frontend {
   @Override
   public CompletableFuture<Void> startExam(int visitId) {
     return post(
-        "start-exam",
-        setter -> setter.set("visit-id", visitId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        "start-exam", setter -> setter.set("visit-id", visitId), null, new GenericType<Void>() {});
   }
 
   @Override
@@ -205,7 +192,7 @@ public class FrontendRest implements Frontend {
     return post(
         "suspend-exam",
         setter -> setter.set("visit-id", visitId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -217,17 +204,13 @@ public class FrontendRest implements Frontend {
           setter.set("visit-id", visitId);
           setter.set("charge", charge);
         },
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Void> enterCharge(ChargeDTO charge) {
-    return post(
-        "enter-charge",
-        setter -> {},
-        Entity.entity(charge, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("enter-charge", setter -> {}, charge, new GenericType<Void>() {});
   }
 
   @Override
@@ -238,7 +221,7 @@ public class FrontendRest implements Frontend {
           setter.set("visit-id", visitId);
           setter.set("charge", charge);
         },
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -267,7 +250,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-wqueue",
         setter -> setter.set("visit-id", visitId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -306,11 +289,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Void> updateHoken(VisitDTO visit) {
-    return post(
-        "update-hoken",
-        setter -> {},
-        Entity.entity(visit, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-hoken", setter -> {}, visit, new GenericType<Void>() {});
   }
 
   @Override
@@ -328,20 +307,12 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Integer> enterDrug(DrugDTO drug) {
-    return post(
-        "enter-drug",
-        setter -> {},
-        Entity.entity(drug, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-drug", setter -> {}, drug, new GenericType<Integer>() {});
   }
 
   @Override
   public CompletableFuture<Void> updateDrug(DrugDTO drug) {
-    return post(
-        "update-drug",
-        setter -> {},
-        Entity.entity(drug, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-drug", setter -> {}, drug, new GenericType<Void>() {});
   }
 
   @Override
@@ -349,17 +320,14 @@ public class FrontendRest implements Frontend {
     return post(
         "batch-update-drug-days",
         setter -> setter.set("days", days),
-        Entity.entity(drugIds, MediaType.APPLICATION_JSON),
+        drugIds,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Void> deleteDrug(int drugId) {
     return post(
-        "delete-drug",
-        setter -> setter.set("drug-id", drugId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        "delete-drug", setter -> setter.set("drug-id", drugId), null, new GenericType<Void>() {});
   }
 
   @Override
@@ -367,17 +335,13 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-drug-cascading",
         setter -> setter.set("drug-id", drugId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
-    return post(
-        "batch-delete-drugs",
-        setter -> {},
-        Entity.entity(drugIds, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("batch-delete-drugs", setter -> {}, drugIds, new GenericType<Void>() {});
   }
 
   @Override
@@ -456,7 +420,7 @@ public class FrontendRest implements Frontend {
     return post(
         "mark-drugs-as-prescribed",
         setter -> setter.set("visit-id", visitId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -470,20 +434,12 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr) {
-    return post(
-        "enter-drug-attr",
-        setter -> {},
-        Entity.entity(drugAttr, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("enter-drug-attr", setter -> {}, drugAttr, new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
-    return post(
-        "update-drug-attr",
-        setter -> {},
-        Entity.entity(drugAttr, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-drug-attr", setter -> {}, drugAttr, new GenericType<Void>() {});
   }
 
   @Override
@@ -491,17 +447,14 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-drug-attr",
         setter -> setter.set("drug-id", drugId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
     return post(
-        "batch-get-drug-attr",
-        setter -> {},
-        Entity.entity(drugIds, MediaType.APPLICATION_JSON),
-        new GenericType<List<DrugAttrDTO>>() {});
+        "batch-get-drug-attr", setter -> {}, drugIds, new GenericType<List<DrugAttrDTO>>() {});
   }
 
   @Override
@@ -520,7 +473,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-drug-tekiyou",
         setter -> setter.set("drug-id", drugId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -535,7 +488,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-visit-safely",
         setter -> setter.set("visit-id", visitId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -585,20 +538,12 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds) {
-    return post(
-        "batch-get-shouki",
-        setter -> {},
-        Entity.entity(visitIds, MediaType.APPLICATION_JSON),
-        new GenericType<List<ShoukiDTO>>() {});
+    return post("batch-get-shouki", setter -> {}, visitIds, new GenericType<List<ShoukiDTO>>() {});
   }
 
   @Override
   public CompletableFuture<Void> updateShouki(ShoukiDTO shouki) {
-    return post(
-        "update-shouki",
-        setter -> {},
-        Entity.entity(shouki, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-shouki", setter -> {}, shouki, new GenericType<Void>() {});
   }
 
   @Override
@@ -606,17 +551,13 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-shouki",
         setter -> setter.set("visit-id", visitId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Integer> enterText(TextDTO text) {
-    return post(
-        "enter-text",
-        setter -> {},
-        Entity.entity(text, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-text", setter -> {}, text, new GenericType<Integer>() {});
   }
 
   @Override
@@ -626,20 +567,13 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Void> updateText(TextDTO text) {
-    return post(
-        "update-text",
-        setter -> {},
-        Entity.entity(text, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-text", setter -> {}, text, new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Void> deleteText(int textId) {
     return post(
-        "delete-text",
-        setter -> setter.set("text-id", textId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        "delete-text", setter -> setter.set("text-id", textId), null, new GenericType<Void>() {});
   }
 
   @Override
@@ -691,11 +625,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou) {
-    return post(
-        "enter-shinryou",
-        setter -> {},
-        Entity.entity(shinryou, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-shinryou", setter -> {}, shinryou, new GenericType<Integer>() {});
   }
 
   @Override
@@ -706,7 +636,7 @@ public class FrontendRest implements Frontend {
           setter.set("visit-id", visitId);
           setter.set("name", name);
         },
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<ShinryouDTO>() {});
   }
 
@@ -715,7 +645,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-shinryou",
         setter -> setter.set("shinryou-id", shinryouId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -724,17 +654,14 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-shinryou-cascading",
         setter -> setter.set("shinryou-id", shinryouId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
     return post(
-        "batch-delete-shinryou-cascading",
-        setter -> {},
-        Entity.entity(shinryouIds, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        "batch-delete-shinryou-cascading", setter -> {}, shinryouIds, new GenericType<Void>() {});
   }
 
   @Override
@@ -755,11 +682,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-    return post(
-        "batch-enter-shinryou",
-        setter -> {},
-        Entity.entity(shinryouList, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("batch-enter-shinryou", setter -> {}, shinryouList, new GenericType<Void>() {});
   }
 
   @Override
@@ -767,7 +690,7 @@ public class FrontendRest implements Frontend {
     return post(
         "list-shinryou-full-by-ids",
         setter -> {},
-        Entity.entity(shinryouIds, MediaType.APPLICATION_JSON),
+        shinryouIds,
         new GenericType<List<ShinryouFullDTO>>() {});
   }
 
@@ -777,7 +700,7 @@ public class FrontendRest implements Frontend {
     return post(
         "list-shinryou-full-with-attr-by-ids",
         setter -> {},
-        Entity.entity(shinryouIds, MediaType.APPLICATION_JSON),
+        shinryouIds,
         new GenericType<List<ShinryouFullWithAttrDTO>>() {});
   }
 
@@ -818,7 +741,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-duplicate-shinryou",
         setter -> setter.set("visit-id", visitId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<List<Integer>>() {});
   }
 
@@ -827,7 +750,7 @@ public class FrontendRest implements Frontend {
     return post(
         "batch-get-shinryou-attr",
         setter -> {},
-        Entity.json(shinryouIds.toArray(new Integer[]{})),
+        shinryouIds,
         new GenericType<List<ShinryouAttrDTO>>() {});
   }
 
@@ -841,11 +764,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Void> enterShinryouAttr(ShinryouAttrDTO shinryouAttr) {
-    return post(
-        "enter-shinryou-attr",
-        setter -> {},
-        Entity.entity(shinryouAttr, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("enter-shinryou-attr", setter -> {}, shinryouAttr, new GenericType<Void>() {});
   }
 
   @Override
@@ -853,26 +772,18 @@ public class FrontendRest implements Frontend {
     return post(
         "set-shinryou-attr",
         setter -> setter.set("shinryou-id", shinryouId),
-        Entity.entity(attr, MediaType.APPLICATION_JSON),
+        attr,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Integer> enterConduct(ConductDTO conduct) {
-    return post(
-        "enter-conduct",
-        setter -> {},
-        Entity.entity(conduct, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-conduct", setter -> {}, conduct, new GenericType<Integer>() {});
   }
 
   @Override
   public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req) {
-    return post(
-        "enter-conduct-full",
-        setter -> {},
-        Entity.entity(req, MediaType.APPLICATION_JSON),
-        new GenericType<ConductFullDTO>() {});
+    return post("enter-conduct-full", setter -> {}, req, new GenericType<ConductFullDTO>() {});
   }
 
   @Override
@@ -888,7 +799,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-conduct-cascading",
         setter -> setter.set("conduct-id", conductId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -900,7 +811,7 @@ public class FrontendRest implements Frontend {
           setter.set("conduct-id", conductId);
           setter.set("conduct-kind", conductKind);
         },
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -917,7 +828,7 @@ public class FrontendRest implements Frontend {
     return post(
         "list-conduct-full-by-ids",
         setter -> {},
-        Entity.entity(conductIds, MediaType.APPLICATION_JSON),
+        conductIds,
         new GenericType<List<ConductFullDTO>>() {});
   }
 
@@ -939,11 +850,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Void> enterGazouLabel(GazouLabelDTO gazouLabel) {
-    return post(
-        "enter-gazou-label",
-        setter -> {},
-        Entity.entity(gazouLabel, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("enter-gazou-label", setter -> {}, gazouLabel, new GenericType<Void>() {});
   }
 
   @Override
@@ -959,17 +866,13 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-gazou-label",
         setter -> setter.set("conduct-id", conductId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
-    return post(
-        "update-gazou-label",
-        setter -> {},
-        Entity.entity(gazouLabel, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-gazou-label", setter -> {}, gazouLabel, new GenericType<Void>() {});
   }
 
   @Override
@@ -980,17 +883,13 @@ public class FrontendRest implements Frontend {
           setter.set("conduct-id", conductId);
           setter.set("label", label);
         },
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Integer> enterConductShinryou(ConductShinryouDTO shinryou) {
-    return post(
-        "enter-conduct-shinryou",
-        setter -> {},
-        Entity.entity(shinryou, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-conduct-shinryou", setter -> {}, shinryou, new GenericType<Integer>() {});
   }
 
   @Override
@@ -1006,7 +905,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-conduct-shinryou",
         setter -> setter.set("conduct-shinryou-id", conductShinryouId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -1036,11 +935,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Integer> enterConductDrug(ConductDrugDTO drug) {
-    return post(
-        "enter-conduct-drug",
-        setter -> {},
-        Entity.entity(drug, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-conduct-drug", setter -> {}, drug, new GenericType<Integer>() {});
   }
 
   @Override
@@ -1056,7 +951,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-conduct-drug",
         setter -> setter.set("conduct-drug-id", conductDrugId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -1086,11 +981,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Integer> enterConductKizai(ConductKizaiDTO kizai) {
-    return post(
-        "enter-conduct-kizai",
-        setter -> {},
-        Entity.entity(kizai, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-conduct-kizai", setter -> {}, kizai, new GenericType<Integer>() {});
   }
 
   @Override
@@ -1106,7 +997,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-conduct-kizai",
         setter -> setter.set("conduct-kizai-id", conductKizaiId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -1136,11 +1027,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
-    return post(
-        "finish-cashier",
-        setter -> {},
-        Entity.entity(payment, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("finish-cashier", setter -> {}, payment, new GenericType<Void>() {});
   }
 
   @Override
@@ -1153,11 +1040,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
-    return post(
-        "enter-shahokokuho",
-        setter -> {},
-        Entity.entity(shahokokuho, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-shahokokuho", setter -> {}, shahokokuho, new GenericType<Integer>() {});
   }
 
   @Override
@@ -1182,11 +1065,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Integer> enterDisease(DiseaseDTO disease) {
-    return post(
-        "enter-disease",
-        setter -> {},
-        Entity.entity(disease, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-disease", setter -> {}, disease, new GenericType<Integer>() {});
   }
 
   @Override
@@ -1199,11 +1078,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Void> updateDisease(DiseaseDTO disease) {
-    return post(
-        "update-disease",
-        setter -> {},
-        Entity.entity(disease, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-disease", setter -> {}, disease, new GenericType<Void>() {});
   }
 
   @Override
@@ -1211,7 +1086,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-disease",
         setter -> setter.set("disease-id", diseaseId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -1243,19 +1118,12 @@ public class FrontendRest implements Frontend {
   public CompletableFuture<Void> batchUpdateDiseaseEndReason(
       List<DiseaseModifyEndReasonDTO> modifications) {
     return post(
-        "batch-update-disease-end-reason",
-        setter -> {},
-        Entity.entity(modifications, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        "batch-update-disease-end-reason", setter -> {}, modifications, new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
-    return post(
-        "modify-disease",
-        setter -> {},
-        Entity.entity(diseaseModifyDTO, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("modify-disease", setter -> {}, diseaseModifyDTO, new GenericType<Void>() {});
   }
 
   @Override
@@ -1271,7 +1139,7 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-pharma-queue",
         setter -> setter.set("visit-id", visitId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
@@ -1292,7 +1160,7 @@ public class FrontendRest implements Frontend {
     return post(
         "resolve-shinryou-master-by-name",
         setter -> setter.set("at", at),
-        Entity.entity(nameCandidates, MediaType.APPLICATION_JSON),
+        nameCandidates,
         new GenericType<ShinryouMasterDTO>() {});
   }
 
@@ -1313,7 +1181,7 @@ public class FrontendRest implements Frontend {
     return post(
         "batch-resolve-shinryou-names",
         setter -> setter.set("at", at),
-        Entity.entity(args, MediaType.APPLICATION_JSON),
+        args,
         new GenericType<Map<String, Integer>>() {});
   }
 
@@ -1391,7 +1259,7 @@ public class FrontendRest implements Frontend {
     return post(
         "resolve-kizai-master-by-name",
         setter -> setter.set("at", at),
-        Entity.entity(nameCandidates, MediaType.APPLICATION_JSON),
+        nameCandidates,
         new GenericType<KizaiMasterDTO>() {});
   }
 
@@ -1412,7 +1280,7 @@ public class FrontendRest implements Frontend {
     return post(
         "batch-resolve-kizai-names",
         setter -> setter.set("at", at),
-        Entity.entity(args, MediaType.APPLICATION_JSON),
+        args,
         new GenericType<Map<String, Integer>>() {});
   }
 
@@ -1471,11 +1339,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Integer> enterPrescExample(PrescExampleDTO prescExample) {
-    return post(
-        "enter-presc-example",
-        setter -> {},
-        Entity.entity(prescExample, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-presc-example", setter -> {}, prescExample, new GenericType<Integer>() {});
   }
 
   @Override
@@ -1483,17 +1347,13 @@ public class FrontendRest implements Frontend {
     return post(
         "delete-presc-example",
         setter -> setter.set("presc-example-id", prescExampleId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
+        null,
         new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Void> updatePrescExample(PrescExampleDTO prescExample) {
-    return post(
-        "update-presc-example",
-        setter -> {},
-        Entity.entity(prescExample, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-presc-example", setter -> {}, prescExample, new GenericType<Void>() {});
   }
 
   @Override
@@ -1512,11 +1372,7 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req) {
-    return post(
-        "batch-enter",
-        setter -> {},
-        Entity.entity(req, MediaType.APPLICATION_JSON),
-        new GenericType<BatchEnterResultDTO>() {});
+    return post("batch-enter", setter -> {}, req, new GenericType<BatchEnterResultDTO>() {});
   }
 
   @Override
@@ -1525,17 +1381,14 @@ public class FrontendRest implements Frontend {
     return post(
         "batch-enter-by-names",
         setter -> setter.set("visit-id", visitId),
-        Entity.entity(req, MediaType.APPLICATION_JSON),
+        req,
         new GenericType<BatchEnterResultDTO>() {});
   }
 
   @Override
   public CompletableFuture<Void> prescDone(int visitId) {
     return post(
-        "presc-done",
-        setter -> setter.set("visit-id", visitId),
-        Entity.entity(null, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+        "presc-done", setter -> setter.set("visit-id", visitId), null, new GenericType<Void>() {});
   }
 
   @Override
@@ -1566,7 +1419,7 @@ public class FrontendRest implements Frontend {
     return post(
         "batch-resolve-stock-drug",
         setter -> setter.set("at", at),
-        Entity.entity(iyakuhincodes, MediaType.APPLICATION_JSON),
+        iyakuhincodes,
         new GenericType<List<ResolvedStockDrugDTO>>() {});
   }
 
@@ -1595,28 +1448,16 @@ public class FrontendRest implements Frontend {
 
   @Override
   public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-    return post(
-        "enter-drug-with-attr",
-        setter -> {},
-        Entity.entity(drugWithAttr, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-drug-with-attr", setter -> {}, drugWithAttr, new GenericType<Integer>() {});
   }
 
   @Override
   public CompletableFuture<Void> updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-    return post(
-        "update-drug-with-attr",
-        setter -> {},
-        Entity.entity(drugWithAttr, MediaType.APPLICATION_JSON),
-        new GenericType<Void>() {});
+    return post("update-drug-with-attr", setter -> {}, drugWithAttr, new GenericType<Void>() {});
   }
 
   @Override
   public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
-    return post(
-        "enter-new-disease",
-        setter -> {},
-        Entity.entity(disease, MediaType.APPLICATION_JSON),
-        new GenericType<Integer>() {});
+    return post("enter-new-disease", setter -> {}, disease, new GenericType<Integer>() {});
   }
 }

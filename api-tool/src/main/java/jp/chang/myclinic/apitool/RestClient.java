@@ -195,10 +195,8 @@ public class RestClient implements Runnable {
         }
         ParamsData paramsData = createParamsData(backendMethod.getParameters());
         Expression setterLambda = createSetterLambda(paramsData.queryParams);
-        Expression entity = new MethodCallExpr(new NameExpr("Entity"), "entity",
-                nodeList(paramsData.bodyParam == null ? new NullLiteralExpr() :
-                                new NameExpr(paramsData.bodyParam.getNameAsString()),
-                        new FieldAccessExpr(new NameExpr("MediaType"), "APPLICATION_JSON")));
+        Expression entity = paramsData.bodyParam == null ? new NullLiteralExpr() :
+                new NameExpr(paramsData.bodyParam.getNameAsString());
         Type retType = helper.getBoxedType(backendMethod.getType());
         Expression call = new MethodCallExpr(null, "post", nodeList(
                 new StringLiteralExpr(path),
