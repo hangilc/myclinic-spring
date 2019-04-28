@@ -18,8 +18,10 @@ public class DtoClassList {
             ConductShinryouDTO.class,
             DiseaseDTO.class,
             DiseaseAdjDTO.class,
+            DiseaseNewDTO.class,
             DrugDTO.class,
             DrugAttrDTO.class,
+            DrugWithAttrDTO.class,
             GazouLabelDTO.class,
             HotlineDTO.class,
             IntraclinicCommentDTO.class,
@@ -41,6 +43,7 @@ public class DtoClassList {
             ShinryouDTO.class,
             ShinryouAttrDTO.class,
             ShinryouMasterDTO.class,
+            ShinryouWithAttrDTO.class,
             ShoukiDTO.class,
             ShuushokugoMasterDTO.class,
             TextDTO.class,
@@ -48,24 +51,23 @@ public class DtoClassList {
             WqueueDTO.class
     );
 
+    private static Map<String, Class<?>> classMap = new HashMap<>();
+
+    static {
+        for(Class<?> cls: list){
+            classMap.put(cls.getSimpleName(), cls);
+        }
+    }
+
     public static List<Class<?>> getList() {
         return list;
     }
 
     public static Class<?> getDtoClassByName(String name){
-        for(Class<?> cls: getList()){
-            if( cls.getSimpleName().equals(name) ){
-                return cls;
-            }
-        }
-        return null;
+        return classMap.get(name);
     }
 
     public static Map<String, Class<?>> getNameDtoClassMap(){
-        Map<String, Class<?>> map = new HashMap<>();
-        for(Class<?> cls: getList()){
-            map.put(cls.getSimpleName(), cls);
-        }
-        return map;
+        return classMap;
     }
 }

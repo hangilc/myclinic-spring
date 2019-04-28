@@ -31,10 +31,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
@@ -221,41 +218,49 @@ public class Helper {
     }
 
     public static class AutoIncInfo {
-        List<String> fieldNames = new ArrayList<>();
-        Class<?> autoIncClass;
-        Collection<Parameter> origParameters;
+        public Parameter param;
+        public List<String> fieldNames = new ArrayList<>();
+        public Class<?> autoIncClass;
+
+        @Override
+        public String toString() {
+            return "AutoIncInfo{" +
+                    "param=" + param +
+                    ", fieldNames=" + fieldNames +
+                    ", autoIncClass=" + autoIncClass +
+                    '}';
+        }
     }
 
     public AutoIncInfo scanAutoInc(Collection<Parameter> parameters) {
         AutoIncInfo info = new AutoIncInfo();
-        info.origParameters = parameters;
-        scanAutoInc(parameters, info);
+        List<String> fields = Collections.emptyList();
+        for (Parameter param : parameters) {
+            Class<?> c = DtoClassList.getDtoClassByName(param.getTypeAsString());
+            if (c != null) {
+                scanAutoIncIter(param, c, fields, info, parameters);
+            }
+        }
         return info;
     }
 
-    private void scanAutoInc(Collection<Parameter> parameters, AutoIncInfo info) {
-        for (Parameter param : parameters) {
-            String name = param.getNameAsString();
-            Class<?> c = DtoClassList.getDtoClassByName(name);
-            if (c != null) {
-                scanAutoInc(c, info);
-            }
-        }
-    }
-
-    private void scanAutoInc(Class<?> cls, AutoIncInfo info) {
-        for (Field field : cls.getFields()) {
+    private void scanAutoIncIter(Parameter param, Class<?> dtoClass, List<String> fields, AutoIncInfo info,
+                                 Collection<Parameter> parameters) {
+        for (Field field : dtoClass.getFields()) {
+            fields = new ArrayList<>(fields);
+            fields.add(field.getName());
             if (field.isAnnotationPresent(AutoInc.class)) {
                 if (info.autoIncClass != null) {
-                    System.err.println("Multiple auto incs: " + info.origParameters);
+                    System.err.println("Multiple auto incs: " + parameters);
                     System.exit(1);
                 }
-                info.fieldNames.add(field.getName());
+                info.param = param;
+                info.fieldNames = fields;
                 info.autoIncClass = field.getType();
-                Class<?> fc = DtoClassList.getDtoClassByName(field.getType().getSimpleName());
-                if( fc != null ){
-                    scanAutoInc(fc, info);
-                }
+            }
+            Class<?> cls = DtoClassList.getDtoClassByName(field.getType().getSimpleName());
+            if (cls != null) {
+                scanAutoIncIter(param, cls, fields, info, parameters);
             }
         }
     }

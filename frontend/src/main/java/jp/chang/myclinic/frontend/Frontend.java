@@ -309,8 +309,6 @@ public interface Frontend {
 
     CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at);
 
-    CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease);
-
     CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at);
 
     CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at);
@@ -358,4 +356,6 @@ public interface Frontend {
     CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr);
 
     CompletableFuture<Void> updateDrugWithAttr(DrugWithAttrDTO drugWithAttr);
+
+    CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease);
 }

@@ -764,11 +764,6 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
-        return delegate.enterNewDisease(disease);
-    }
-
-    @Override
     public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
         return delegate.resolveShinryouMasterByKey(key, at);
     }
@@ -878,4 +873,18 @@ public class FrontendProxy implements Frontend {
         return delegate.enterShinryouByName(visitId, name);
     }
 
+    @Override
+    public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        return delegate.enterDrugWithAttr(drugWithAttr);
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        return delegate.updateDrugWithAttr(drugWithAttr);
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
+        return delegate.enterNewDisease(disease);
+    }
 }

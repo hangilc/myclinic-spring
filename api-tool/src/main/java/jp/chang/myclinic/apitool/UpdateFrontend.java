@@ -113,37 +113,37 @@ class UpdateFrontend implements Runnable {
         }
     }
 
-    private MethodDeclaration implementFrontendBackendMethod(MethodDeclaration backendMethod) {
-        String name = backendMethod.getNameAsString();
-        backendMethod.addMarkerAnnotation("Override");
-        backendMethod.setModifiers(Keyword.PUBLIC);
-        if (name.startsWith("enter")) {
-            List<Class<?>> dtoClasses = backendMethod.getParameters().stream()
-                    .map(p -> nameToDtoClassMap.get(p.getNameAsString()))
-                    .filter(Objects::nonNull)
-                    .collect(toList());
-            List<Field> autoIncs = dtoClasses.stream().flatMap(c -> helper.getAutoIncs(c).stream())
-                    .collect(toList());
-            if (autoIncs.size() == 1) {
-                Field autoInc = autoIncs.get(0);
-                backendMethod.setBody(makeEnterWithAutoIncBody(
-                        backendMethod.getNameAsString(),
-                        backendMethod.getParameter(0).getNameAsString(),
-                        autoInc.getName()
-                ));
-            } else {
-                backendMethod.setBody(makeTxBody(backendMethod));
-            }
-        } else if (name.startsWith("get") || name.startsWith("list") ||
-                name.startsWith("search") || name.startsWith("find") ||
-                name.startsWith("count") || name.startsWith("resolve") ||
-                name.startsWith("batchResolve")) {
-            backendMethod.setBody(makeBody("query", backendMethod));
-        } else {
-            backendMethod.setBody(makeTxBody(backendMethod));
-        }
-        return backendMethod;
-    }
+//    private MethodDeclaration implementFrontendBackendMethod(MethodDeclaration backendMethod) {
+//        String name = backendMethod.getNameAsString();
+//        backendMethod.addMarkerAnnotation("Override");
+//        backendMethod.setModifiers(Keyword.PUBLIC);
+//        if (name.startsWith("enter")) {
+//            List<Class<?>> dtoClasses = backendMethod.getParameters().stream()
+//                    .map(p -> nameToDtoClassMap.get(p.getNameAsString()))
+//                    .filter(Objects::nonNull)
+//                    .collect(toList());
+//            List<Field> autoIncs = dtoClasses.stream().flatMap(c -> helper.getAutoIncs(c).stream())
+//                    .collect(toList());
+//            if (autoIncs.size() == 1) {
+//                Field autoInc = autoIncs.get(0);
+//                backendMethod.setBody(makeEnterWithAutoIncBody(
+//                        backendMethod.getNameAsString(),
+//                        backendMethod.getParameter(0).getNameAsString(),
+//                        autoInc.getName()
+//                ));
+//            } else {
+//                backendMethod.setBody(makeTxBody(backendMethod));
+//            }
+//        } else if (name.startsWith("get") || name.startsWith("list") ||
+//                name.startsWith("search") || name.startsWith("find") ||
+//                name.startsWith("count") || name.startsWith("resolve") ||
+//                name.startsWith("batchResolve")) {
+//            backendMethod.setBody(makeBody("query", backendMethod));
+//        } else {
+//            backendMethod.setBody(makeTxBody(backendMethod));
+//        }
+//        return backendMethod;
+//    }
 
     private void updateFrontendAdapter() throws Exception {
         CompilationUnit backendUnit = StaticJavaParser.parse(Paths.get(backendSourceFile));
@@ -218,25 +218,25 @@ class UpdateFrontend implements Runnable {
         return result;
     }
 
-    private Type makeFrontendReturnType(MethodDeclaration backendMethod) {
-        if (backendMethod.getNameAsString().startsWith("enter")) {
-            if (backendMethod.getType().isVoidType()) {
-                Parameter param = backendMethod.getParameter(0);
-                Type paramType = param.getType();
-                Class<?> dtoClass = nameToDtoClassMap.get(paramType.asString());
-                if (dtoClass != null) {
-                    List<Field> autoIncs = helper.getAutoIncs(dtoClass);
-                    if (autoIncs.size() == 1) {
-                        Field autoInc = autoIncs.get(0);
-                        Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
-                        Type retType = new ClassOrInterfaceType(null, autoIncClass.getSimpleName());
-                        return wrapWithCompletableFuture(retType);
-                    }
-                }
-            }
-        }
-        return wrapWithCompletableFuture(backendMethod.getType());
-    }
+//    private Type makeFrontendReturnType(MethodDeclaration backendMethod) {
+//        if (backendMethod.getNameAsString().startsWith("enter")) {
+//            if (backendMethod.getType().isVoidType()) {
+//                Parameter param = backendMethod.getParameter(0);
+//                Type paramType = param.getType();
+//                Class<?> dtoClass = nameToDtoClassMap.get(paramType.asString());
+//                if (dtoClass != null) {
+//                    List<Field> autoIncs = helper.getAutoIncs(dtoClass);
+//                    if (autoIncs.size() == 1) {
+//                        Field autoInc = autoIncs.get(0);
+//                        Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
+//                        Type retType = new ClassOrInterfaceType(null, autoIncClass.getSimpleName());
+//                        return wrapWithCompletableFuture(retType);
+//                    }
+//                }
+//            }
+//        }
+//        return wrapWithCompletableFuture(backendMethod.getType());
+//    }
 
     private BlockStmt makeEnterWithAutoIncBody(String methodName, String argName, String autoIncField) {
         BlockStmt blockStmt = new BlockStmt();

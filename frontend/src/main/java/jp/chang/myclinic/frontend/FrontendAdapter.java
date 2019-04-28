@@ -762,11 +762,6 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
@@ -876,4 +871,18 @@ public class FrontendAdapter implements Frontend {
         throw new RuntimeException("not implemented");
     }
 
+    @Override
+    public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
+        throw new RuntimeException("not implemented");
+    }
 }

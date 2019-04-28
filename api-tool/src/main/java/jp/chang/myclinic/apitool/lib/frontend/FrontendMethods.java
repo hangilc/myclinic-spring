@@ -16,37 +16,20 @@ import static java.util.stream.Collectors.toList;
 
 public class FrontendMethods {
 
-    private static Map<String, Class<?>> nameToDtoClassMap = DtoClassList.getNameDtoClassMap();
     private static Helper helper = Helper.getInstance();
 
     public static FrontendMethod createFrontendMethod(MethodDeclaration backendMethod) {
         String methodName = backendMethod.getNameAsString();
         if (methodName.startsWith("enter")) {
-            Field autoIncField = null;
-            Parameter dtoParameter = null;
-            Class<?> dtoClass = null;
-            for (Parameter param : backendMethod.getParameters()) {
-                Class<?> cls = nameToDtoClassMap.get(param.getTypeAsString());
-                if (cls != null) {
-                    List<Field> autoIncs = helper.getAutoIncs(cls);
-                    for (Field autoInc : autoIncs) {
-                        if (autoIncField != null) {
-                            System.err.println("Too many aoto inc fields: " + backendMethod);
-                            System.exit(1);
-                        }
-                        autoIncField = autoInc;
-                        dtoParameter = param;
-                        dtoClass = cls;
-                    }
-                }
-            }
-            if (autoIncField != null) {
+            Helper.AutoIncInfo autoIncInfo = helper.scanAutoInc(backendMethod.getParameters());
+            if (autoIncInfo.autoIncClass != null) {
                 if (!backendMethod.getType().isVoidType()) {
                     System.err.println("Non-void return type in auto-inc insert method: " +
                             backendMethod);
                     System.exit(1);
                 }
-                return new FrontendMethodAutoInc(backendMethod, autoIncField, dtoParameter, dtoClass);
+                return new FrontendMethodAutoInc(backendMethod, autoIncInfo.param,
+                        autoIncInfo.autoIncClass, autoIncInfo.fieldNames);
             } else {
                 if (backendMethod.getType().isVoidType()) {
                     return new FrontendMethodTxProc(backendMethod);

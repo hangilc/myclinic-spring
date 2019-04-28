@@ -3,7 +3,6 @@ package jp.chang.myclinic.frontend;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -810,14 +809,6 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
-        return tx(backend -> {
-            backend.enterNewDisease(disease);
-            return disease.disease.diseaseId;
-        });
-    }
-
-    @Override
     public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
         return query(backend -> backend.resolveShinryouMasterByKey(key, at));
     }
@@ -927,4 +918,24 @@ public class FrontendBackend implements Frontend {
         return tx(backend -> backend.enterShinryouByName(visitId, name));
     }
 
+    @Override
+    public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        return tx(backend -> {
+            backend.enterDrugWithAttr(drugWithAttr);
+            return drugWithAttr.drug.drugId;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        return txProc(backend -> backend.updateDrugWithAttr(drugWithAttr));
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
+        return tx(backend -> {
+            backend.enterNewDisease(disease);
+            return disease.disease.diseaseId;
+        });
+    }
 }

@@ -15,42 +15,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
 
 public class FrontendMethodAutoInc extends FrontendMethodBase {
 
-    private Field autoIncField;
-    private Parameter dtoParameter;
-    private Class<?> dtoClass;
+    private Parameter parameter;
+    private Class<?> autoIncClass;
+    private List<String> autoIncFieldNames;
 
-    FrontendMethodAutoInc(MethodDeclaration backendMethod, Field autoIncField,
-                          Parameter dtoParameter, Class<?> dtoClass) {
+    FrontendMethodAutoInc(MethodDeclaration backendMethod,
+                          Parameter parameter,
+                          Class<?> autoIncClass,
+                          List<String> autoIncFieldNames) {
         super(backendMethod);
-        this.autoIncField = autoIncField;
-        this.dtoParameter = dtoParameter;
-        this.dtoClass = dtoClass;
+        this.parameter = parameter;
+        this.autoIncClass = autoIncClass;
+        this.autoIncFieldNames = autoIncFieldNames;
     }
 
     @Override
     Type getReturnType(){
-        Class<?> boxed = helper.getBoxedClass(autoIncField.getType());
+        Class<?> boxed = helper.getBoxedClass(autoIncClass);
         return helper.createGenericType("CompletableFuture", boxed.getSimpleName());
     }
 
     @Override
     public MethodDeclaration createFrontendBackendMethod() {
         // return tx(backend -> { backend.---(---); return ----.---; });
+        FieldAccessExpr fieldAccessExpr = new FieldAccessExpr(
+                parameter.getNameAsExpression(), autoIncFieldNames.get(0));
+        for(String fieldName: autoIncFieldNames.subList(1, autoIncFieldNames.size())){
+            fieldAccessExpr = new FieldAccessExpr(fieldAccessExpr, fieldName);
+        }
         BlockStmt blockStmt = new BlockStmt();
         BlockStmt lambdaBody = new BlockStmt(nodeList(
                 new ExpressionStmt(
                         new MethodCallExpr(new NameExpr("backend"), getMethodName(),
                                 nodeList(getParameterValues()))
                 ),
-                new ReturnStmt(
-                        new FieldAccessExpr(dtoParameter.getNameAsExpression(),
-                                autoIncField.getName())
-                )
+                new ReturnStmt(fieldAccessExpr)
         ));
         LambdaExpr lambdaExpr = new LambdaExpr(
                 new Parameter(new UnknownType(), "backend"),
