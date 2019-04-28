@@ -73,11 +73,11 @@ public class RestServer implements Runnable {
         }
         if (name.startsWith("enter")) {
             method.addAnnotation(new MarkerAnnotationExpr("POST"));
-            AutoIncInfo autoIncInfo = new AutoIncInfo();
-            if (paramsInfo.bodyParam != null && isAutoIncMethod(method, paramsInfo.bodyParam, autoIncInfo)) {
-                method.setType(autoIncInfo.autoIncField.getType().getSimpleName());
+            Helper.AutoIncInfo autoIncInfo = helper.scanAutoInc(method.getParameters());
+            if( autoIncInfo.autoIncClass != null ){
+                method.setType(autoIncInfo.autoIncClass.getSimpleName());
                 method.setBody(createAutoIncBlock(name, paramsInfo.bodyParam.getNameAsString(),
-                        autoIncInfo.autoIncField.getName()));
+                        autoIncInfo.fieldNames));
             } else {
                 if (method.getType().isVoidType()) {
                     method.setBody(createVoidBlock(name, method.getParameters()));
@@ -174,13 +174,12 @@ public class RestServer implements Runnable {
                 new FieldAccessExpr(new NameExpr("MediaType"), "APPLICATION_JSON"));
     }
 
-    private static class AutoIncInfo {
-        //private Class<?> dtoClass;
-        private Field autoIncField;
-    }
-
-    private boolean isAutoIncMethod(MethodDeclaration m, Parameter complexParam, AutoIncInfo info) {
-        throw new RuntimeException("not implemented");
+//    private static class AutoIncInfo {
+//        //private Class<?> dtoClass;
+//        private Field autoIncField;
+//    }
+//
+//    private boolean isAutoIncMethod(MethodDeclaration m, Parameter complexParam, AutoIncInfo info) {
 //        if (m.getType().isVoidType() && complexParam != null) {
 //            Class<?> dtoClass = helper.getDtoClassNamed(complexParam.getType().toString());
 //            if (dtoClass != null) {
@@ -198,15 +197,20 @@ public class RestServer implements Runnable {
 //            }
 //        }
 //        return false;
-    }
+//    }
 
-    private BlockStmt createAutoIncBlock(String methodName, String paramName, String fieldName) {
+    private BlockStmt createAutoIncBlock(String methodName, String paramName, List<String> fieldNames) {
+        FieldAccessExpr fieldAccessExpr = new FieldAccessExpr(
+                new NameExpr(paramName), fieldNames.get(0));
+        for(String fieldName: fieldNames.subList(1, fieldNames.size())){
+            fieldAccessExpr = new FieldAccessExpr(fieldAccessExpr, fieldName);
+        }
         Expression backendCallExpr = new MethodCallExpr(new NameExpr("backend"), methodName,
                 nodeList(new NameExpr(paramName)));
         LambdaExpr lambda = new LambdaExpr(helper.createSingleLambdaParameter("backend"),
                 new BlockStmt(nodeList(
                         new ExpressionStmt(backendCallExpr),
-                        new ReturnStmt(new FieldAccessExpr(new NameExpr(paramName), fieldName))
+                        new ReturnStmt(fieldAccessExpr)
                 )));
         return new BlockStmt(nodeList(new ReturnStmt(new MethodCallExpr(
                 new NameExpr("dbBackend"),

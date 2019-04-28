@@ -69,6 +69,7 @@ public class RestClient implements Runnable {
         MethodDeclaration method = new MethodDeclaration();
         method.setName(backendMethod.getNameAsString());
         method.setModifiers(Keyword.PUBLIC);
+        method.addAnnotation(new MarkerAnnotationExpr("Override"));
         method.setType(helper.createGenericType("CompletableFuture", helper.getBoxedType(backendMethod.getType())));
         for (Parameter param : backendMethod.getParameters()) {
             Parameter p = new Parameter(param.getType(), param.getName());

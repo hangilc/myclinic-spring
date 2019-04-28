@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
-public class FrontendRest implements Frontend{
+public class FrontendRest implements Frontend {
 
   static ExecutorService executorService = Executors.newFixedThreadPool(10);
 
@@ -70,6 +70,7 @@ public class FrontendRest implements Frontend{
         .toCompletableFuture();
   }
 
+  @Override
   public CompletableFuture<PatientDTO> getPatient(int patientId) {
     return get(
         "get-patient",
@@ -77,6 +78,7 @@ public class FrontendRest implements Frontend{
         new GenericType<PatientDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterPatient(PatientDTO patient) {
     return post(
         "enter-patient",
@@ -85,6 +87,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<Void> updatePatient(PatientDTO patient) {
     return post(
         "update-patient",
@@ -93,6 +96,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<PatientDTO>> searchPatientByKeyword2(
       String lastNameKeyword, String firstNameKeyword) {
     return get(
@@ -104,6 +108,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<PatientDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String keyword) {
     return get(
         "search-patient-by-keyword",
@@ -111,6 +116,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<PatientDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<PatientDTO>> searchPatient(String text) {
     return get(
         "search-patient",
@@ -118,6 +124,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<PatientDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(
       int patientId, LocalDate at) {
     return get(
@@ -129,6 +136,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShahokokuhoDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(
       int patientId, LocalDate at) {
     return get(
@@ -140,6 +148,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<KoukikoureiDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at) {
     return get(
         "find-available-roujin",
@@ -150,6 +159,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<RoujinDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at) {
     return get(
         "find-available-kouhi",
@@ -160,6 +170,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<KouhiDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at) {
     return get(
         "start-visit",
@@ -170,6 +181,7 @@ public class FrontendRest implements Frontend{
         new GenericType<VisitDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> startExam(int visitId) {
     return post(
         "start-exam",
@@ -178,6 +190,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> suspendExam(int visitId) {
     return post(
         "suspend-exam",
@@ -186,6 +199,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> endExam(int visitId, int charge) {
     return post(
         "end-exam",
@@ -197,6 +211,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> enterCharge(ChargeDTO charge) {
     return post(
         "enter-charge",
@@ -205,6 +220,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> setChargeOfVisit(int visitId, int charge) {
     return post(
         "set-charge-of-visit",
@@ -216,11 +232,13 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<ChargeDTO> getCharge(int visitId) {
     return get(
         "get-charge", setter -> setter.set("visit-id", visitId), new GenericType<ChargeDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<PaymentDTO>> listPayment(int visitId) {
     return get(
         "list-payment",
@@ -228,11 +246,13 @@ public class FrontendRest implements Frontend{
         new GenericType<List<PaymentDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<WqueueDTO> getWqueue(int visitId) {
     return get(
         "get-wqueue", setter -> setter.set("visit-id", visitId), new GenericType<WqueueDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteWqueue(int visitId) {
     return post(
         "delete-wqueue",
@@ -241,24 +261,29 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<WqueueDTO>> listWqueue() {
     return get("list-wqueue", setter -> {}, new GenericType<List<WqueueDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<WqueueFullDTO>> listWqueueFull() {
     return get("list-wqueue-full", setter -> {}, new GenericType<List<WqueueFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam() {
     return get(
         "list-wqueue-full-for-exam", setter -> {}, new GenericType<List<WqueueFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<HokenDTO> getHoken(int visitId) {
     return get(
         "get-hoken", setter -> setter.set("visit-id", visitId), new GenericType<HokenDTO>() {});
   }
 
+  @Override
   public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
     return get(
         "list-available-hoken",
@@ -269,6 +294,7 @@ public class FrontendRest implements Frontend{
         new GenericType<HokenDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> updateHoken(VisitDTO visit) {
     return post(
         "update-hoken",
@@ -277,10 +303,12 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<DrugDTO> getDrug(int drugId) {
     return get("get-drug", setter -> setter.set("drug-id", drugId), new GenericType<DrugDTO>() {});
   }
 
+  @Override
   public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
     return get(
         "get-drug-with-attr",
@@ -288,6 +316,7 @@ public class FrontendRest implements Frontend{
         new GenericType<DrugWithAttrDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterDrug(DrugDTO drug) {
     return post(
         "enter-drug",
@@ -296,6 +325,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<Void> updateDrug(DrugDTO drug) {
     return post(
         "update-drug",
@@ -304,6 +334,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> batchUpdateDrugDays(List<Integer> drugIds, int days) {
     return post(
         "batch-update-drug-days",
@@ -312,6 +343,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteDrug(int drugId) {
     return post(
         "delete-drug",
@@ -320,6 +352,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteDrugCascading(int drugId) {
     return post(
         "delete-drug-cascading",
@@ -328,6 +361,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
     return post(
         "batch-delete-drugs",
@@ -336,6 +370,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<DrugFullDTO> getDrugFull(int drugId) {
     return get(
         "get-drug-full",
@@ -343,6 +378,7 @@ public class FrontendRest implements Frontend{
         new GenericType<DrugFullDTO>() {});
   }
 
+  @Override
   public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
     return get(
         "get-drug-full-with-attr",
@@ -350,6 +386,7 @@ public class FrontendRest implements Frontend{
         new GenericType<DrugFullWithAttrDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<DrugWithAttrDTO>> listDrugWithAttr(int visitId) {
     return get(
         "list-drug-with-attr",
@@ -357,6 +394,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<DrugWithAttrDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId) {
     return get(
         "list-drug-full",
@@ -364,6 +402,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<DrugFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<Integer>> listRepresentativeGaiyouDrugId(
       String text, int patientId) {
     return get(
@@ -375,6 +414,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<Integer>>() {});
   }
 
+  @Override
   public CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId) {
     return get(
         "list-prev-drug-by-patient",
@@ -382,6 +422,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<DrugFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(String text, int patientId) {
     return get(
         "search-prev-drug",
@@ -392,6 +433,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<DrugFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> countUnprescribedDrug(int visitId) {
     return get(
         "count-unprescribed-drug",
@@ -399,6 +441,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<Void> markDrugsAsPrescribed(int visitId) {
     return post(
         "mark-drugs-as-prescribed",
@@ -407,6 +450,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId) {
     return get(
         "get-drug-attr",
@@ -414,6 +458,7 @@ public class FrontendRest implements Frontend{
         new GenericType<DrugAttrDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr) {
     return post(
         "enter-drug-attr",
@@ -422,6 +467,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
     return post(
         "update-drug-attr",
@@ -430,6 +476,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteDrugAttr(int drugId) {
     return post(
         "delete-drug-attr",
@@ -438,6 +485,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
     return post(
         "batch-get-drug-attr",
@@ -446,6 +494,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<DrugAttrDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou) {
     return get(
         "set-drug-tekiyou",
@@ -456,6 +505,7 @@ public class FrontendRest implements Frontend{
         new GenericType<DrugAttrDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteDrugTekiyou(int drugId) {
     return post(
         "delete-drug-tekiyou",
@@ -464,11 +514,13 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<VisitDTO> getVisit(int visitId) {
     return get(
         "get-visit", setter -> setter.set("visit-id", visitId), new GenericType<VisitDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteVisitSafely(int visitId) {
     return post(
         "delete-visit-safely",
@@ -477,6 +529,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<VisitPatientDTO>> listRecentVisitWithPatient(
       int page, int itemsPerPage) {
     return get(
@@ -488,10 +541,12 @@ public class FrontendRest implements Frontend{
         new GenericType<List<VisitPatientDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<VisitPatientDTO>> listTodaysVisit() {
     return get("list-todays-visit", setter -> {}, new GenericType<List<VisitPatientDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<VisitFull2PageDTO> listVisitFull2(int patientId, int page) {
     return get(
         "list-visit-full2",
@@ -502,6 +557,7 @@ public class FrontendRest implements Frontend{
         new GenericType<VisitFull2PageDTO>() {});
   }
 
+  @Override
   public CompletableFuture<VisitFullDTO> getVisitFull(int visitId) {
     return get(
         "get-visit-full",
@@ -509,6 +565,7 @@ public class FrontendRest implements Frontend{
         new GenericType<VisitFullDTO>() {});
   }
 
+  @Override
   public CompletableFuture<VisitFull2DTO> getVisitFull2(int visitId) {
     return get(
         "get-visit-full2",
@@ -516,6 +573,7 @@ public class FrontendRest implements Frontend{
         new GenericType<VisitFull2DTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds) {
     return post(
         "batch-get-shouki",
@@ -524,6 +582,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShoukiDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<Void> updateShouki(ShoukiDTO shouki) {
     return post(
         "update-shouki",
@@ -532,6 +591,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteShouki(int visitId) {
     return post(
         "delete-shouki",
@@ -540,6 +600,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterText(TextDTO text) {
     return post(
         "enter-text",
@@ -548,10 +609,12 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<TextDTO> getText(int textId) {
     return get("get-text", setter -> setter.set("text-id", textId), new GenericType<TextDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> updateText(TextDTO text) {
     return post(
         "update-text",
@@ -560,6 +623,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteText(int textId) {
     return post(
         "delete-text",
@@ -568,6 +632,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<TextDTO>> listText(int visitId) {
     return get(
         "list-text",
@@ -575,6 +640,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<TextDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<TextVisitPageDTO> searchText(int patientId, String text, int page) {
     return get(
         "search-text",
@@ -586,6 +652,7 @@ public class FrontendRest implements Frontend{
         new GenericType<TextVisitPageDTO>() {});
   }
 
+  @Override
   public CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(String text, int page) {
     return get(
         "search-text-globally",
@@ -596,6 +663,7 @@ public class FrontendRest implements Frontend{
         new GenericType<TextVisitPatientPageDTO>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouDTO> getShinryou(int shinryouId) {
     return get(
         "get-shinryou",
@@ -603,6 +671,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouDTO>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
     return get(
         "get-shinryou-with-attr",
@@ -610,6 +679,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouWithAttrDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou) {
     return post(
         "enter-shinryou",
@@ -618,6 +688,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name) {
     return post(
         "enter-shinryou-by-name",
@@ -629,6 +700,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteShinryou(int shinryouId) {
     return post(
         "delete-shinryou",
@@ -637,6 +709,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
     return post(
         "delete-shinryou-cascading",
@@ -645,6 +718,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
     return post(
         "batch-delete-shinryou-cascading",
@@ -653,6 +727,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouFullDTO> getShinryouFull(int shinryouId) {
     return get(
         "get-shinryou-full",
@@ -660,6 +735,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouFullDTO>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
     return get(
         "get-shinryou-full-with-attr",
@@ -667,6 +743,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouFullWithAttrDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
     return post(
         "batch-enter-shinryou",
@@ -675,6 +752,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(List<Integer> shinryouIds) {
     return post(
         "list-shinryou-full-by-ids",
@@ -683,6 +761,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShinryouFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(
       List<Integer> shinryouIds) {
     return post(
@@ -692,6 +771,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShinryouFullWithAttrDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
     return get(
         "list-shinryou",
@@ -699,6 +779,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShinryouDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
     return get(
         "list-shinryou-with-attr",
@@ -706,6 +787,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShinryouWithAttrDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShinryouFullDTO>> listShinryouFull(int visitId) {
     return get(
         "list-shinryou-full",
@@ -713,6 +795,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShinryouFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
     return get(
         "list-shinryou-full-with-attr",
@@ -720,6 +803,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShinryouFullWithAttrDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId) {
     return post(
         "delete-duplicate-shinryou",
@@ -728,6 +812,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<Integer>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(List<Integer> shinryouIds) {
     return post(
         "batch-get-shinryou-attr",
@@ -736,6 +821,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShinryouAttrDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouAttrDTO> getShinryouAttr(int shinryouId) {
     return get(
         "get-shinryou-attr",
@@ -743,6 +829,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouAttrDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> enterShinryouAttr(ShinryouAttrDTO shinryouAttr) {
     return post(
         "enter-shinryou-attr",
@@ -751,6 +838,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
     return post(
         "set-shinryou-attr",
@@ -759,6 +847,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterConduct(ConductDTO conduct) {
     return post(
         "enter-conduct",
@@ -767,6 +856,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req) {
     return post(
         "enter-conduct-full",
@@ -775,6 +865,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ConductFullDTO>() {});
   }
 
+  @Override
   public CompletableFuture<ConductDTO> getConduct(int conductId) {
     return get(
         "get-conduct",
@@ -782,6 +873,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ConductDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteConductCascading(int conductId) {
     return post(
         "delete-conduct-cascading",
@@ -790,6 +882,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> modifyConductKind(int conductId, int conductKind) {
     return post(
         "modify-conduct-kind",
@@ -801,6 +894,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<ConductDTO>> listConduct(int visitId) {
     return get(
         "list-conduct",
@@ -808,6 +902,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ConductDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ConductFullDTO>> listConductFullByIds(List<Integer> conductIds) {
     return post(
         "list-conduct-full-by-ids",
@@ -816,6 +911,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ConductFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<ConductFullDTO> getConductFull(int conductId) {
     return get(
         "get-conduct-full",
@@ -823,6 +919,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ConductFullDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<ConductFullDTO>> listConductFull(int visitId) {
     return get(
         "list-conduct-full",
@@ -830,6 +927,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ConductFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<Void> enterGazouLabel(GazouLabelDTO gazouLabel) {
     return post(
         "enter-gazou-label",
@@ -838,6 +936,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<GazouLabelDTO> getGazouLabel(int conductId) {
     return get(
         "get-gazou-label",
@@ -845,6 +944,7 @@ public class FrontendRest implements Frontend{
         new GenericType<GazouLabelDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteGazouLabel(int conductId) {
     return post(
         "delete-gazou-label",
@@ -853,6 +953,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
     return post(
         "update-gazou-label",
@@ -861,6 +962,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> modifyGazouLabel(int conductId, String label) {
     return post(
         "modify-gazou-label",
@@ -872,6 +974,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterConductShinryou(ConductShinryouDTO shinryou) {
     return post(
         "enter-conduct-shinryou",
@@ -880,6 +983,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<ConductShinryouDTO> getConductShinryou(int conductShinryouId) {
     return get(
         "get-conduct-shinryou",
@@ -887,6 +991,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ConductShinryouDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteConductShinryou(int conductShinryouId) {
     return post(
         "delete-conduct-shinryou",
@@ -895,6 +1000,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<ConductShinryouDTO>> listConductShinryou(int conductId) {
     return get(
         "list-conduct-shinryou",
@@ -902,6 +1008,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ConductShinryouDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<ConductShinryouFullDTO> getConductShinryouFull(int conductShinryouId) {
     return get(
         "get-conduct-shinryou-full",
@@ -909,6 +1016,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ConductShinryouFullDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<ConductShinryouFullDTO>> listConductShinryouFull(int conductId) {
     return get(
         "list-conduct-shinryou-full",
@@ -916,6 +1024,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ConductShinryouFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterConductDrug(ConductDrugDTO drug) {
     return post(
         "enter-conduct-drug",
@@ -924,6 +1033,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<ConductDrugDTO> getConductDrug(int conductDrugId) {
     return get(
         "get-conduct-drug",
@@ -931,6 +1041,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ConductDrugDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteConductDrug(int conductDrugId) {
     return post(
         "delete-conduct-drug",
@@ -939,6 +1050,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<ConductDrugDTO>> listConductDrug(int conductId) {
     return get(
         "list-conduct-drug",
@@ -946,6 +1058,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ConductDrugDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<ConductDrugFullDTO> getConductDrugFull(int conductDrugId) {
     return get(
         "get-conduct-drug-full",
@@ -953,6 +1066,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ConductDrugFullDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<ConductDrugFullDTO>> listConductDrugFull(int conductId) {
     return get(
         "list-conduct-drug-full",
@@ -960,6 +1074,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ConductDrugFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterConductKizai(ConductKizaiDTO kizai) {
     return post(
         "enter-conduct-kizai",
@@ -968,6 +1083,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<ConductKizaiDTO> getConductKizai(int conductKizaiId) {
     return get(
         "get-conduct-kizai",
@@ -975,6 +1091,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ConductKizaiDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteConductKizai(int conductKizaiId) {
     return post(
         "delete-conduct-kizai",
@@ -983,6 +1100,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<ConductKizaiDTO>> listConductKizai(int conductId) {
     return get(
         "list-conduct-kizai",
@@ -990,6 +1108,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ConductKizaiDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<ConductKizaiFullDTO> getConductKizaiFull(int conductKizaiId) {
     return get(
         "get-conduct-kizai-full",
@@ -997,6 +1116,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ConductKizaiFullDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<ConductKizaiFullDTO>> listConductKizaiFull(int conductId) {
     return get(
         "list-conduct-kizai-full",
@@ -1004,6 +1124,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ConductKizaiFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
     return post(
         "finish-cashier",
@@ -1012,6 +1133,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<ShahokokuhoDTO> getShahokokuho(int shahokokuhoId) {
     return get(
         "get-shahokokuho",
@@ -1019,6 +1141,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShahokokuhoDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
     return post(
         "enter-shahokokuho",
@@ -1027,6 +1150,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<KoukikoureiDTO> getKoukikourei(int koukikoureiId) {
     return get(
         "get-koukikourei",
@@ -1034,16 +1158,19 @@ public class FrontendRest implements Frontend{
         new GenericType<KoukikoureiDTO>() {});
   }
 
+  @Override
   public CompletableFuture<RoujinDTO> getRoujin(int roujinId) {
     return get(
         "get-roujin", setter -> setter.set("roujin-id", roujinId), new GenericType<RoujinDTO>() {});
   }
 
+  @Override
   public CompletableFuture<KouhiDTO> getKouhi(int kouhiId) {
     return get(
         "get-kouhi", setter -> setter.set("kouhi-id", kouhiId), new GenericType<KouhiDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterDisease(DiseaseDTO disease) {
     return post(
         "enter-disease",
@@ -1052,6 +1179,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<DiseaseDTO> getDisease(int diseaseId) {
     return get(
         "get-disease",
@@ -1059,6 +1187,7 @@ public class FrontendRest implements Frontend{
         new GenericType<DiseaseDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> updateDisease(DiseaseDTO disease) {
     return post(
         "update-disease",
@@ -1067,6 +1196,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deleteDisease(int diseaseId) {
     return post(
         "delete-disease",
@@ -1075,6 +1205,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<DiseaseFullDTO> getDiseaseFull(int diseaseId) {
     return get(
         "get-disease-full",
@@ -1082,6 +1213,7 @@ public class FrontendRest implements Frontend{
         new GenericType<DiseaseFullDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<DiseaseFullDTO>> listCurrentDiseaseFull(int patientId) {
     return get(
         "list-current-disease-full",
@@ -1089,6 +1221,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<DiseaseFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<DiseaseFullDTO>> listDiseaseFull(int patientId) {
     return get(
         "list-disease-full",
@@ -1096,6 +1229,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<DiseaseFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<Void> batchUpdateDiseaseEndReason(
       List<DiseaseModifyEndReasonDTO> modifications) {
     return post(
@@ -1105,6 +1239,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
     return post(
         "modify-disease",
@@ -1113,6 +1248,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<PharmaQueueDTO> getPharmaQueue(int visitId) {
     return get(
         "get-pharma-queue",
@@ -1120,6 +1256,7 @@ public class FrontendRest implements Frontend{
         new GenericType<PharmaQueueDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deletePharmaQueue(int visitId) {
     return post(
         "delete-pharma-queue",
@@ -1128,6 +1265,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouMasterDTO> findShinryouMasterByName(String name, LocalDate at) {
     return get(
         "find-shinryou-master-by-name",
@@ -1138,6 +1276,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByName(
       List<String> nameCandidates, LocalDate at) {
     return post(
@@ -1147,6 +1286,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
     return get(
         "resolve-shinryou-master-by-key",
@@ -1157,6 +1297,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Map<String, Integer>> batchResolveShinryouNames(
       List<List<String>> args, LocalDate at) {
     return post(
@@ -1166,6 +1307,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Map<String, Integer>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(
       String text, LocalDate at) {
     return get(
@@ -1177,6 +1319,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShinryouMasterDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at) {
     return get(
         "get-shinryou-master",
@@ -1187,6 +1330,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShinryouMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
     return get(
         "get-iyakuhin-master",
@@ -1197,6 +1341,7 @@ public class FrontendRest implements Frontend{
         new GenericType<IyakuhinMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(
       String text, LocalDate at) {
     return get(
@@ -1208,6 +1353,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<IyakuhinMasterDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
     return get(
         "get-kizai-master",
@@ -1218,6 +1364,7 @@ public class FrontendRest implements Frontend{
         new GenericType<KizaiMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at) {
     return get(
         "find-kizai-master-by-name",
@@ -1228,6 +1375,7 @@ public class FrontendRest implements Frontend{
         new GenericType<KizaiMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByName(
       List<String> nameCandidates, LocalDate at) {
     return post(
@@ -1237,6 +1385,7 @@ public class FrontendRest implements Frontend{
         new GenericType<KizaiMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
     return get(
         "resolve-kizai-master-by-key",
@@ -1247,6 +1396,7 @@ public class FrontendRest implements Frontend{
         new GenericType<KizaiMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Map<String, Integer>> batchResolveKizaiNames(
       List<List<String>> args, LocalDate at) {
     return post(
@@ -1256,6 +1406,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Map<String, Integer>>() {});
   }
 
+  @Override
   public CompletableFuture<List<KizaiMasterDTO>> searchKizaiMaster(String text, LocalDate at) {
     return get(
         "search-kizai-master",
@@ -1266,6 +1417,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<KizaiMasterDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<ByoumeiMasterDTO>> searchByoumeiMaster(String text, LocalDate at) {
     return get(
         "search-byoumei-master",
@@ -1276,6 +1428,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ByoumeiMasterDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<ByoumeiMasterDTO> getByoumeiMasterByName(String name, LocalDate at) {
     return get(
         "get-byoumei-master-by-name",
@@ -1286,6 +1439,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ByoumeiMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<ShuushokugoMasterDTO>> searchShuushokugoMaster(
       String text, LocalDate at) {
     return get(
@@ -1297,6 +1451,7 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ShuushokugoMasterDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<ShuushokugoMasterDTO> getShuushokugoMasterByName(String name) {
     return get(
         "get-shuushokugo-master-by-name",
@@ -1304,6 +1459,7 @@ public class FrontendRest implements Frontend{
         new GenericType<ShuushokugoMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> enterPrescExample(PrescExampleDTO prescExample) {
     return post(
         "enter-presc-example",
@@ -1312,6 +1468,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<Void> deletePrescExample(int prescExampleId) {
     return post(
         "delete-presc-example",
@@ -1320,6 +1477,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<Void> updatePrescExample(PrescExampleDTO prescExample) {
     return post(
         "update-presc-example",
@@ -1328,6 +1486,7 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<PrescExampleFullDTO>> searchPrescExample(String text) {
     return get(
         "search-presc-example",
@@ -1335,11 +1494,13 @@ public class FrontendRest implements Frontend{
         new GenericType<List<PrescExampleFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<List<PrescExampleFullDTO>> listAllPrescExample() {
     return get(
         "list-all-presc-example", setter -> {}, new GenericType<List<PrescExampleFullDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req) {
     return post(
         "batch-enter",
@@ -1348,6 +1509,7 @@ public class FrontendRest implements Frontend{
         new GenericType<BatchEnterResultDTO>() {});
   }
 
+  @Override
   public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(
       int visitId, BatchEnterByNamesRequestDTO req) {
     return post(
@@ -1357,6 +1519,7 @@ public class FrontendRest implements Frontend{
         new GenericType<BatchEnterResultDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Void> prescDone(int visitId) {
     return post(
         "presc-done",
@@ -1365,15 +1528,18 @@ public class FrontendRest implements Frontend{
         new GenericType<Void>() {});
   }
 
+  @Override
   public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
     return get("list-disease-example", setter -> {}, new GenericType<List<DiseaseExampleDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
     return get(
         "get-meisai", setter -> setter.set("visit-id", visitId), new GenericType<MeisaiDTO>() {});
   }
 
+  @Override
   public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
     return get(
         "resolve-stock-drug",
@@ -1384,6 +1550,7 @@ public class FrontendRest implements Frontend{
         new GenericType<IyakuhinMasterDTO>() {});
   }
 
+  @Override
   public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(
       List<Integer> iyakuhincodes, LocalDate at) {
     return post(
@@ -1393,22 +1560,53 @@ public class FrontendRest implements Frontend{
         new GenericType<List<ResolvedStockDrugDTO>>() {});
   }
 
+  @Override
   public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
     return get("get-clinic-info", setter -> {}, new GenericType<ClinicInfoDTO>() {});
   }
 
+  @Override
   public CompletableFuture<PracticeLogDTO> getLastPracticeLog() {
     return get("get-last-practice-log", setter -> {}, new GenericType<PracticeLogDTO>() {});
   }
 
+  @Override
   public CompletableFuture<Integer> getLastPracticeLogId() {
     return get("get-last-practice-log-id", setter -> {}, new GenericType<Integer>() {});
   }
 
+  @Override
   public CompletableFuture<List<PracticeLogDTO>> listPracticeLogSince(int afterThisId) {
     return get(
         "list-practice-log-since",
         setter -> setter.set("after-this-id", afterThisId),
         new GenericType<List<PracticeLogDTO>>() {});
+  }
+
+  @Override
+  public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+    return post(
+        "enter-drug-with-attr",
+        setter -> {},
+        Entity.entity(drugWithAttr, MediaType.APPLICATION_JSON),
+        new GenericType<Integer>() {});
+  }
+
+  @Override
+  public CompletableFuture<Void> updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+    return post(
+        "update-drug-with-attr",
+        setter -> {},
+        Entity.entity(drugWithAttr, MediaType.APPLICATION_JSON),
+        new GenericType<Void>() {});
+  }
+
+  @Override
+  public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
+    return post(
+        "enter-new-disease",
+        setter -> {},
+        Entity.entity(disease, MediaType.APPLICATION_JSON),
+        new GenericType<Integer>() {});
   }
 }

@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import static java.util.stream.Collectors.toList;
 
 @Path("/api")
@@ -978,14 +977,6 @@ public class RestServer {
         });
     }
 
-    @Path("enter-new-disease")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public void enterNewDisease(DiseaseNewDTO disease) {
-        dbBackend.txProc(backend -> backend.enterNewDisease(disease));
-    }
-
     @Path("get-disease")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -1309,4 +1300,33 @@ public class RestServer {
         return dbBackend.query(backend -> backend.listPracticeLogSince(afterThisId));
     }
 
+    @Path("enter-drug-with-attr")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    public int enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        return dbBackend.tx(backend -> {
+            backend.enterDrugWithAttr(drugWithAttr);
+            return drugWithAttr.drug.drugId;
+        });
+    }
+
+    @Path("update-drug-with-attr")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        dbBackend.txProc(backend -> backend.updateDrugWithAttr(drugWithAttr));
+    }
+
+    @Path("enter-new-disease")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    public int enterNewDisease(DiseaseNewDTO disease) {
+        return dbBackend.tx(backend -> {
+            backend.enterNewDisease(disease);
+            return disease.disease.diseaseId;
+        });
+    }
 }
