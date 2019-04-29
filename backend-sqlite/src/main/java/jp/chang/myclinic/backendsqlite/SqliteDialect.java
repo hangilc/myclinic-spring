@@ -22,4 +22,9 @@ public class SqliteDialect implements Dialect {
     public String isValidUptoUnbound(String validUpto) {
         return String.format("(%s = '0000-00-00')", validUpto);
     }
+
+    @Override
+    public String forUpdate() {
+        return "";
+    }
 }

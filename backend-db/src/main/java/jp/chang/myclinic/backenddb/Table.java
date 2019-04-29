@@ -104,12 +104,20 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
     }
 
     public DTO getById(Object id) {
+        return _getById(id, "");
+    }
+
+    public DTO getByIdForUpdate(Object id, String suffix){
+        return _getById(id, suffix);
+    }
+
+    private DTO _getById(Object id, String suffix) {
         List<Column<DTO>> primaries = getColumns().stream().filter(Column::isPrimary).collect(toList());
         if (primaries.size() != 1) {
             throw new RuntimeException("Number of primary key is not one.");
         }
         Column<DTO> primary = primaries.get(0);
-        String sql = String.format("select * from %s where %s = ?",
+        String sql = String.format("select * from %s where %s = ? " + suffix,
                 getTableName(), primary.getDbColumnName());
         return getQuery().get(sql, this, id);
     }

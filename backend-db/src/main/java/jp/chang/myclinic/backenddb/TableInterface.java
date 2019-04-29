@@ -10,6 +10,7 @@ public interface TableInterface<DTO> {
     void insert(DTO dto);
     void batchCopy(List<DTO> items);
     DTO getById(Object id);
+    DTO getByIdForUpdate(Object id, String suffix);
     void update(DTO dto);
     void delete(Object id);
     DTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException;

@@ -13,13 +13,12 @@ import jp.chang.myclinic.util.DateTimeUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static jp.chang.myclinic.backenddb.Query.*;
 import static jp.chang.myclinic.backenddb.SqlTranslator.TableInfo;
 
@@ -33,6 +32,7 @@ public class Backend {
     private SupportSet ss;
     private Projector<DrugAttrDTO> nullableDrugAttrProjector;
     private Projector<ShinryouAttrDTO> nullableShinryouAttrProjector;
+    private String forUpdate;
 
     public Backend(TableSet ts, Query query, SupportSet ss) {
         this.ts = ts;
@@ -49,6 +49,7 @@ public class Backend {
                 ts.shinryouAttrTable,
                 attr -> attr.shinryouId == 0
         );
+        this.forUpdate = ts.dialect.forUpdate();
     }
 
     private static <S, T, U> Projector<U> biProjector(Projector<S> p1, Projector<T> p2, BiFunction<S, T, U> f) {
@@ -58,6 +59,9 @@ public class Backend {
             return f.apply(s, t);
         };
     }
+
+    private Projector<Integer> intProjector =
+            (rs, ctx) -> rs.getInt(ctx.nextIndex());
 
     @ExcludeFromFrontend
     public void setPracticeLogPublisher(Consumer<String> publisher) {
@@ -117,7 +121,7 @@ public class Backend {
     }
 
     public void updatePatient(PatientDTO patient) {
-        PatientDTO prev = getPatient(patient.patientId);
+        PatientDTO prev = ts.patientTable.getByIdForUpdate(patient.patientId, ts.dialect.forUpdate());
         ts.patientTable.update(patient);
         practiceLogger.logPatientUpdated(prev, patient);
     }
@@ -158,8 +162,7 @@ public class Backend {
 
     public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
         String sql = xlate("select * from Shahokokuho where patientId = ? and " +
-                ts.dialect.isValidAt("validFrom", "validUpto", "?"),
-                        //" validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
+                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
                 ts.shahokokuhoTable);
         return getQuery().query(sql, ts.shahokokuhoTable, patientId, at, at);
     }
@@ -167,7 +170,6 @@ public class Backend {
     public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
         String sql = xlate("select * from Koukikourei where patientId = ? and " +
                         ts.dialect.isValidAt("validFrom", "validUpto", "?"),
-                //" validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.koukikoureiTable);
         return getQuery().query(sql, ts.koukikoureiTable, patientId, at, at);
     }
@@ -175,7 +177,6 @@ public class Backend {
     public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
         String sql = xlate("select * from Roujin where patientId = ? and " +
                         ts.dialect.isValidAt("validFrom", "validUpto", "?"),
-//                " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.roujinTable);
         return getQuery().query(sql, ts.roujinTable, patientId, at, at);
     }
@@ -183,7 +184,6 @@ public class Backend {
     public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at) {
         String sql = xlate("select * from Kouhi where patientId = ? and " +
                         ts.dialect.isValidAt("validFrom", "validUpto", "?"),
-//                " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.kouhiTable);
         return getQuery().query(sql, ts.kouhiTable, patientId, at, at);
     }
@@ -267,19 +267,22 @@ public class Backend {
         }
         boolean isToday = isTodaysVisit(visit);
         setChargeOfVisit(visitId, charge);
-        WqueueDTO wqueue = ts.wqueueTable.getById(visitId);
+        WqueueDTO wqueue = ts.wqueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
         if (wqueue != null && isToday) {
             changeWqueueState(visitId, WqueueWaitState.WaitCashier.getCode());
         } else {
             if (wqueue != null) { // it not today
-                deleteWqueue(visitId);
+                WqueueDTO updatedWqueue = WqueueDTO.copy(wqueue);
+                updatedWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
+                updateWqueue(wqueue, updatedWqueue);
+            } else {
+                WqueueDTO newWqueue = new WqueueDTO();
+                newWqueue.visitId = visitId;
+                newWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
+                enterWqueue(newWqueue);
             }
-            WqueueDTO newWqueue = new WqueueDTO();
-            newWqueue.visitId = visitId;
-            newWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
-            enterWqueue(newWqueue);
         }
-        PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
+        PharmaQueueDTO pharmaQueue = ts.pharmaQueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
         if (pharmaQueue != null) {
             deletePharmaQueue(visitId);
         }
@@ -289,8 +292,7 @@ public class Backend {
                 PharmaQueueDTO newPharmaQueue = new PharmaQueueDTO();
                 newPharmaQueue.visitId = visitId;
                 newPharmaQueue.pharmaState = PharmaQueueState.WaitPack.getCode();
-                ts.pharmaQueueTable.insert(newPharmaQueue);
-                practiceLogger.logPharmaQueueCreated(newPharmaQueue);
+                enterPharmaQueue(newPharmaQueue);
             }
         }
     }
@@ -302,12 +304,17 @@ public class Backend {
         practiceLogger.logChargeCreated(charge);
     }
 
+    private void updateCharge(ChargeDTO prev, ChargeDTO updated) {
+        ts.chargeTable.update(updated);
+        practiceLogger.logChargeUpdated(prev, updated);
+    }
+
     public void setChargeOfVisit(int visitId, int charge) {
-        ChargeDTO prev = ts.chargeTable.getById(visitId);
+        ChargeDTO prev = ts.chargeTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
         if (prev != null) {
             ChargeDTO updated = ChargeDTO.copy(prev);
-            ts.chargeTable.update(updated);
-            practiceLogger.logChargeUpdated(prev, updated);
+            updated.charge = charge;
+            updateCharge(prev, updated);
         } else {
             ChargeDTO newCharge = new ChargeDTO();
             newCharge.visitId = visitId;
@@ -340,25 +347,28 @@ public class Backend {
         practiceLogger.logWqueueCreated(wqueue);
     }
 
+    private void updateWqueue(WqueueDTO prev, WqueueDTO wqueue) {
+        ts.wqueueTable.update(wqueue);
+        practiceLogger.logWqueueUpdated(prev, wqueue);
+    }
+
     public WqueueDTO getWqueue(int visitId) {
         return ts.wqueueTable.getById(visitId);
     }
 
     private void changeWqueueState(int visitId, int state) {
-        WqueueDTO prev = ts.wqueueTable.getById(visitId);
+        WqueueDTO prev = ts.wqueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
         WqueueDTO updated = WqueueDTO.copy(prev);
         updated.waitState = state;
-        ts.wqueueTable.update(updated);
-        practiceLogger.logWqueueUpdated(prev, updated);
+        updateWqueue(prev, updated);
     }
 
     public void deleteWqueue(int visitId) {
-        WqueueDTO wqueue = ts.wqueueTable.getById(visitId);
-        if (wqueue == null) {
-            return;
+        WqueueDTO wqueue = ts.wqueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
+        if (wqueue != null) {
+            ts.wqueueTable.delete(visitId);
+            practiceLogger.logWqueueDeleted(wqueue);
         }
-        ts.wqueueTable.delete(visitId);
-        practiceLogger.logWqueueDeleted(wqueue);
     }
 
     public List<WqueueDTO> listWqueue() {
@@ -438,14 +448,15 @@ public class Backend {
     }
 
     public void updateHoken(VisitDTO visit) {
-        VisitDTO origVisit = ts.visitTable.getById(visit.visitId);
-        origVisit.shahokokuhoId = visit.shahokokuhoId;
-        origVisit.koukikoureiId = visit.koukikoureiId;
-        origVisit.roujinId = visit.roujinId;
-        origVisit.kouhi1Id = visit.kouhi1Id;
-        origVisit.kouhi2Id = visit.kouhi2Id;
-        origVisit.kouhi3Id = visit.kouhi3Id;
-        updateVisit(origVisit);
+        VisitDTO origVisit = ts.visitTable.getByIdForUpdate(visit.visitId, ts.dialect.forUpdate());
+        VisitDTO updated = VisitDTO.copy(origVisit);
+        updated.shahokokuhoId = visit.shahokokuhoId;
+        updated.koukikoureiId = visit.koukikoureiId;
+        updated.roujinId = visit.roujinId;
+        updated.kouhi1Id = visit.kouhi1Id;
+        updated.kouhi2Id = visit.kouhi2Id;
+        updated.kouhi3Id = visit.kouhi3Id;
+        updateVisit(origVisit, updated);
     }
 
     // Drug ///////////////////////////////////////////////////////////////////////////
@@ -459,6 +470,11 @@ public class Backend {
         result.drug = getDrug(drugId);
         result.attr = getDrugAttr(drugId);
         return result;
+    }
+
+    private int countDrugForVisit(int visitId) {
+        String sql = "select count(*) from Drug where visitId = ?";
+        return getQuery().get(xlate(sql, ts.drugTable), intProjector, visitId);
     }
 
     public void enterDrug(DrugDTO drug) {
@@ -476,38 +492,40 @@ public class Backend {
         }
     }
 
-    public void updateDrug(DrugDTO drug) {
-        DrugDTO prev = getDrug(drug.drugId);
+    public void updateDrug(DrugDTO prev, DrugDTO drug) {
         ts.drugTable.update(drug);
         practiceLogger.logDrugUpdated(prev, drug);
     }
 
     public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-        DrugDTO drug = drugWithAttr.drug;
-        DrugAttrDTO attr = drugWithAttr.attr;
-        updateDrug(drug);
-        if (attr == null) {
-            deleteDrugAttr(drug.drugId);
+        int drugId = drugWithAttr.drug.drugId;
+        DrugDTO prevDrug = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
+        DrugAttrDTO prevAttr = ts.drugAttrTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
+        updateDrug(prevDrug, drugWithAttr.drug);
+        if (prevAttr == null) {
+            if (drugWithAttr.attr != null) {
+                enterDrugAttr(drugWithAttr.attr);
+            }
         } else {
-            DrugAttrDTO curr = getDrugAttr(attr.drugId);
-            if (curr != null) {
-                updateDrugAttr(attr);
+            if (drugWithAttr.attr == null) {
+                deleteDrugAttr(drugId);
             } else {
-                enterDrugAttr(attr);
+                updateDrugAttr(prevAttr, drugWithAttr.attr);
             }
         }
     }
 
     public void batchUpdateDrugDays(List<Integer> drugIds, int days) {
         drugIds.forEach(drugId -> {
-            DrugDTO drug = getDrug(drugId);
+            DrugDTO prev = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
+            DrugDTO drug = DrugDTO.copy(prev);
             drug.days = days;
-            updateDrug(drug);
+            updateDrug(prev, drug);
         });
     }
 
     public void deleteDrug(int drugId) {
-        DrugDTO drug = ts.drugTable.getById(drugId);
+        DrugDTO drug = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
         ts.drugTable.delete(drugId);
         practiceLogger.logDrugDeleted(drug);
     }
@@ -637,11 +655,14 @@ public class Backend {
     }
 
     public void markDrugsAsPrescribed(int visitId) {
-        String sql = xlate("update Drug set prescribed = 1 where visitId = ?",
-                ts.drugTable);
-        getQuery().update(sql, stmt -> {
-            stmt.setInt(1, visitId);
-        });
+        String sql = xlate("select drugId from Drug where visitId = ?", ts.drugTable);
+        List<Integer> drugIds = getQuery().query(sql, intProjector, visitId);
+        for (Integer drugId : drugIds) {
+            DrugDTO prev = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
+            DrugDTO drug = DrugDTO.copy(prev);
+            drug.prescribed = 1;
+            updateDrug(prev, drug);
+        }
     }
 
     // DrugAttr /////////////////////////////////////////////////////////////////////////
@@ -654,7 +675,7 @@ public class Backend {
         ts.drugAttrTable.insert(drugAttr);
     }
 
-    public void updateDrugAttr(DrugAttrDTO drugAttr) {
+    public void updateDrugAttr(DrugAttrDTO prev, DrugAttrDTO drugAttr) {
         ts.drugAttrTable.update(drugAttr);
     }
 
@@ -663,15 +684,22 @@ public class Backend {
     }
 
     public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
-        return drugIds.stream().map(ts.drugAttrTable::getById).filter(Objects::nonNull).collect(toList());
+        if (drugIds.size() == 0) {
+            return Collections.emptyList();
+        } else {
+            String sql = "select * from DrugAttr where drugId in (" +
+                    drugIds.stream().map(Object::toString).collect(joining(",")) + ")";
+            return getQuery().query(xlate(sql, ts.drugAttrTable), ts.drugAttrTable);
+        }
     }
 
     public DrugAttrDTO setDrugTekiyou(int drugId, String tekiyou) {
-        DrugAttrDTO attr = ts.drugAttrTable.getById(drugId);
+        DrugAttrDTO attr = ts.drugAttrTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
         if (attr != null) {
-            attr.tekiyou = tekiyou;
-            updateDrugAttr(attr);
-            return attr;
+            DrugAttrDTO updated = DrugAttrDTO.copy(attr);
+            updated.tekiyou = tekiyou;
+            updateDrugAttr(attr, updated);
+            return updated;
         } else {
             DrugAttrDTO newDrugAttr = new DrugAttrDTO();
             newDrugAttr.drugId = drugId;
@@ -682,15 +710,15 @@ public class Backend {
     }
 
     public void deleteDrugTekiyou(int drugId) {
-        DrugAttrDTO attr = ts.drugAttrTable.getById(drugId);
-        if (attr == null) {
-            return;
-        }
-        attr.tekiyou = null;
-        if (DrugAttrDTO.isEmpty(attr)) {
-            deleteDrugAttr(drugId);
-        } else {
-            updateDrugAttr(attr);
+        DrugAttrDTO attr = ts.drugAttrTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
+        if (attr != null) {
+            DrugAttrDTO updated = DrugAttrDTO.copy(attr);
+            updated.tekiyou = null;
+            if (DrugAttrDTO.isEmpty(updated)) {
+                deleteDrugAttr(drugId);
+            } else {
+                updateDrugAttr(attr, updated);
+            }
         }
     }
 
@@ -700,24 +728,22 @@ public class Backend {
         return ts.visitTable.getById(visitId);
     }
 
-    private void updateVisit(VisitDTO visit) {
-        VisitDTO prev = getVisit(visit.visitId);
+    private void updateVisit(VisitDTO prev, VisitDTO visit) {
         ts.visitTable.update(visit);
         practiceLogger.logVisitUpdated(prev, visit);
     }
 
     public void deleteVisitSafely(int visitId) {
-        VisitFullDTO visit = getVisitFull(visitId);
-        if (visit.texts.size() > 0) {
+        if (countTextForVisit(visitId) > 0) {
             throw new CannotDeleteVisitSafelyException("文章があるので、診察を削除できません。");
         }
-        if (visit.drugs.size() > 0) {
+        if (countDrugForVisit(visitId) > 0) {
             throw new CannotDeleteVisitSafelyException("投薬があるので、診察を削除できません。");
         }
-        if (visit.shinryouList.size() > 0) {
+        if (countShinryouForVisit(visitId) > 0) {
             throw new CannotDeleteVisitSafelyException("診療行為があるので、診察を削除できません。");
         }
-        if (visit.conducts.size() > 0) {
+        if (countConductForVisit(visitId) > 0) {
             throw new CannotDeleteVisitSafelyException("処置があるので、診察を削除できません。");
         }
         ChargeDTO charge = getCharge(visitId);
@@ -728,11 +754,11 @@ public class Backend {
         if (payments.size() > 0) {
             throw new CannotDeleteVisitSafelyException("支払い記録があるので、診察を削除できません。");
         }
-        WqueueDTO wqueue = getWqueue(visitId);
+        WqueueDTO wqueue = ts.wqueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
         if (wqueue != null) {
             deleteWqueue(visitId);
         }
-        PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
+        PharmaQueueDTO pharmaQueue = ts.pharmaQueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
         if (pharmaQueue != null) {
             deletePharmaQueue(visitId);
         }
@@ -740,7 +766,7 @@ public class Backend {
     }
 
     private void deleteVisit(int visitId) {
-        VisitDTO visit = ts.visitTable.getById(visitId);
+        VisitDTO visit = ts.visitTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
         ts.visitTable.delete(visitId);
         practiceLogger.logVisitDeleted(visit);
     }
@@ -772,7 +798,7 @@ public class Backend {
     private int countVisitByPatient(int patientId) {
         String sql = xlate("select count(*) from Visit where patientId = ?",
                 ts.visitTable);
-        return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), patientId);
+        return getQuery().get(sql, intProjector, patientId);
     }
 
     public VisitFull2PageDTO listVisitFull2(int patientId, int page) {
@@ -834,10 +860,16 @@ public class Backend {
     }
 
     public void updateShouki(ShoukiDTO shouki) {
+        ShoukiDTO prev = ts.shoukiTable.getByIdForUpdate(shouki.visitId, ts.dialect.forUpdate());
+        updateShouki(prev, shouki);
+    }
+
+    private void updateShouki(ShoukiDTO prev, ShoukiDTO shouki) {
         ts.shoukiTable.update(shouki);
     }
 
     public void deleteShouki(int visitId) {
+        ShoukiDTO deleted = ts.shoukiTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
         ts.shoukiTable.delete(visitId);
     }
 
@@ -853,15 +885,24 @@ public class Backend {
     }
 
     public void updateText(TextDTO text) {
-        TextDTO prev = getText(text.textId);
+        TextDTO prev = ts.textTable.getByIdForUpdate(text.textId, ts.dialect.forUpdate());
+        updateText(prev, text);
+    }
+
+    private void updateText(TextDTO prev, TextDTO text) {
         ts.textTable.update(text);
         practiceLogger.logTextUpdated(prev, text);
     }
 
     public void deleteText(int textId) {
-        TextDTO text = getText(textId);
+        TextDTO text = ts.textTable.getByIdForUpdate(textId, ts.dialect.forUpdate());
         ts.textTable.delete(textId);
         practiceLogger.logTextDeleted(text);
+    }
+
+    private int countTextForVisit(int visitId) {
+        String sql = "select count(*) from Text where visitId = ?";
+        return getQuery().get(xlate(sql, ts.textTable), intProjector, visitId);
     }
 
     public List<TextDTO> listText(int visitId) {
@@ -930,6 +971,11 @@ public class Backend {
         return result;
     }
 
+    private int countShinryouForVisit(int visitId) {
+        String sql = "select count(*) from Shinryou where visitId = ?";
+        return getQuery().get(xlate(sql, ts.shinryouTable), intProjector, visitId);
+    }
+
     public void enterShinryou(ShinryouDTO shinryou) {
         ts.shinryouTable.insert(shinryou);
         practiceLogger.logShinryouCreated(shinryou);
@@ -954,7 +1000,7 @@ public class Backend {
     }
 
     public void deleteShinryou(int shinryouId) {
-        ShinryouDTO shinryou = getShinryou(shinryouId);
+        ShinryouDTO shinryou = ts.shinryouTable.getByIdForUpdate(shinryouId, ts.dialect.forUpdate());
         ts.shinryouTable.delete(shinryouId);
         practiceLogger.logShinryouDeleted(shinryou);
     }
@@ -1040,6 +1086,8 @@ public class Backend {
     }
 
     public List<Integer> deleteDuplicateShinryou(int visitId) {
+        String sql = "select * from Shinryou where visitId = ?" + ts.dialect.forUpdate();
+        getQuery().query(xlate(sql, ts.shinryouTable), ts.shinryouTable, visitId);
         return listShinryou(visitId).stream()
                 .collect(groupingBy(s -> s.shinryoucode))
                 .values().stream()
@@ -1074,14 +1122,16 @@ public class Backend {
     }
 
     public void setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
-        if (attr == null || ShinryouAttrDTO.isEmpty(attr)) {
-            deleteShinryouAttr(shinryouId);
-        } else {
-            ShinryouAttrDTO curr = ts.shinryouAttrTable.getById(shinryouId);
-            if (curr != null) {
-                updateShinryouAttr(attr);
-            } else {
+        ShinryouAttrDTO prev = ts.shinryouAttrTable.getByIdForUpdate(shinryouId, ts.dialect.forUpdate());
+        if (prev == null) {
+            if (attr != null) {
                 enterShinryouAttr(attr);
+            }
+        } else {
+            if (attr == null) {
+                deleteShinryouAttr(shinryouId);
+            } else {
+                updateShinryouAttr(attr);
             }
         }
     }
@@ -1091,6 +1141,11 @@ public class Backend {
     public void enterConduct(ConductDTO conduct) {
         ts.conductTable.insert(conduct);
         practiceLogger.logConductCreated(conduct);
+    }
+
+    private int countConductForVisit(int visitId) {
+        String sql = "select count(*) from Conduct where visitId = ?";
+        return getQuery().get(xlate(sql, ts.conductTable), intProjector, visitId);
     }
 
     public ConductFullDTO enterConductFull(ConductEnterRequestDTO req) {
@@ -1140,28 +1195,54 @@ public class Backend {
     }
 
     private void deleteConduct(int conductId) {
-        ConductDTO conduct = getConduct(conductId);
-        ts.conductTable.delete(conductId);
+        ConductDTO conduct = ts.conductTable.getByIdForUpdate(conductId, ts.dialect.forUpdate());
+        deleteConduct(conduct);
+    }
+
+    private void deleteConduct(ConductDTO conduct) {
+        ts.conductTable.delete(conduct.conductId);
         practiceLogger.logConductDeleted(conduct);
     }
 
     public void deleteConductCascading(int conductId) {
-        GazouLabelDTO gazouLabel = getGazouLabel(conductId);
+        GazouLabelDTO gazouLabel = ts.gazouLabelTable.getByIdForUpdate(conductId, forUpdate);
         if (gazouLabel != null) {
-            deleteGazouLabel(conductId);
+            deleteGazouLabel(gazouLabel);
         }
-        listConductShinryou(conductId).forEach(s -> deleteConductShinryou(s.conductShinryouId));
-        listConductDrug(conductId).forEach(s -> deleteConductDrug(s.conductDrugId));
-        listConductKizai(conductId).forEach(s -> deleteConductKizai(s.conductKizaiId));
+        {
+            String sql = "select * from ConductShinryou where conductId = ? " + forUpdate;
+            for (ConductShinryouDTO shinryou :
+                    getQuery().query(xlate(sql, ts.conductShinryouTable), ts.conductShinryouTable, conductId)) {
+                deleteConductShinryou(shinryou);
+            }
+        }
+        {
+            String sql = "select * from ConductDrug where conductId = ? " + forUpdate;
+            for (ConductDrugDTO drug :
+                    getQuery().query(xlate(sql, ts.conductDrugTable), ts.conductDrugTable, conductId)) {
+                deleteConductDrug(drug);
+            }
+        }
+        {
+            String sql = "select * from ConductKizai where conductId = ? " + forUpdate;
+            for (ConductKizaiDTO kizai :
+                    getQuery().query(xlate(sql, ts.conductKizaiTable), ts.conductKizaiTable, conductId)) {
+                deleteConductKizai(kizai);
+            }
+        }
         deleteConduct(conductId);
     }
 
+    private void updateConduct(ConductDTO prev, ConductDTO conduct) {
+        ts.conductTable.update(conduct);
+        practiceLogger.logConductUpdated(prev, conduct);
+    }
+
     public void modifyConductKind(int conductId, int conductKind) {
-        ConductDTO prev = getConduct(conductId);
+        ConductDTO prev = ts.conductTable.getByIdForUpdate(conductId, forUpdate);
         ConductDTO updated = ConductDTO.copy(prev);
         updated.kind = conductKind;
-        ts.conductTable.update(updated);
-        practiceLogger.logConductUpdated(prev, updated);
+        updateConduct(prev, updated);
     }
 
     public List<ConductDTO> listConduct(int visitId) {
@@ -1193,72 +1274,6 @@ public class Backend {
         return listConduct(visitId).stream().map(this::extendConduct).collect(toList());
     }
 
-//    public List<Integer> copyAllConducts(int targetVisitId, int sourceVisitId) {
-//        List<Integer> copiedConductIds = new ArrayList<>();
-//        List<ConductDTO> sourceConducts = listConduct(sourceVisitId);
-//        VisitDTO targetVisit = getVisit(targetVisitId);
-//        LocalDate at = DateTimeUtil.parseSqlDateTime(targetVisit.visitedAt).toLocalDate();
-//        for (ConductDTO source : sourceConducts) {
-//            ConductDTO newConduct = ConductDTO.copy(source);
-//            newConduct.conductId = 0;
-//            newConduct.visitId = targetVisitId;
-//            enterConduct(newConduct);
-//            int conductId = newConduct.conductId;
-//            copiedConductIds.add(conductId);
-//            GazouLabelDTO gazouLabel = getGazouLabel(source.conductId);
-//            if (gazouLabel != null) {
-//                gazouLabel.conductId = conductId;
-//                enterGazouLabel(gazouLabel);
-//            }
-//            listConductShinryou(source.conductId)
-//                    .forEach(shinryou -> {
-//                        ConductShinryouDTO newShinryou = ConductShinryouDTO.copy(shinryou);
-//                        newShinryou.conductShinryouId = 0;
-//                        newShinryou.conductId = conductId;
-//                        ShinryouMasterDTO master = getShinryouMaster(shinryou.shinryoucode, at);
-//                        if (master == null) {
-//                            VisitDTO sourceVisit = getVisit(sourceVisitId);
-//                            ShinryouMasterDTO sourceMaster = getShinryouMaster(shinryou.shinryoucode,
-//                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
-//                            throw new RuntimeException("Cannot find effective shinryou master: " + sourceMaster.name);
-//                        }
-//                        newShinryou.shinryoucode = master.shinryoucode;
-//                        enterConductShinryou(newShinryou);
-//                    });
-//            listConductDrug(source.conductId)
-//                    .forEach(drug -> {
-//                        ConductDrugDTO newDrug = ConductDrugDTO.copy(drug);
-//                        newDrug.conductDrugId = 0;
-//                        newDrug.conductId = conductId;
-//                        IyakuhinMasterDTO master = resolveStockDrug(drug.iyakuhincode, at);
-//                        if (master == null) {
-//                            VisitDTO sourceVisit = getVisit(sourceVisitId);
-//                            IyakuhinMasterDTO sourceMaster = getIyakuhinMaster(drug.iyakuhincode,
-//                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
-//                            throw new RuntimeException("Cannot find effective iyakuhin master: " + sourceMaster.name);
-//                        }
-//                        newDrug.iyakuhincode = master.iyakuhincode;
-//                        enterConductDrug(newDrug);
-//                    });
-//            listConductKizai(source.conductId)
-//                    .forEach(kizai -> {
-//                        ConductKizaiDTO newKizai = ConductKizaiDTO.copy(kizai);
-//                        newKizai.conductKizaiId = 0;
-//                        newKizai.conductId = conductId;
-//                        KizaiMasterDTO master = getKizaiMaster(kizai.kizaicode, at);
-//                        if (master == null) {
-//                            VisitDTO sourceVisit = getVisit(sourceVisitId);
-//                            KizaiMasterDTO sourceMaster = getKizaiMaster(kizai.kizaicode,
-//                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
-//                            throw new RuntimeException("Cannot find effective kizai master: " + sourceMaster.name);
-//                        }
-//                        newKizai.kizaicode = master.kizaicode;
-//                        enterConductKizai(newKizai);
-//                    });
-//        }
-//        return copiedConductIds;
-//    }
-
     // GazouLabel ///////////////////////////////////////////////////////////////////////////
 
     public void enterGazouLabel(GazouLabelDTO gazouLabel) {
@@ -1271,27 +1286,36 @@ public class Backend {
     }
 
     public void deleteGazouLabel(int conductId) {
-        GazouLabelDTO deleted = getGazouLabel(conductId);
-        ts.gazouLabelTable.delete(conductId);
-        practiceLogger.logGazouLabelDeleted(deleted);
+        GazouLabelDTO deleted = ts.gazouLabelTable.getByIdForUpdate(conductId, forUpdate);
+        deleteGazouLabel(deleted);
+    }
+
+    private void deleteGazouLabel(GazouLabelDTO gazouLabel) {
+        ts.gazouLabelTable.delete(gazouLabel.conductId);
+        practiceLogger.logGazouLabelDeleted(gazouLabel);
     }
 
     public void updateGazouLabel(GazouLabelDTO gazouLabel) {
-        GazouLabelDTO prev = getGazouLabel(gazouLabel.conductId);
+        GazouLabelDTO prev = ts.gazouLabelTable.getByIdForUpdate(gazouLabel.conductId, forUpdate);
+        updateGazouLabel(prev, gazouLabel);
+    }
+
+    private void updateGazouLabel(GazouLabelDTO prev, GazouLabelDTO gazouLabel) {
         ts.gazouLabelTable.update(gazouLabel);
         practiceLogger.logGazouLabelUpdated(prev, gazouLabel);
     }
 
     public void modifyGazouLabel(int conductId, String label) {
-        GazouLabelDTO gazouLabel = getGazouLabel(conductId);
+        GazouLabelDTO gazouLabel = ts.gazouLabelTable.getByIdForUpdate(conductId, forUpdate);
         if (gazouLabel == null) {
             gazouLabel = new GazouLabelDTO();
             gazouLabel.conductId = conductId;
             gazouLabel.label = label;
             enterGazouLabel(gazouLabel);
         } else {
-            gazouLabel.label = label;
-            updateGazouLabel(gazouLabel);
+            GazouLabelDTO modified = GazouLabelDTO.copy(gazouLabel);
+            modified.label = label;
+            updateGazouLabel(gazouLabel, modified);
         }
     }
 
@@ -1307,9 +1331,13 @@ public class Backend {
     }
 
     public void deleteConductShinryou(int conductShinryouId) {
-        ConductShinryouDTO deleted = getConductShinryou(conductShinryouId);
-        ts.conductShinryouTable.delete(conductShinryouId);
-        practiceLogger.logConductShinryouDeleted(deleted);
+        ConductShinryouDTO deleted = ts.conductShinryouTable.getByIdForUpdate(conductShinryouId, forUpdate);
+        deleteConductShinryou(deleted);
+    }
+
+    private void deleteConductShinryou(ConductShinryouDTO shinryou) {
+        ts.conductShinryouTable.delete(shinryou.conductShinryouId);
+        practiceLogger.logConductShinryouDeleted(shinryou);
     }
 
     public List<ConductShinryouDTO> listConductShinryou(int conductId) {
@@ -1356,8 +1384,12 @@ public class Backend {
 
     public void deleteConductDrug(int conductDrugId) {
         ConductDrugDTO deleted = getConductDrug(conductDrugId);
-        ts.conductDrugTable.delete(conductDrugId);
-        practiceLogger.logConductDrugDeleted(deleted);
+        deleteConductDrug(deleted);
+    }
+
+    private void deleteConductDrug(ConductDrugDTO drug) {
+        ts.conductDrugTable.delete(drug.conductDrugId);
+        practiceLogger.logConductDrugDeleted(drug);
     }
 
     public List<ConductDrugDTO> listConductDrug(int conductId) {
@@ -1403,9 +1435,13 @@ public class Backend {
     }
 
     public void deleteConductKizai(int conductKizaiId) {
-        ConductKizaiDTO deleted = getConductKizai(conductKizaiId);
-        ts.conductKizaiTable.delete(conductKizaiId);
-        practiceLogger.logConductKizaiDeleted(deleted);
+        ConductKizaiDTO deleted = ts.conductKizaiTable.getByIdForUpdate(conductKizaiId, forUpdate);
+        deleteConductKizai(deleted);
+    }
+
+    private void deleteConductKizai(ConductKizaiDTO kizai) {
+        ts.conductKizaiTable.delete(kizai.conductKizaiId);
+        practiceLogger.logConductKizaiDeleted(kizai);
     }
 
     public List<ConductKizaiDTO> listConductKizai(int conductId) {
@@ -1605,6 +1641,11 @@ public class Backend {
 
     public PharmaQueueDTO getPharmaQueue(int visitId) {
         return ts.pharmaQueueTable.getById(visitId);
+    }
+
+    public void enterPharmaQueue(PharmaQueueDTO pharmaQueue) {
+        ts.pharmaQueueTable.insert(pharmaQueue);
+        practiceLogger.logPharmaQueueCreated(pharmaQueue);
     }
 
     public void deletePharmaQueue(int visitId) {

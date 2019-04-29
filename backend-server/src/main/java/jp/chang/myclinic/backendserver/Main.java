@@ -43,12 +43,12 @@ public class Main {
         ss.shinryoucodeResolver = new ShinryoucodeFileResolver(new File("config/shinryoucodes.yml"));
         ss.kizaicodeResolver = new KizaicodeFileResolver(new File("config/kizaicodes.yml"));
         ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml"));
-        String dbFile = Paths.get(System.getProperty("user.home"),
-                    "sqlite-data", "myclinic-test-sqlite.db").toString();
-        DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-        DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
-//        DataSource ds = MysqlDataSourceProvider.create();
-//        DbBackend dbBackend = new DbBackend(ds, MysqlTableSet::create, ss);
+//        String dbFile = Paths.get(System.getProperty("user.home"),
+//                    "sqlite-data", "myclinic-test-sqlite.db").toString();
+//        DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
+//        DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
+        DataSource ds = MysqlDataSourceProvider.create();
+        DbBackend dbBackend = new DbBackend(ds, MysqlTableSet::create, ss);
         Server server = new Server(cmdOpts.port);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
         context.setContextPath("/");
