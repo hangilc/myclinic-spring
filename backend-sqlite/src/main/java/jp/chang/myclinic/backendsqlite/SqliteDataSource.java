@@ -1,5 +1,6 @@
 package jp.chang.myclinic.backendsqlite;
 
+import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteDataSource;
 
 import javax.sql.DataSource;
@@ -7,6 +8,7 @@ import java.io.File;
 import java.nio.file.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 
 public class SqliteDataSource {
 
@@ -29,14 +31,15 @@ public class SqliteDataSource {
             temp.toFile().deleteOnExit();
             Files.copy(Paths.get(dbFile), temp, StandardCopyOption.REPLACE_EXISTING);
             System.out.println(temp);
-            SQLiteDataSource ds = new SQLiteDataSource();
+            SQLiteConfig config = new SQLiteConfig();
+            config.setBusyTimeout(60000);
+            SQLiteDataSource ds = new SQLiteDataSource(config);
             String url = "jdbc:sqlite:" + temp.toString();
             ds.setUrl(url);
             return ds;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
 }

@@ -14,7 +14,7 @@ public class DB {
         this.ds = ds;
     }
 
-    public Supplier<Connection> getConnectionProvider(){
+    public Supplier<Connection> getConnectionProvider() {
         return () -> threadLocalConnection.get();
     }
 
@@ -28,18 +28,18 @@ public class DB {
         T call() throws SQLException;
     }
 
-    public <T> T query(Proc<T> proc){
-        try (Connection conn = openConnection()){
+    public <T> T query(Proc<T> proc) {
+        try (Connection conn = openConnection()) {
             conn.setAutoCommit(true);
             return proc.call();
-        } catch(SQLException e){
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
             threadLocalConnection.set(null);
         }
     }
 
-    public <T> T tx(Proc<T> proc){
+    public <T> T tx(Proc<T> proc) {
         Connection conn = null;
         try {
             conn = openConnection();
@@ -48,17 +48,17 @@ public class DB {
             T value = proc.call();
             conn.commit();
             return value;
-        } catch(Exception ex){
-            if( conn != null ){
-                try {
+        } catch (Exception ex) {
+            try {
+                if (conn != null) {
                     conn.rollback();
-                } catch (SQLException e) {
-                    e.printStackTrace();
                 }
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
             }
             throw new RuntimeException(ex);
         } finally {
-            if( conn != null ){
+            if (conn != null) {
                 try {
                     conn.close();
                 } catch (SQLException e) {

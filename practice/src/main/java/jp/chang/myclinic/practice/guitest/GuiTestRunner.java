@@ -20,11 +20,11 @@ public class GuiTestRunner extends GroupTestBase {
     @Override
     protected List<TestInterface> getTests() {
         return List.of(
-                new DrugTest(stage, main),
-                new ShinryouTest(stage, main),
-                new RecordDrugsPaneTest(stage, main),
-                new RecordsPaneTest(stage, main),
-                new MainPaneTest(stage, main)
+                new DrugTest(stage, main)
+                , new ShinryouTest(stage, main)
+                , new RecordDrugsPaneTest(stage, main)
+                , new RecordsPaneTest(stage, main)
+                , new MainPaneTest(stage, main)
         );
     }
 

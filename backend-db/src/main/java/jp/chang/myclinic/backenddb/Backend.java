@@ -158,28 +158,32 @@ public class Backend {
 
     public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
         String sql = xlate("select * from Shahokokuho where patientId = ? and " +
-                        " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
+                ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                        //" validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.shahokokuhoTable);
         return getQuery().query(sql, ts.shahokokuhoTable, patientId, at, at);
     }
 
     public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
         String sql = xlate("select * from Koukikourei where patientId = ? and " +
-                        " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
+                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                //" validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.koukikoureiTable);
         return getQuery().query(sql, ts.koukikoureiTable, patientId, at, at);
     }
 
     public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
         String sql = xlate("select * from Roujin where patientId = ? and " +
-                        " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
+                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+//                " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.roujinTable);
         return getQuery().query(sql, ts.roujinTable, patientId, at, at);
     }
 
     public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at) {
         String sql = xlate("select * from Kouhi where patientId = ? and " +
-                        " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
+                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+//                " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.kouhiTable);
         return getQuery().query(sql, ts.kouhiTable, patientId, at, at);
     }

@@ -63,4 +63,15 @@ public class Column<DTO> {
     public void setPlaceHolder(String placeHolder) {
         this.placeHolder = placeHolder;
     }
+
+    @Override
+    public String toString() {
+        return "Column{" +
+                "dbColumnName='" + dbColumnName + '\'' +
+                ", dtoFieldName='" + dtoFieldName + '\'' +
+                ", isPrimary=" + isPrimary +
+                ", isAutoIncrement=" + isAutoIncrement +
+                ", placeHolder='" + placeHolder + '\'' +
+                '}';
+    }
 }

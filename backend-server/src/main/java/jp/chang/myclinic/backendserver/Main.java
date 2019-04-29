@@ -2,6 +2,8 @@ package jp.chang.myclinic.backendserver;
 
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.SupportSet;
+import jp.chang.myclinic.backendmysql.MysqlDataSourceProvider;
+import jp.chang.myclinic.backendmysql.MysqlTableSet;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
@@ -12,6 +14,7 @@ import jp.chang.myclinic.support.meisai.MeisaiServiceImpl;
 import jp.chang.myclinic.support.shinryoucodes.ShinryoucodeFileResolver;
 import jp.chang.myclinic.support.stockdrug.StockDrugFile;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -44,6 +47,8 @@ public class Main {
                     "sqlite-data", "myclinic-test-sqlite.db").toString();
         DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
         DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
+//        DataSource ds = MysqlDataSourceProvider.create();
+//        DbBackend dbBackend = new DbBackend(ds, MysqlTableSet::create, ss);
         Server server = new Server(cmdOpts.port);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
         context.setContextPath("/");

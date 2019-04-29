@@ -68,8 +68,8 @@ public class MainPaneBlankTest extends GuiTestBase {
         Collections.reverse(prevTimes);
         prevTimes.forEach(at -> {
             VisitDTO visit = frontend.startVisit(patient.patientId, at).join();
-            frontend.endExam(visit.visitId, 0);
-            frontend.deleteWqueue(visit.visitId);
+            frontend.endExam(visit.visitId, 0).join();
+            frontend.deleteWqueue(visit.visitId).join();
         });
         VisitDTO visit = frontend.startVisit(patient.patientId, LocalDateTime.now()).join();
         createMainPane();
@@ -81,13 +81,13 @@ public class MainPaneBlankTest extends GuiTestBase {
         MockData mock = new MockData();
         PatientDTO patient = mock.pickPatient();
         patient.patientId = frontend.enterPatient(patient).join();
-        frontend.startVisit(patient.patientId, LocalDateTime.now());
+        frontend.startVisit(patient.patientId, LocalDateTime.now()).join();
         for(int i=0;i<6;i++){
             PatientDTO p = mock.pickPatient();
             p.lastName = patient.lastName;
             p.lastNameYomi = patient.lastNameYomi;
             p.patientId = frontend.enterPatient(p).join();
-            frontend.startVisit(p.patientId, LocalDateTime.now());
+            frontend.startVisit(p.patientId, LocalDateTime.now()).join();
         }
         createMainPane();
     }

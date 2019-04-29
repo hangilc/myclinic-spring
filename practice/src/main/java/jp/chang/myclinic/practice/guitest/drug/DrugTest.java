@@ -16,9 +16,9 @@ public class DrugTest extends GroupTestBase {
     @Override
     protected List<TestInterface> getTests() {
         return List.of(
-                new DrugEnterFormTest(stage, main),
-                new DrugEditFormTest(stage, main),
-                new RecordDrugsPaneTest(stage, main)
+                new DrugEnterFormTest(stage, main)
+                , new DrugEditFormTest(stage, main)
+                , new RecordDrugsPaneTest(stage, main)
         );
     }
 }
