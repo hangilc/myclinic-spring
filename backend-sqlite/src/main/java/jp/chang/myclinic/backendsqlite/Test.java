@@ -7,26 +7,25 @@ import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaFile;
 import jp.chang.myclinic.support.kizaicodes.KizaicodeFileResolver;
-import jp.chang.myclinic.support.kizainames.KizaiNamesFile;
 import jp.chang.myclinic.support.meisai.MeisaiServiceImpl;
 import jp.chang.myclinic.support.shinryoucodes.ShinryoucodeFileResolver;
 import jp.chang.myclinic.support.stockdrug.StockDrugFile;
+import picocli.CommandLine;
+import picocli.CommandLine.*;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.file.Paths;
 
-public class Test {
+@Command(name = "test", mixinStandardHelpOptions = true)
+public class Test implements Runnable {
+
+    @Parameters(paramLabel = "SQLite db file", arity = "0..1", description = "SQLite db file to use for testing")
+    private String dbFile = Paths.get(System.getProperty("user.home"), "sqlite-data",
+            "myclinic-test-sqlite.db").toString();
 
     public static void main(String[] args) {
-        if( args.length != 1 ){
-            System.err.println("Usage: Test dbFile");
-            System.exit(1);
-        }
-        String dbFile = args[0];
-        DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-        DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, createSupportSet());
-        new Tester().test(dbBackend);
+        CommandLine.run(new Test(), args);
     }
 
     private static SupportSet createSupportSet(){
@@ -41,5 +40,11 @@ public class Test {
         return ss;
     }
 
+    @Override
+    public void run() {
+        DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
+        DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, createSupportSet());
+        new Tester().test(dbBackend);
+    }
 }
 

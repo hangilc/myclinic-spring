@@ -1,0 +1,25 @@
+<?xml version = "1.0"?>
+<project name = "myclinic" default = "help" xmlns:if="ant:if">
+	<property environment="env"/>
+	<target name ="backend-sqlite-test">
+		<antcall if:set="build" target="backend-sqlite-install" />
+		<java classname="jp.chang.myclinic.backendsqlite.Test" fork="true" failonerror="true">
+			<classpath>
+				<pathelement location="backend-sqlite/target/backend-sqlite-1.0.0-SNAPSHOT-jar-with-dependencies.jar" />
+			</classpath>
+		</java>
+	</target>
+	<target name = "backend-sqlite-install">
+		<exec executable="mvn.cmd">
+			<arg line="-pl backend-sqlite install"/>
+		</exec>
+	</target>
+ <target name="help">
+		<java classname="org.apache.tools.ant.Main">
+			<arg value="-projecthelp" />
+			<arg value="-buildfile" />
+			<arg value="${ant.file}" />
+		</java>
+	</target>
+</project>
+
