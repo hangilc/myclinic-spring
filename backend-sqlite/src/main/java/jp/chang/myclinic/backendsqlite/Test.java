@@ -1,7 +1,6 @@
 package jp.chang.myclinic.backendsqlite;
 
-import jp.chang.myclinic.backenddb.DbBackend;
-import jp.chang.myclinic.backenddb.SupportSet;
+import jp.chang.myclinic.backenddb.*;
 import jp.chang.myclinic.backenddb.test.Tester;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
@@ -50,13 +49,14 @@ public class Test implements Runnable {
 
     @Override
     public void run() {
+        DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
+        DB db = new DBImpl(ds);
         if( threadSize == 1 ) {
-            DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, createSupportSet());
+            DbBackend dbBackend = new DbBackend(db, SqliteTableSet::create, createSupportSet());
             new Tester().test(dbBackend);
         } else {
-            DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, createSupportSet());
+            db = new SerialDB(db);
+            DbBackend dbBackend = new DbBackend(db, SqliteTableSet::create, createSupportSet());
             List<Future<Void>> futures = new ArrayList<>();
             for(int i=0;i<threadSize;i++){
                 ExecutorService service = Executors.newSingleThreadExecutor();

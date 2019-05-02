@@ -19,8 +19,8 @@ public class DbBackend {
     private TableSet ts;
     private Backend backend;
 
-    public DbBackend(DataSource ds, Function<Query, TableSet> tableSetCreator, SupportSet ss){
-        this.db = new DB(ds);
+    public DbBackend(DB db, Function<Query, TableSet> tableSetCreator, SupportSet ss){
+        this.db = db;
         this.query = new Query(db.getConnectionProvider());
         this.ts = tableSetCreator.apply(query);
         this.backend = new Backend(ts, query, ss);
