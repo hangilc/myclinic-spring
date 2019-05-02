@@ -7,7 +7,7 @@ public class Tester {
 
     public void test(DbBackend dbBackend){
         new PatientTester(dbBackend).test();
-//        new VisitTester(dbBackend).test();
+        new VisitTester(dbBackend).test();
 //        new DrugTester(dbBackend).test();
 //        new ShinryouTester(dbBackend).test();
 //        new ConductTester(dbBackend).test();

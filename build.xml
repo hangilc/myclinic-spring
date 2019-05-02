@@ -32,7 +32,7 @@
 
 	<target name = "backend-mysql-install">
 		<exec executable="mvn.cmd" failonerror="true">
-			<arg line="-pl backend-mysql install"/>
+			<arg line="-pl backend-mysql clean install"/>
 		</exec>
 	</target>
 

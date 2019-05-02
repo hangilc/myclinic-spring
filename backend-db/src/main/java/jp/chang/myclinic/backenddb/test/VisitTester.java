@@ -5,11 +5,14 @@ import jp.chang.myclinic.backenddb.CannotDeleteVisitSafelyException;
 import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
+
+import static java.util.stream.Collectors.toList;
 import static jp.chang.myclinic.consts.MyclinicConsts.*;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.*;
+import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,26 +23,47 @@ public class VisitTester extends TesterBase {
         super(dbBackend);
     }
 
-//    @DbTest
-//    public void testStartVisit(DbBackend dbBackend){
-//        int serialId = dbBackend.query(Backend::getLastPracticeLogId);
-//        dbBackend.txProc(backend -> {
-//            VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
-//            WqueueDTO wqueue = backend.listWqueue().stream().filter(wq -> wq.visitId == visit.visitId).findFirst()
-//                    .orElseThrow(() -> new RuntimeException("Cannot find wqueue"));
-//            confirm(wqueue.visitId == visit.visitId && wqueue.waitState == MyclinicConsts.WqueueStateWaitExam);
-////            List<PracticeLogDTO> logs = backend.listPracticeLogSince(serialId);
-////            confirm(logs.size() == 2);
-////            PracticeLogDTO vlog = logs.get(0);
-////            confirm(vlog.isVisitCreated());
-////            PracticeLogDTO wlog = logs.get(1);
-////            confirm(wlog.isWqueueCreated());
-////            WqueueCreated wcreated = wlog.asWqueueCreated();
-////            confirm(wcreated.created.visitId == visit.visitId);
-////            confirm(wcreated.created.waitState == WqueueWaitState.WaitExam.getCode());
-//        });
-//    }
-//
+    @DbTest
+    public void startVisit(){
+        int logIndex = getCurrentPracticeLogIndex();
+        PatientDTO patient = mock.pickPatient();
+        dbBackend.txProc(backend -> backend.enterPatient(patient));
+        class Local {
+            private VisitDTO visit;
+        }
+        Local local = new Local();
+        LocalDateTime now = LocalDateTime.now();
+        dbBackend.txProc(backend -> local.visit = backend.startVisit(patient.patientId, now));
+        final VisitDTO visit = local.visit;
+        confirm(visit.patientId == patient.patientId, "patient-id", () -> {
+            System.out.println("visit: " + visit);
+            System.out.println("patient: " + patient);
+        });
+        confirm(toSqlDatetime(now).equals(visit.visitedAt), "visited-at", () -> {
+            System.out.println("visitedAt: " + visit.visitedAt);
+            System.out.println("now: " + now);
+        });
+        List<WqueueDTO> wqueueList = dbBackend.query(Backend::listWqueue)
+                .stream()
+                .filter(wq -> wq.visitId == visit.visitId)
+                .collect(toList());
+        confirm(wqueueList.size() == 1);
+        confirm(wqueueList.get(0).visitId == visit.visitId &&
+                wqueueList.get(0).waitState == WqueueStateWaitExam);
+        List<PracticeLogDTO> logs = getPracticeLogList(logIndex, log -> {
+            if( log.isVisitCreated() ){
+                return log.asVisitCreated().created.visitId == visit.visitId;
+            }
+            if( log.isWqueueCreated() ){
+                return log.asWqueueCreated().created.visitId == visit.visitId;
+            }
+            return false;
+        });
+        confirm(logs.size() == 2);
+        confirm(logs.get(0).isVisitCreated() && logs.get(0).asVisitCreated().created.visitId == visit.visitId);
+        confirm(logs.get(1).isWqueueCreated() && logs.get(1).asWqueueCreated().created.visitId == visit.visitId);
+    }
+
 //    @DbTest
 //    public void startExam(DbBackend dbBackend){
 //        class Local {

@@ -5,9 +5,11 @@ import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.mockdata.MockData;
+import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -71,8 +73,24 @@ class TesterBase {
         }
     }
 
+    String toSqlDatetime(LocalDateTime time){
+        return DateTimeUtil.toSqlDateTime(time);
+    }
+
+    LocalDateTime fromSqlDatetime(String sqlDatetime){
+        return DateTimeUtil.parseSqlDateTime(sqlDatetime);
+    }
+
     void confirm(boolean ok) {
         if (!ok) {
+            throw new RuntimeException("Confirmation failed.");
+        }
+    }
+
+    void confirm(boolean ok, String label, Runnable detail){
+        if( !ok ){
+            System.out.println(label);
+            detail.run();
             throw new RuntimeException("Confirmation failed.");
         }
     }
