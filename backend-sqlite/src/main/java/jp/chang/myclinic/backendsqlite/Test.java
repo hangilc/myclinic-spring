@@ -16,9 +16,17 @@ import picocli.CommandLine.*;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Command(name = "test", mixinStandardHelpOptions = true)
 public class Test implements Runnable {
+
+    @Option(names = "--thread")
+    private int threadSize = 1;
 
     @Parameters(paramLabel = "SQLite db file", arity = "0..1", description = "SQLite db file to use for testing")
     private String dbFile = Paths.get(System.getProperty("user.home"), "sqlite-data",
@@ -42,9 +50,31 @@ public class Test implements Runnable {
 
     @Override
     public void run() {
-        DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-        DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, createSupportSet());
-        new Tester().test(dbBackend);
+        if( threadSize == 1 ) {
+            DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
+            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, createSupportSet());
+            new Tester().test(dbBackend);
+        } else {
+            DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
+            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, createSupportSet());
+            List<Future<Void>> futures = new ArrayList<>();
+            for(int i=0;i<threadSize;i++){
+                ExecutorService service = Executors.newSingleThreadExecutor();
+                Future<Void> future = service.submit(() -> {
+                    new Tester().test(dbBackend);
+                    return null;
+                });
+                futures.add(future);
+            }
+            try {
+                for (Future future : futures) {
+                    future.get();
+                }
+            } catch(Exception ex){
+                ex.printStackTrace();
+                System.exit(1);
+            }
+        }
     }
 }
 

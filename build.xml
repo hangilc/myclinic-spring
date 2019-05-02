@@ -7,10 +7,12 @@
 			<classpath>
 				<pathelement location="backend-sqlite/target/backend-sqlite-1.0.0-SNAPSHOT-jar-with-dependencies.jar" />
 			</classpath>
+			<arg if:set="thread" value="--thread"/>
+			<arg if:set="thread" value="${thread}"/>
 		</java>
 	</target>
 	<target name = "backend-sqlite-install">
-		<exec executable="mvn.cmd">
+		<exec executable="mvn.cmd" failonerror="true">
 			<arg line="-pl backend-sqlite install"/>
 		</exec>
 	</target>
