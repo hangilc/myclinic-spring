@@ -47,6 +47,20 @@ public class PracticeLogger {
         this.publisher = publisher;
     }
 
+    public class PublishedPracticeLogDTO {
+        public int serialId;
+        public String kind;
+        public String createdAt;
+        public String body;
+
+        private PublishedPracticeLogDTO(PracticeLogDTO log){
+            this.serialId = log.serialId;
+            this.kind = log.kind;
+            this.createdAt = log.createdAt;
+            this.body = log.body;
+        }
+    }
+
     private void logValue(String kind, PracticeLogBody obj) {
         try {
             PracticeLogDTO dto = new PracticeLogDTO();
@@ -54,7 +68,7 @@ public class PracticeLogger {
             dto.createdAt = DateTimeUtil.toSqlDateTime(LocalDateTime.now());
             dto.body = mapper.writeValueAsString(obj);
             saver.save(dto);
-            String message = mapper.writeValueAsString(dto);
+            String message = mapper.writeValueAsString(new PublishedPracticeLogDTO(dto));
             publisher.publish(message);
         } catch (JsonProcessingException e) {
             e.printStackTrace();

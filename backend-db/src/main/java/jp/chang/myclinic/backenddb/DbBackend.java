@@ -2,6 +2,7 @@ package jp.chang.myclinic.backenddb;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DbBackend {
@@ -26,8 +27,12 @@ public class DbBackend {
         this.backend = new Backend(ts, query, ss);
     }
 
-    public Query getQuery() {
-        return query;
+    public void setPracticeLogPublisher(Consumer<String> publisher){
+        backend.setPracticeLogPublisher(publisher);
+    }
+
+    public void setHolineLogPublisher(Consumer<String> publisher){
+        backend.setHotlineLogPublisher(publisher);
     }
 
     public TableSet getTableSet() {

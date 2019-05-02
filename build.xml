@@ -1,8 +1,9 @@
 <?xml version = "1.0"?>
 <project name = "myclinic" default = "help" xmlns:if="ant:if">
 	<property environment="env"/>
+
 	<target name ="backend-sqlite-test">
-		<antcall if:set="build" target="backend-sqlite-install" />
+		<antcall if:true="${build}" target="backend-sqlite-install" />
 		<java classname="jp.chang.myclinic.backendsqlite.Test" fork="true" failonerror="true">
 			<classpath>
 				<pathelement location="backend-sqlite/target/backend-sqlite-1.0.0-SNAPSHOT-jar-with-dependencies.jar" />
@@ -11,12 +12,31 @@
 			<arg if:set="thread" value="${thread}"/>
 		</java>
 	</target>
+
 	<target name = "backend-sqlite-install">
 		<exec executable="mvn.cmd" failonerror="true">
 			<arg line="-pl backend-sqlite install"/>
 		</exec>
 	</target>
- <target name="help">
+
+	<target name ="backend-mysql-test">
+		<antcall if:true="${build}" target="backend-mysql-install" />
+		<java classname="jp.chang.myclinic.backendmysql.Test" fork="true" failonerror="true">
+			<classpath>
+				<pathelement location="backend-mysql/target/backend-mysql-1.0.0-SNAPSHOT-jar-with-dependencies.jar" />
+			</classpath>
+			<arg if:set="host" line="--host ${host}"/>
+			<arg if:set="thread" line="--thread ${thread}"/>
+		</java>
+	</target>
+
+	<target name = "backend-mysql-install">
+		<exec executable="mvn.cmd" failonerror="true">
+			<arg line="-pl backend-mysql install"/>
+		</exec>
+	</target>
+
+	<target name="help">
 		<java classname="org.apache.tools.ant.Main">
 			<arg value="-projecthelp" />
 			<arg value="-buildfile" />
