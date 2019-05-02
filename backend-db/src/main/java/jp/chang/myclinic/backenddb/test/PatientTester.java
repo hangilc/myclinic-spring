@@ -33,7 +33,6 @@ class PatientTester extends TesterBase {
             }
             return false;
         });
-        System.out.println("logs: " + logs);
         confirm(logs.size() == 1 && logs.get(0).asPatientCreated().created.equals(p));
     }
 

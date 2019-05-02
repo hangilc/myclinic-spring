@@ -1,11 +1,8 @@
 package jp.chang.myclinic.backenddb.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.backenddb.Backend;
-import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
-import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.mockdata.MockData;
 
@@ -13,7 +10,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 
 class TesterBase {
@@ -21,17 +17,17 @@ class TesterBase {
     DbBackend dbBackend;
     static MockData mock = new MockData();
     static private ObjectMapper mapper = new ObjectMapper();
-    private List<PracticeLogDTO> practiceLogList = new ArrayList<>();  // synchronized by this
+    private static final List<PracticeLogDTO> practiceLogList = new ArrayList<>();  // synchronized by this
 
     TesterBase(DbBackend dbBackend) {
         this.dbBackend = dbBackend;
-        dbBackend.setPracticeLogPublisher(this::publishPracticeLog);
+        dbBackend.setPracticeLogPublisher(TesterBase::publishPracticeLog);
     }
 
-    private void publishPracticeLog(String log){
+    private synchronized static void publishPracticeLog(String log){
         try {
             PracticeLogDTO practiceLog = mapper.readValue(log, PracticeLogDTO.class);
-            synchronized(this) {
+            synchronized(TesterBase.class) {
                 practiceLogList.add(practiceLog);
             }
         } catch (IOException e) {
@@ -39,11 +35,11 @@ class TesterBase {
         }
     }
 
-    synchronized int getCurrentPracticeLogIndex(){
+    synchronized static int getCurrentPracticeLogIndex(){
         return practiceLogList.size();
     }
 
-    synchronized List<PracticeLogDTO> getPracticeLogList(int startIndex, Predicate<PracticeLogDTO> filter){
+    synchronized static List<PracticeLogDTO> getPracticeLogList(int startIndex, Predicate<PracticeLogDTO> filter){
         List<PracticeLogDTO> result = new ArrayList<>();
         for(int i=startIndex;i<practiceLogList.size();i++){
             PracticeLogDTO log = practiceLogList.get(i);
