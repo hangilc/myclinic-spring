@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jp.chang.myclinic.dto.annotation.AutoInc;
 import jp.chang.myclinic.dto.annotation.Primary;
 
+import java.util.Objects;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DrugDTO {
 	@Primary
@@ -28,6 +30,26 @@ public class DrugDTO {
 		dst.category = src.category;
 		dst.prescribed = src.prescribed;
 		return dst;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DrugDTO drugDTO = (DrugDTO) o;
+		return drugId == drugDTO.drugId &&
+				visitId == drugDTO.visitId &&
+				iyakuhincode == drugDTO.iyakuhincode &&
+				Double.compare(drugDTO.amount, amount) == 0 &&
+				days == drugDTO.days &&
+				category == drugDTO.category &&
+				prescribed == drugDTO.prescribed &&
+				Objects.equals(usage, drugDTO.usage);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(drugId, visitId, iyakuhincode, amount, usage, days, category, prescribed);
 	}
 
 	@Override

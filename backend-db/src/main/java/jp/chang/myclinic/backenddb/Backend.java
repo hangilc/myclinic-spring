@@ -192,111 +192,9 @@ public class Backend {
 
     // Visit ////////////////////////////////////////////////////////////////////////
 
-    private void enterVisit(VisitDTO visit) {
+    public void enterVisit(VisitDTO visit) {
         ts.visitTable.insert(visit);
         practiceLogger.logVisitCreated(visit);
-    }
-
-    public VisitDTO startVisit(int patientId, LocalDateTime at) {
-        LocalDate atDate = at.toLocalDate();
-        VisitDTO visitDTO = new VisitDTO();
-        visitDTO.patientId = patientId;
-        visitDTO.visitedAt = DateTimeUtil.toSqlDateTime(at);
-        {
-            List<ShahokokuhoDTO> list = findAvailableShahokokuho(patientId, atDate);
-            if (list.size() == 0) {
-                visitDTO.shahokokuhoId = 0;
-            } else {
-                visitDTO.shahokokuhoId = list.get(0).shahokokuhoId;
-            }
-        }
-        {
-            List<KoukikoureiDTO> list = findAvailableKoukikourei(patientId, atDate);
-            if (list.size() == 0) {
-                visitDTO.koukikoureiId = 0;
-            } else {
-                visitDTO.koukikoureiId = list.get(0).koukikoureiId;
-            }
-        }
-        {
-            List<RoujinDTO> list = findAvailableRoujin(patientId, atDate);
-            if (list.size() == 0) {
-                visitDTO.roujinId = 0;
-            } else {
-                visitDTO.roujinId = list.get(0).roujinId;
-            }
-        }
-        {
-            visitDTO.kouhi1Id = 0;
-            visitDTO.kouhi2Id = 0;
-            visitDTO.kouhi3Id = 0;
-            List<KouhiDTO> list = findAvailableKouhi(patientId, atDate);
-            int n = list.size();
-            if (n > 0) {
-                visitDTO.kouhi1Id = list.get(0).kouhiId;
-                if (n > 1) {
-                    visitDTO.kouhi2Id = list.get(1).kouhiId;
-                    if (n > 2) {
-                        visitDTO.kouhi3Id = list.get(2).kouhiId;
-                    }
-                }
-            }
-        }
-        enterVisit(visitDTO);
-        WqueueDTO wqueueDTO = new WqueueDTO();
-        wqueueDTO.visitId = visitDTO.visitId;
-        wqueueDTO.waitState = MyclinicConsts.WqueueStateWaitExam;
-        enterWqueue(wqueueDTO);
-        return visitDTO;
-    }
-
-    public void startExam(int visitId) {
-        changeWqueueState(visitId, WqueueWaitState.InExam.getCode());
-    }
-
-    public void suspendExam(int visitId) {
-        changeWqueueState(visitId, WqueueWaitState.WaitReExam.getCode());
-    }
-
-    private boolean isTodaysVisit(VisitDTO visit) {
-        return visit.visitedAt.substring(0, 10).equals(LocalDate.now().toString());
-    }
-
-    public void endExam(int visitId, int charge) {
-        VisitDTO visit = ts.visitTable.getById(visitId);
-        if (visit == null) {
-            throw new RuntimeException("No such visit: " + visitId);
-        }
-        boolean isToday = isTodaysVisit(visit);
-        setChargeOfVisit(visitId, charge);
-        WqueueDTO wqueue = ts.wqueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
-        if (wqueue != null && isToday) {
-            changeWqueueState(visitId, WqueueWaitState.WaitCashier.getCode());
-        } else {
-            if (wqueue != null) { // it not today
-                WqueueDTO updatedWqueue = WqueueDTO.copy(wqueue);
-                updatedWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
-                updateWqueue(wqueue, updatedWqueue);
-            } else {
-                WqueueDTO newWqueue = new WqueueDTO();
-                newWqueue.visitId = visitId;
-                newWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
-                enterWqueue(newWqueue);
-            }
-        }
-        PharmaQueueDTO pharmaQueue = ts.pharmaQueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
-        if (pharmaQueue != null) {
-            deletePharmaQueue(pharmaQueue);
-        }
-        if (isToday) {
-            int unprescribed = countUnprescribedDrug(visitId);
-            if (unprescribed > 0) {
-                PharmaQueueDTO newPharmaQueue = new PharmaQueueDTO();
-                newPharmaQueue.visitId = visitId;
-                newPharmaQueue.pharmaState = PharmaQueueState.WaitPack.getCode();
-                enterPharmaQueue(newPharmaQueue);
-            }
-        }
     }
 
     // Charge /////////////////////////////////////////////////////////////////////////////
@@ -311,19 +209,9 @@ public class Backend {
         practiceLogger.logChargeUpdated(prev, updated);
     }
 
-    public void setChargeOfVisit(int visitId, int charge) {
-        ChargeDTO newCharge = new ChargeDTO();
-        newCharge.visitId = visitId;
-        newCharge.charge = charge;
-        try {
-            ts.chargeTable.insert(newCharge);
-            practiceLogger.logChargeCreated(newCharge);
-        } catch (IntegrityException e) {
-            ChargeDTO prev = ts.chargeTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
-            ChargeDTO updated = ChargeDTO.copy(prev);
-            updated.charge = charge;
-            updateCharge(prev, updated);
-        }
+    public void updateCharge(ChargeDTO charge){
+        ChargeDTO prev = ts.chargeTable.getByIdForUpdate(charge.visitId, forUpdate);
+        updateCharge(prev, charge);
     }
 
     public ChargeDTO getCharge(int visitId) {
@@ -345,25 +233,22 @@ public class Backend {
 
     // Wqueue /////////////////////////////////////////////////////////////////////////////
 
-    private void enterWqueue(WqueueDTO wqueue) {
+    public void enterWqueue(WqueueDTO wqueue) {
         ts.wqueueTable.insert(wqueue);
         practiceLogger.logWqueueCreated(wqueue);
     }
 
-    private void updateWqueue(WqueueDTO prev, WqueueDTO wqueue) {
+    public void updateWqueue(WqueueDTO wqueue){
+        WqueueDTO prev = ts.wqueueTable.getByIdForUpdate(wqueue.visitId, forUpdate);
+        if( prev == null ){
+            throw new RuntimeException("cannot find previous wqueue: " + wqueue);
+        }
         ts.wqueueTable.update(wqueue);
         practiceLogger.logWqueueUpdated(prev, wqueue);
     }
 
     public WqueueDTO getWqueue(int visitId) {
         return ts.wqueueTable.getById(visitId);
-    }
-
-    private void changeWqueueState(int visitId, int state) {
-        WqueueDTO prev = ts.wqueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
-        WqueueDTO updated = WqueueDTO.copy(prev);
-        updated.waitState = state;
-        updateWqueue(prev, updated);
     }
 
     public void deleteWqueue(int visitId) {
@@ -1504,7 +1389,7 @@ public class Backend {
             if (wqueue != null) {
                 WqueueDTO modified = WqueueDTO.copy(wqueue);
                 modified.waitState = WqueueWaitState.WaitDrug.getCode();
-                updateWqueue(wqueue, modified);
+                updateWqueue(modified);
             }
         } else {
             if (wqueue != null) {
@@ -1666,7 +1551,7 @@ public class Backend {
         return ts.pharmaQueueTable.getById(visitId);
     }
 
-    private void enterPharmaQueue(PharmaQueueDTO pharmaQueue) {
+    public void enterPharmaQueue(PharmaQueueDTO pharmaQueue) {
         ts.pharmaQueueTable.insert(pharmaQueue);
         practiceLogger.logPharmaQueueCreated(pharmaQueue);
     }

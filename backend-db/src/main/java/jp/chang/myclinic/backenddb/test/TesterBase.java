@@ -2,7 +2,10 @@ package jp.chang.myclinic.backenddb.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.backenddb.DbBackend;
+import jp.chang.myclinic.backenddb.DbBackendService;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -18,13 +21,18 @@ import java.util.function.Predicate;
 class TesterBase {
 
     DbBackend dbBackend;
+    DbBackendService dbBackendService;
     static MockData mock = new MockData();
     static private ObjectMapper mapper = new ObjectMapper();
     private static final List<PracticeLogDTO> practiceLogList = new ArrayList<>();  // synchronized by this
+    PatientDTO defaultPatient;
 
     TesterBase(DbBackend dbBackend) {
         this.dbBackend = dbBackend;
+        this.dbBackendService = new DbBackendService(dbBackend);
         dbBackend.setPracticeLogPublisher(TesterBase::publishPracticeLog);
+        this.defaultPatient = mock.pickPatient();
+        dbBackend.txProc(b -> b.enterPatient(defaultPatient));
     }
 
     private synchronized static void publishPracticeLog(String log){
@@ -72,6 +80,20 @@ class TesterBase {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    VisitDTO startVisit(){
+        return dbBackendService.startVisit(defaultPatient.patientId, LocalDateTime.now());
+    }
+
+    VisitDTO startExam(){
+        VisitDTO visit = startVisit();
+        dbBackendService.startExam(visit.visitId);
+        return visit;
+    }
+
+    void endExam(int visitId, int charge){
+        dbBackendService.endExam(visitId, charge);
     }
 
     String toSqlDatetime(LocalDateTime time){

@@ -22,6 +22,7 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
         return query;
     }
 
+    @Override
     public abstract String getTableName();
 
     protected abstract Class<DTO> getClassDTO();
@@ -41,6 +42,7 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
         return getColumns().stream().map(Column::getDbColumnName).collect(toList());
     }
 
+    @Override
     public void insert(DTO dto) {
         Map<Boolean, List<Column<DTO>>> colmap = getColumns().stream().collect(groupingBy(Column::isAutoIncrement));
         if (colmap.get(true) == null || colmap.get(true).size() == 0) {
@@ -103,10 +105,12 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
         getQuery().batchCopy(sql, setter, items);
     }
 
+    @Override
     public DTO getById(Object id) {
         return _getById(id, "");
     }
 
+    @Override
     public DTO getByIdForUpdate(Object id, String suffix){
         return _getById(id, suffix);
     }
@@ -122,6 +126,7 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
         return getQuery().get(sql, this, id);
     }
 
+    @Override
     public void update(DTO dto) {
         Map<Boolean, List<Column<DTO>>> colmap = getColumns().stream().collect(groupingBy(Column::isPrimary));
         List<Column<DTO>> primaries = colmap.get(true);
@@ -146,7 +151,8 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
         getQuery().update(sql, setter);
     }
 
-    public void delete(Object id) {
+    @Override
+    public int delete(Object id) {
         List<Column<DTO>> primaries = getColumns().stream().filter(Column::isPrimary).collect(toList());
         if (primaries.size() != 1) {
             throw new RuntimeException("Not table with single primary key.");
@@ -159,9 +165,10 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
         SqlConsumer<PreparedStatement> setter = stmt -> {
             stmt.setObject(1, id);
         };
-        getQuery().update(sql, setter);
+        return getQuery().update(sql, setter);
     }
 
+    @Override
     public DTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {
         DTO dto = newInstanceDTO();
         for (Column<DTO> c : getColumns()) {

@@ -12,7 +12,7 @@ public interface TableInterface<DTO> {
     DTO getById(Object id);
     DTO getByIdForUpdate(Object id, String suffix);
     void update(DTO dto);
-    void delete(Object id);
+    int delete(Object id);
     DTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException;
 
 }
