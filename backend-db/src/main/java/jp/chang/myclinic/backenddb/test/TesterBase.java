@@ -128,4 +128,9 @@ class TesterBase {
         confirm(logs.size() == 1);
     }
 
+    void confirmNoLog(int startIndex, Predicate<PracticeLogDTO> pred){
+        List<PracticeLogDTO> logs = getPracticeLogList(startIndex, pred);
+        confirm(logs.size() == 0);
+    }
+
 }

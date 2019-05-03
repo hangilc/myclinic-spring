@@ -386,10 +386,9 @@ public class Backend {
 
     public void updateDrug(DrugDTO drug) {
         DrugDTO prev = ts.drugTable.getByIdForUpdate(drug.drugId, forUpdate);
-        updateDrug(prev, drug);
-    }
-
-    private void updateDrug(DrugDTO prev, DrugDTO drug) {
+        if( prev == null ){
+            throw new RuntimeException("Cannot find prev drug while updating: " + drug);
+        }
         ts.drugTable.update(drug);
         practiceLogger.logDrugUpdated(prev, drug);
     }
@@ -398,7 +397,7 @@ public class Backend {
         int drugId = drugWithAttr.drug.drugId;
         DrugDTO prevDrug = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
         DrugAttrDTO prevAttr = ts.drugAttrTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
-        updateDrug(prevDrug, drugWithAttr.drug);
+        updateDrug(drugWithAttr.drug);
         if (prevAttr == null) {
             if (drugWithAttr.attr != null) {
                 enterDrugAttr(drugWithAttr.attr);
@@ -417,7 +416,7 @@ public class Backend {
             DrugDTO prev = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
             DrugDTO drug = DrugDTO.copy(prev);
             drug.days = days;
-            updateDrug(prev, drug);
+            updateDrug(drug);
         });
     }
 
@@ -564,7 +563,7 @@ public class Backend {
             DrugDTO prev = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
             DrugDTO drug = DrugDTO.copy(prev);
             drug.prescribed = 1;
-            updateDrug(prev, drug);
+            updateDrug(drug);
         }
     }
 

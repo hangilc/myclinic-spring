@@ -112,10 +112,6 @@ public class VisitTester extends TesterBase {
                 .map(wqueueUpdated -> {
                     WqueueDTO prev = wqueueUpdated.prev;
                     WqueueDTO updated = wqueueUpdated.updated;
-                    if( prev.visitId == visit.visitId || updated.visitId == visit.visitId ){
-                        System.out.println("prev: " + prev);
-                        System.out.println("updated: " + updated);
-                    }
                     return prev.visitId == visit.visitId &&
                             prev.waitState == WqueueStateInExam &&
                             updated.visitId == visit.visitId &&
