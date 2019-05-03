@@ -1,6 +1,8 @@
 package jp.chang.myclinic.backenddb;
 
 import jp.chang.myclinic.backenddb.annotation.ExcludeFromFrontend;
+import jp.chang.myclinic.backenddb.exception.CannotDeleteVisitSafelyException;
+import jp.chang.myclinic.backenddb.exception.IntegrityException;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.WqueueWaitState;
@@ -310,16 +312,17 @@ public class Backend {
     }
 
     public void setChargeOfVisit(int visitId, int charge) {
-        ChargeDTO prev = ts.chargeTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
-        if (prev != null) {
+        ChargeDTO newCharge = new ChargeDTO();
+        newCharge.visitId = visitId;
+        newCharge.charge = charge;
+        try {
+            ts.chargeTable.insert(newCharge);
+            practiceLogger.logChargeCreated(newCharge);
+        } catch (IntegrityException e) {
+            ChargeDTO prev = ts.chargeTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
             ChargeDTO updated = ChargeDTO.copy(prev);
             updated.charge = charge;
             updateCharge(prev, updated);
-        } else {
-            ChargeDTO newCharge = new ChargeDTO();
-            newCharge.visitId = visitId;
-            newCharge.charge = charge;
-            enterCharge(newCharge);
         }
     }
 
@@ -368,8 +371,8 @@ public class Backend {
         deleteWqueue(wqueue);
     }
 
-    private void deleteWqueue(WqueueDTO wqueue){
-        if( wqueue != null ){
+    private void deleteWqueue(WqueueDTO wqueue) {
+        if (wqueue != null) {
             ts.wqueueTable.delete(wqueue.visitId);
             practiceLogger.logWqueueDeleted(wqueue);
         }
@@ -496,7 +499,7 @@ public class Backend {
         }
     }
 
-    public void updateDrug(DrugDTO drug){
+    public void updateDrug(DrugDTO drug) {
         DrugDTO prev = ts.drugTable.getByIdForUpdate(drug.drugId, forUpdate);
         updateDrug(prev, drug);
     }
@@ -538,8 +541,8 @@ public class Backend {
         deleteDrug(drug);
     }
 
-    private void deleteDrug(DrugDTO drug){
-        if( drug != null ){
+    private void deleteDrug(DrugDTO drug) {
+        if (drug != null) {
             ts.drugTable.delete(drug.drugId);
             practiceLogger.logDrugDeleted(drug);
         }
@@ -709,18 +712,18 @@ public class Backend {
     }
 
     public DrugAttrDTO setDrugTekiyou(int drugId, String tekiyou) {
-        DrugAttrDTO attr = ts.drugAttrTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
-        if (attr != null) {
+        DrugAttrDTO newDrugAttr = new DrugAttrDTO();
+        newDrugAttr.drugId = drugId;
+        newDrugAttr.tekiyou = tekiyou;
+        try {
+            ts.drugAttrTable.insert(newDrugAttr);
+            return newDrugAttr;
+        } catch(IntegrityException e){
+            DrugAttrDTO attr = ts.drugAttrTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
             DrugAttrDTO updated = DrugAttrDTO.copy(attr);
             updated.tekiyou = tekiyou;
             updateDrugAttr(updated);
             return updated;
-        } else {
-            DrugAttrDTO newDrugAttr = new DrugAttrDTO();
-            newDrugAttr.drugId = drugId;
-            newDrugAttr.tekiyou = tekiyou;
-            enterDrugAttr(newDrugAttr);
-            return newDrugAttr;
         }
     }
 
@@ -1131,15 +1134,12 @@ public class Backend {
     }
 
     public void setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
-        ShinryouAttrDTO prev = ts.shinryouAttrTable.getByIdForUpdate(shinryouId, ts.dialect.forUpdate());
-        if (prev == null) {
-            if (attr != null) {
-                enterShinryouAttr(attr);
-            }
+        if( attr == null ){
+            deleteShinryouAttr(shinryouId);
         } else {
-            if (attr == null) {
-                deleteShinryouAttr(shinryouId);
-            } else {
+            try {
+                ts.shinryouAttrTable.insert(attr);
+            } catch (IntegrityException e) {
                 updateShinryouAttr(attr);
             }
         }
@@ -1209,7 +1209,7 @@ public class Backend {
     }
 
     private void deleteConduct(ConductDTO conduct) {
-        if( conduct != null ) {
+        if (conduct != null) {
             ts.conductTable.delete(conduct.conductId);
             practiceLogger.logConductDeleted(conduct);
         }
@@ -1302,7 +1302,7 @@ public class Backend {
     }
 
     private void deleteGazouLabel(GazouLabelDTO gazouLabel) {
-        if( gazouLabel != null ) {
+        if (gazouLabel != null) {
             ts.gazouLabelTable.delete(gazouLabel.conductId);
             practiceLogger.logGazouLabelDeleted(gazouLabel);
         }
@@ -1349,7 +1349,7 @@ public class Backend {
     }
 
     private void deleteConductShinryou(ConductShinryouDTO shinryou) {
-        if( shinryou != null ) {
+        if (shinryou != null) {
             ts.conductShinryouTable.delete(shinryou.conductShinryouId);
             practiceLogger.logConductShinryouDeleted(shinryou);
         }
@@ -1403,7 +1403,7 @@ public class Backend {
     }
 
     private void deleteConductDrug(ConductDrugDTO drug) {
-        if( drug != null ) {
+        if (drug != null) {
             ts.conductDrugTable.delete(drug.conductDrugId);
             practiceLogger.logConductDrugDeleted(drug);
         }
@@ -1457,7 +1457,7 @@ public class Backend {
     }
 
     private void deleteConductKizai(ConductKizaiDTO kizai) {
-        if( kizai != null ) {
+        if (kizai != null) {
             ts.conductKizaiTable.delete(kizai.conductKizaiId);
             practiceLogger.logConductKizaiDeleted(kizai);
         }
@@ -1569,7 +1569,7 @@ public class Backend {
         updateDisease(prev, disease);
     }
 
-    private void updateDisease(DiseaseDTO prev, DiseaseDTO disease){
+    private void updateDisease(DiseaseDTO prev, DiseaseDTO disease) {
         ts.diseaseTable.update(disease);
         practiceLogger.logDiseaseUpdated(prev, disease);
     }
@@ -1654,7 +1654,7 @@ public class Backend {
     }
 
     private void deleteDiseaseAdj(DiseaseAdjDTO adj) {
-        if( adj != null ) {
+        if (adj != null) {
             ts.diseaseAdjTable.delete(adj.diseaseAdjId);
             practiceLogger.logDiseaseAdjDeleted(adj);
         }
@@ -1676,8 +1676,8 @@ public class Backend {
         deletePharmaQueue(pharmaQueue);
     }
 
-    private void deletePharmaQueue(PharmaQueueDTO pharmaQueue){
-        if( pharmaQueue != null ){
+    private void deletePharmaQueue(PharmaQueueDTO pharmaQueue) {
+        if (pharmaQueue != null) {
             ts.pharmaQueueTable.delete(pharmaQueue.visitId);
             practiceLogger.logPharmaQueueDeleted(pharmaQueue);
         }

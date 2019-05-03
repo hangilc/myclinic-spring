@@ -1,18 +1,15 @@
 package jp.chang.myclinic.backenddb.test;
 
 import jp.chang.myclinic.backenddb.Backend;
-import jp.chang.myclinic.backenddb.CannotDeleteVisitSafelyException;
-import jp.chang.myclinic.backenddb.DB;
+import jp.chang.myclinic.backenddb.exception.CannotDeleteVisitSafelyException;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 
 import static java.util.stream.Collectors.toList;
 import static jp.chang.myclinic.consts.MyclinicConsts.*;
-import jp.chang.myclinic.consts.MyclinicConsts;
-import jp.chang.myclinic.consts.WqueueWaitState;
+
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.*;
-import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +21,7 @@ public class VisitTester extends TesterBase {
     }
 
     @DbTest
-    public void startVisit(){
+    public void startVisit() {
         int logIndex = getCurrentPracticeLogIndex();
         PatientDTO patient = mock.pickPatient();
         dbBackend.txProc(backend -> backend.enterPatient(patient));
@@ -51,10 +48,10 @@ public class VisitTester extends TesterBase {
         confirm(wqueueList.get(0).visitId == visit.visitId &&
                 wqueueList.get(0).waitState == WqueueStateWaitExam);
         List<PracticeLogDTO> logs = getPracticeLogList(logIndex, log -> {
-            if( log.isVisitCreated() ){
+            if (log.isVisitCreated()) {
                 return log.asVisitCreated().created.visitId == visit.visitId;
             }
-            if( log.isWqueueCreated() ){
+            if (log.isWqueueCreated()) {
                 return log.asWqueueCreated().created.visitId == visit.visitId;
             }
             return false;
@@ -64,157 +61,160 @@ public class VisitTester extends TesterBase {
         confirm(logs.get(1).isWqueueCreated() && logs.get(1).asWqueueCreated().created.visitId == visit.visitId);
     }
 
-//    @DbTest
-//    public void startExam(DbBackend dbBackend){
-//        class Local {
-//            private VisitDTO visit;
-//        }
-//        Local local = new Local();
-//        int serialId = dbBackend.query(backend -> {
-//            local.visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
-//            return backend.getLastPracticeLogId();
-//        });
-//        dbBackend.txProc(backend -> {
-//            VisitDTO visit = local.visit;
-//            backend.startExam(visit.visitId);
-//            WqueueDTO wqueue = backend.listWqueue().stream().filter(wq -> wq.visitId == visit.visitId).findFirst()
-//                    .orElseThrow(() -> new RuntimeException("Cannot find wqueue"));
-//            confirm(wqueue.visitId == visit.visitId && wqueue.waitState == MyclinicConsts.WqueueStateInExam);
-//            List<PracticeLogDTO> logs = backend.listPracticeLogSince(serialId);
-////            {
-////                PracticeLogDTO log = logs.get(0);
-////                confirm(log.isWqueueUpdated());
-////                WqueueUpdated body = log.asWqueueUpdated();
-////                confirm(body.prev.visitId == visit.visitId &&
-////                        body.prev.waitState == MyclinicConsts.WqueueStateWaitExam);
-////                confirm(body.updated.visitId == visit.visitId &&
-////                        body.updated.waitState == MyclinicConsts.WqueueStateInExam);
-////            }
-//        });
-//    }
-//
-//    @DbTest
-//    public void testEndExam(DbBackend dbBackend){
-//        int chargeValue = 570;
-//        class Local {
-//            private VisitDTO visit;
-//        }
-//        Local local = new Local();
-//        int serialId = dbBackend.query(backend -> {
-//            local.visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
-//            backend.startExam(local.visit.visitId);
-//            return backend.getLastPracticeLogId();
-//        });
-//        dbBackend.txProc(backend -> {
-//            VisitDTO visit = local.visit;
-//            backend.endExam(visit.visitId, chargeValue);
-//            WqueueDTO wqueue = backend.listWqueue().stream().filter(wq -> wq.visitId == visit.visitId).findFirst()
-//                    .orElseThrow(() -> new RuntimeException("Cannot find wqueue"));
-//            confirm(wqueue.visitId == visit.visitId && wqueue.waitState == MyclinicConsts.WqueueStateWaitCashier);
-//            ChargeDTO charge = backend.getCharge(visit.visitId);
-//            confirm(charge.visitId == visit.visitId && charge.charge == chargeValue);
-//            confirm(backend.countUnprescribedDrug(visit.visitId) == 0);
-//            confirm(backend.getPharmaQueue(visit.visitId) == null);
-//            List<PracticeLogDTO> logs = backend.listPracticeLogSince(serialId);
-////            {
-////                PracticeLogDTO log = logs.get(0);
-////                confirm(log.isChargeCreated());
-////                ChargeCreated body = log.asChargeCreated();
-////                confirm(body.created.visitId == visit.visitId);
-////                confirm(body.created.charge == chargeValue);
-////            }
-////            {
-////                PracticeLogDTO log = logs.get(1);
-////                confirm(log.isWqueueUpdated());
-////                WqueueUpdated body = log.asWqueueUpdated();
-////                confirm(body.prev.visitId == visit.visitId && body.prev.waitState == WqueueStateInExam);
-////                confirm(body.updated.visitId == visit.visitId && body.updated.waitState == WqueueStateWaitCashier);
-////            }
-//        });
-//    }
-//
-//    @DbTest
-//    public void testGetVisitFull(Backend backend){
-//        VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
-//        TextDTO text = mock.pickText(visit.visitId);
-//        backend.enterText(text);
-//        VisitFullDTO visitFull = backend.getVisitFull(visit.visitId);
-//        confirm(visitFull.texts.size() == 1);
-//        confirm(visitFull.texts.get(0).visitId == visit.visitId);
-//        confirm(visitFull.texts.get(0).content.equals(text.content));
-//    }
-//
-//    @DbTest
-//    public void testGetVisitFull2(Backend backend){
-//
-//    }
-//
-//    @DbTest
-//    public void testDeleteVisit(Backend backend){
-//        VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
-//        int visitId = visit.visitId;
-//        int serialId = backend.getLastPracticeLogId();
-//        backend.deleteVisitSafely(visitId);
-//        confirm(backend.getVisit(visitId) == null);
-//        confirm(backend.getWqueue(visitId) == null);
-//        confirm(backend.getPharmaQueue(visitId) == null);
-//        List<PracticeLogDTO> logs = backend.listPracticeLogSince(serialId);
-////        confirm(logs.size() == 2);
-////        {
-////            PracticeLogDTO log = logs.get(0);
-////            confirm(log.isWqueueDeleted());
-////            WqueueDeleted body = log.asWqueueDeleted();
-////            confirm(body.deleted.visitId == visitId);
-////        }
-////        {
-////            PracticeLogDTO log = logs.get(1);
-////            confirm(log.isVisitDeleted());
-////            VisitDeleted body = log.asVisitDeleted();
-////            confirm(body.deleted.visitId == visitId);
-////        }
-//    }
-//
-//    @DbTest
-//    public void testDeleteVisitFails(Backend backend){
-//        VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
-//        TextDTO text = new TextDTO();
-//        text.visitId = visit.visitId;
-//        text.content = "Not to be deleted.";
-//        backend.enterText(text);
-//        boolean catched = false;
-//        try {
-//            backend.deleteVisitSafely(visit.visitId);
-//        } catch(CannotDeleteVisitSafelyException e){
-//            catched = true;
-//        }
-//        confirm(catched);
-//        confirm(backend.getVisit(visit.visitId) != null);
-//        confirm(backend.getText(text.textId) != null);
-//    }
-//
-//    @DbTest
-//    public void testTodaysVisit(Backend backend){
-//        VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
-//        List<VisitPatientDTO> visits = backend.listTodaysVisit();
-//        boolean found = false;
-//        for(VisitPatientDTO vp: visits){
-//            if( vp.visit.visitId == visit.visitId && vp.patient.patientId == patient1.patientId ){
-//                found = true;
-//                break;
-//            }
-//        }
-//        confirm(found);
-//    }
-//
-//    @DbTest
-//    public void testSearchText(Backend backend){
-//        TextVisitPageDTO result = backend.searchText(198, "血圧", 0);
-//        //System.out.println(result);
-//    }
-//
-//    @DbTest
-//    public void testSearchTextGlobally(Backend backend){
-//        TextVisitPatientPageDTO result = backend.searchTextGlobally("調子", 0);
-//        //System.out.println(result);
-//    }
+    @DbTest
+    public void startExam() {
+        int logIndex = getCurrentPracticeLogIndex();
+        PatientDTO patient = mock.pickPatient();
+        dbBackend.txProc(backend -> backend.enterPatient(patient));
+        VisitDTO visit = dbBackend.query(backend ->
+                backend.startVisit(patient.patientId, LocalDateTime.now())
+        );
+        dbBackend.txProc(backend -> backend.startExam(visit.visitId));
+        List<WqueueDTO> wqueueList = dbBackend.query(backend -> backend.listWqueue().stream()
+                .filter(wq -> wq.visitId == visit.visitId).collect(toList()));
+        confirm(wqueueList.size() == 1);
+        WqueueDTO wqueue = wqueueList.get(0);
+        confirmNotNull(wqueue);
+        confirm(wqueue.waitState == WqueueStateInExam && wqueue.visitId == visit.visitId);
+        List<PracticeLogDTO> logs = getPracticeLogList(logIndex, log -> {
+            if (log.isWqueueUpdated()) {
+                return log.asWqueueUpdated().updated.visitId == visit.visitId;
+            }
+            return false;
+        });
+        confirm(logs.size() == 1);
+        WqueueDTO prev = logs.get(0).asWqueueUpdated().prev;
+        WqueueDTO updated = logs.get(0).asWqueueUpdated().updated;
+        confirm(prev.visitId == visit.visitId && prev.waitState == WqueueStateWaitExam);
+        confirm(updated.visitId == visit.visitId && updated.waitState == WqueueStateInExam);
+    }
+
+    @DbTest
+    public void endExam() {
+        int logIndex = getCurrentPracticeLogIndex();
+        PatientDTO patient = mock.pickPatient();
+        dbBackend.txProc(backend -> backend.enterPatient(patient));
+        VisitDTO visit = dbBackend.query(backend -> backend.startVisit(patient.patientId, LocalDateTime.now()));
+        int chargeValue = 570;
+        dbBackend.txProc(backend -> backend.startExam(visit.visitId));
+        dbBackend.txProc(backend -> backend.endExam(visit.visitId, chargeValue));
+        List<WqueueDTO> wqueueList = dbBackend.query(backend -> backend.listWqueue().stream()
+                .filter(wq -> wq.visitId == visit.visitId).collect(toList()));
+        confirm(wqueueList.size() == 1);
+        confirm(wqueueList.get(0).waitState == WqueueStateWaitCashier && wqueueList.get(0).visitId == visit.visitId);
+        ChargeDTO charge = dbBackend.query(backend -> backend.getCharge(visit.visitId));
+        confirmNotNull(charge);
+        confirm(charge.charge == chargeValue && charge.visitId == visit.visitId);
+        int unprescribed = dbBackend.query(backend -> backend.countUnprescribedDrug(visit.visitId));
+        confirm(unprescribed == 0);
+        PharmaQueueDTO pharmaQueue = dbBackend.query(backend -> backend.getPharmaQueue(visit.visitId));
+        confirm(pharmaQueue == null);
+        confirmSingleLog(logIndex, log -> log.getWqueueUpdated()
+                .map(wqueueUpdated -> {
+                    WqueueDTO prev = wqueueUpdated.prev;
+                    WqueueDTO updated = wqueueUpdated.updated;
+                    return prev.visitId == visit.visitId &&
+                            prev.waitState == WqueueStateInExam &&
+                            updated.visitId == visit.visitId &&
+                            updated.waitState == WqueueStateWaitCashier;
+                })
+                .orElse(false)
+        );
+        confirmSingleLog(logIndex, log -> log.getChargeCreated()
+                .map(chargeCreated -> {
+                    ChargeDTO created = chargeCreated.created;
+                    return created.visitId == visit.visitId && created.charge == chargeValue;
+                }).orElse(false)
+        );
+    }
+
+    @DbTest
+    public void testGetVisitFull() {
+        PatientDTO patient = mock.pickPatient();
+        dbBackend.txProc(backend -> backend.enterPatient(patient));
+        VisitDTO visit = dbBackend.query(backend -> backend.startVisit(patient.patientId, LocalDateTime.now()));
+        dbBackend.txProc(backend -> backend.startExam(visit.visitId));
+        dbBackend.txProc(backend -> backend.endExam(visit.visitId, 0));
+        VisitFullDTO visitFull = dbBackend.query(backend -> backend.getVisitFull(visit.visitId));
+        confirm(visitFull.visit.visitId == visit.visitId);
+        confirm(visitFull.texts.size() == 0);
+        confirm(visitFull.drugs.size() == 0);
+        confirm(visitFull.shinryouList.size() == 0);
+        confirm(visitFull.conducts.size() == 0);
+    }
+
+    @DbTest
+    public void testGetVisitFull2() {
+        PatientDTO patient = mock.pickPatient();
+        dbBackend.txProc(backend -> backend.enterPatient(patient));
+        VisitDTO visit = dbBackend.query(backend -> backend.startVisit(patient.patientId, LocalDateTime.now()));
+        dbBackend.txProc(backend -> backend.startExam(visit.visitId));
+        dbBackend.txProc(backend -> backend.endExam(visit.visitId, 0));
+        VisitFull2DTO visitFull = dbBackend.query(backend -> backend.getVisitFull2(visit.visitId));
+        confirm(visitFull.visit.visitId == visit.visitId);
+        confirm(visitFull.texts.size() == 0);
+        confirm(visitFull.drugs.size() == 0);
+        confirm(visitFull.shinryouList.size() == 0);
+        confirm(visitFull.conducts.size() == 0);
+        confirm(visitFull.charge.charge == 0);
+        confirm(visitFull.hoken.shahokokuho == null);
+        confirm(visitFull.hoken.koukikourei == null);
+        confirm(visitFull.hoken.roujin == null);
+        confirm(visitFull.hoken.kouhi1 == null);
+        confirm(visitFull.hoken.kouhi2 == null);
+        confirm(visitFull.hoken.kouhi3 == null);
+    }
+
+    @DbTest
+    public void testDeleteVisit() {
+        PatientDTO patient = mock.pickPatient();
+        dbBackend.txProc(b -> b.enterPatient(patient));
+        VisitDTO visit = dbBackend.query(b -> b.startVisit(patient.patientId, LocalDateTime.now()));
+        int logIndex = getCurrentPracticeLogIndex();
+        dbBackend.txProc(b -> b.deleteVisitSafely(visit.visitId));
+        confirm(dbBackend.query(b -> b.getVisit(visit.visitId)) == null);
+        confirm(dbBackend.query(b -> b.getWqueue(visit.visitId)) == null);
+        confirm(dbBackend.query(b -> b.getPharmaQueue(visit.visitId)) == null);
+        confirmSingleLog(logIndex, log -> log.getWqueueDeleted()
+                .map(wqueueDeleted -> wqueueDeleted.deleted.visitId == visit.visitId)
+                .orElse(false));
+        confirmSingleLog(logIndex, log -> log.getVisitDeleted()
+                .map(visitDeleted -> visitDeleted.deleted.visitId == visit.visitId)
+                .orElse(false));
+    }
+
+    @DbTest
+    public void testDeleteVisitFails(){
+        PatientDTO patient = mock.pickPatient();
+        dbBackend.txProc(b -> b.enterPatient(patient));
+        VisitDTO visit = dbBackend.query(b -> b.startVisit(patient.patientId, LocalDateTime.now()));
+        TextDTO text = new TextDTO();
+        text.visitId = visit.visitId;
+        text.content = "Not to be deleted.";
+        dbBackend.txProc(b -> b.enterText(text));
+        class Local {
+            private boolean catched;
+        }
+        Local local = new Local();
+        dbBackend.txProc(b -> {
+            try {
+                b.deleteVisitSafely(visit.visitId);
+            } catch(CannotDeleteVisitSafelyException e){
+                local.catched = true;
+            }
+        });
+        confirm(local.catched);
+        confirm(dbBackend.query(b -> b.getVisit(visit.visitId) != null));
+        confirm(dbBackend.query(b -> b.getText(text.textId) != null));
+    }
+
+    @DbTest
+    public void testTodaysVisit(){
+        PatientDTO patient = mock.pickPatient();
+        dbBackend.txProc(b -> b.enterPatient(patient));
+        VisitDTO visit = dbBackend.query(b -> b.startVisit(patient.patientId, LocalDateTime.now()));
+        List<VisitPatientDTO> visits = dbBackend.query(Backend::listTodaysVisit);
+        confirm(visits.stream().filter(vp -> vp.visit.visitId == visit.visitId).count() == 1);
+    }
+
 }

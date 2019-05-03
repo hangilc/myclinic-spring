@@ -6,6 +6,7 @@ import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.util.DateTimeUtil;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -93,6 +94,16 @@ class TesterBase {
             detail.run();
             throw new RuntimeException("Confirmation failed.");
         }
+    }
+
+    @Contract("null -> fail")
+    void confirmNotNull(Object obj){
+        confirm(obj != null);
+    }
+
+    void confirmSingleLog(int startIndex, Predicate<PracticeLogDTO> pred){
+        List<PracticeLogDTO> logs = getPracticeLogList(startIndex, pred);
+        confirm(logs.size() == 1);
     }
 
 }
