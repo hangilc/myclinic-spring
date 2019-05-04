@@ -2,6 +2,8 @@ package jp.chang.myclinic.dto;
 
 import jp.chang.myclinic.dto.annotation.Primary;
 
+import java.util.Objects;
+
 public class DrugAttrDTO {
     @Primary
     public int drugId;
@@ -36,6 +38,20 @@ public class DrugAttrDTO {
 
     public static DrugAttrDTO deleteTekiyou(int drugId, DrugAttrDTO attr){
         return setTekiyou(drugId, attr, null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DrugAttrDTO that = (DrugAttrDTO) o;
+        return drugId == that.drugId &&
+                Objects.equals(tekiyou, that.tekiyou);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(drugId, tekiyou);
     }
 
     @Override

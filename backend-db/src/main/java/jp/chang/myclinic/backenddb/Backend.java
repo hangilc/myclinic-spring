@@ -199,19 +199,18 @@ public class Backend {
 
     // Charge /////////////////////////////////////////////////////////////////////////////
 
-    public void enterCharge(ChargeDTO charge) {
+    void enterCharge(ChargeDTO charge) {
         ts.chargeTable.insert(charge);
         practiceLogger.logChargeCreated(charge);
     }
 
-    private void updateCharge(ChargeDTO prev, ChargeDTO updated) {
-        ts.chargeTable.update(updated);
-        practiceLogger.logChargeUpdated(prev, updated);
-    }
-
-    public void updateCharge(ChargeDTO charge){
+    void updateCharge(ChargeDTO charge){
         ChargeDTO prev = ts.chargeTable.getByIdForUpdate(charge.visitId, forUpdate);
-        updateCharge(prev, charge);
+        if( prev == null ){
+            throw new RuntimeException("No previous charge to update: " + charge);
+        }
+        ts.chargeTable.update(charge);
+        practiceLogger.logChargeUpdated(prev, charge);
     }
 
     public ChargeDTO getCharge(int visitId) {
@@ -369,22 +368,12 @@ public class Backend {
         return getQuery().get(xlate(sql, ts.drugTable), intProjector, visitId);
     }
 
-    public void enterDrug(DrugDTO drug) {
+    void enterDrug(DrugDTO drug) {
         ts.drugTable.insert(drug);
         practiceLogger.logDrugCreated(drug);
     }
 
-    public void enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-        DrugDTO drug = drugWithAttr.drug;
-        DrugAttrDTO attr = drugWithAttr.attr;
-        enterDrug(drug);
-        if (attr != null) {
-            attr.drugId = drug.drugId;
-            enterDrugAttr(attr);
-        }
-    }
-
-    public void updateDrug(DrugDTO drug) {
+    void updateDrug(DrugDTO drug) {
         DrugDTO prev = ts.drugTable.getByIdForUpdate(drug.drugId, forUpdate);
         if( prev == null ){
             throw new RuntimeException("Cannot find prev drug while updating: " + drug);
@@ -420,7 +409,7 @@ public class Backend {
         });
     }
 
-    public void deleteDrug(int drugId) {
+    void deleteDrug(int drugId) {
         DrugDTO drug = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
         deleteDrug(drug);
     }
@@ -1553,6 +1542,15 @@ public class Backend {
     public void enterPharmaQueue(PharmaQueueDTO pharmaQueue) {
         ts.pharmaQueueTable.insert(pharmaQueue);
         practiceLogger.logPharmaQueueCreated(pharmaQueue);
+    }
+
+    void updatePharmaQueue(PharmaQueueDTO pharmaQueue){
+        PharmaQueueDTO prev = ts.pharmaQueueTable.getByIdForUpdate(pharmaQueue.visitId, forUpdate);
+        if( prev == null ){
+            throw new RuntimeException("Cannot find prev to update PharmaQueue: " + pharmaQueue);
+        }
+        ts.pharmaQueueTable.update(pharmaQueue);
+        practiceLogger.logPharmaQueueUpdated(prev, pharmaQueue);
     }
 
     public void deletePharmaQueue(int visitId) {

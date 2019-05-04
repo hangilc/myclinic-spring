@@ -10,6 +10,13 @@ public class PharmaQueueDTO {
     public int visitId;
     public int pharmaState;
 
+    public static PharmaQueueDTO copy(PharmaQueueDTO src){
+        PharmaQueueDTO dst = new PharmaQueueDTO();
+        dst.visitId = src.visitId;
+        dst.pharmaState = src.pharmaState;
+        return dst;
+    }
+
     @Override
     public String toString() {
         return "PharmaQueueDTO{" +

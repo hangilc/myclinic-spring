@@ -17,9 +17,9 @@ public class DbBackendService {
         this.dbBackend = dbBackend;
     }
 
-    private void setWqueueState(int visitId, WqueueWaitState state){
+    private void setWqueueState(int visitId, WqueueWaitState state) {
         WqueueDTO wqueue = dbBackend.query(b -> b.getWqueue(visitId));
-        if( wqueue == null ){
+        if (wqueue == null) {
             WqueueDTO newWqueue = new WqueueDTO();
             newWqueue.visitId = visitId;
             newWqueue.waitState = state.getCode();
@@ -29,6 +29,10 @@ public class DbBackendService {
             updatedWqueue.waitState = state.getCode();
             dbBackend.txProc(b -> b.updateWqueue(updatedWqueue));
         }
+    }
+
+    public void backendEnterVisit(VisitDTO visit) {
+        dbBackend.txProc(backend -> backend.enterVisit(visit));
     }
 
     public VisitDTO startVisit(int patientId, LocalDateTime at) {
@@ -84,9 +88,9 @@ public class DbBackendService {
         return visitDTO;
     }
 
-    public void startExam(int visitId){
+    public void startExam(int visitId) {
         WqueueDTO wqueue = dbBackend.query(b -> b.getWqueue(visitId));
-        if( wqueue == null ){
+        if (wqueue == null) {
             throw new RuntimeException("Cannot start exam because wqueue is null");
         }
         WqueueDTO updated = WqueueDTO.copy(wqueue);
@@ -94,7 +98,7 @@ public class DbBackendService {
         dbBackend.txProc(b -> b.updateWqueue(updated));
     }
 
-    public void suspendExam(int visitId){
+    public void suspendExam(int visitId) {
         setWqueueState(visitId, WqueueWaitState.WaitReExam);
     }
 
@@ -103,42 +107,155 @@ public class DbBackendService {
         if (visit == null) {
             throw new RuntimeException("No such visit: " + visitId);
         }
-        boolean isToday = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate().equals(LocalDate.now());
-        ChargeDTO prevCharge = dbBackend.query(b -> b.getCharge(visitId));
-        if (prevCharge != null) {
-            ChargeDTO newCharge = ChargeDTO.copy(prevCharge);
-            newCharge.charge = charge;
-            dbBackend.txProc(b -> b.updateCharge(newCharge));
-        } else {
-            ChargeDTO newCharge = new ChargeDTO();
-            newCharge.visitId = visitId;
-            newCharge.charge = charge;
-            dbBackend.txProc(b -> b.enterCharge(newCharge));
-        }
+        ChargeDTO newCharge = new ChargeDTO();
+        newCharge.visitId = visitId;
+        newCharge.charge = charge;
+        dbBackend.txProc(b -> b.enterCharge(newCharge));
         WqueueDTO wqueue = dbBackend.query(b -> b.getWqueue(visitId));
-        if (wqueue != null) {
-            WqueueDTO newWqueue = WqueueDTO.copy(wqueue);
-            newWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
-            dbBackend.txProc(b -> b.updateWqueue(newWqueue));
-        } else {
+        if (wqueue == null) {
+            throw new RuntimeException("Cannot find wqueue in endExam: " + visit);
+        }
+        WqueueDTO newWqueue = WqueueDTO.copy(wqueue);
+        newWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
+        dbBackend.txProc(b -> b.updateWqueue(newWqueue));
+        int unprescribed = dbBackend.query(b -> b.countUnprescribedDrug(visitId));
+        if (unprescribed > 0) {
+            PharmaQueueDTO newPharmaQueue = new PharmaQueueDTO();
+            newPharmaQueue.visitId = visitId;
+            newPharmaQueue.pharmaState = PharmaQueueState.WaitPack.getCode();
+            dbBackend.txProc(b -> b.enterPharmaQueue(newPharmaQueue));
+        }
+    }
+
+    public void backendEnterCharge(ChargeDTO charge) {
+        dbBackend.txProc(backend -> backend.enterCharge(charge));
+    }
+
+    public void enterCharge(int visitId, int charge) {
+        ChargeDTO newCharge = new ChargeDTO();
+        newCharge.visitId = visitId;
+        newCharge.charge = charge;
+        dbBackend.txProc(backend -> backend.enterCharge(newCharge));
+        chargeModifiedHook(visitId);
+    }
+
+    public void updateCharge(int visitId, int charge) {
+        ChargeDTO newCharge = new ChargeDTO();
+        newCharge.visitId = visitId;
+        newCharge.charge = charge;
+        dbBackend.txProc(backend -> backend.updateCharge(newCharge));
+        chargeModifiedHook(visitId);
+    }
+
+    private void chargeModifiedHook(int visitId) {
+        WqueueDTO wq = dbBackend.query(backend -> backend.getWqueue(visitId));
+        if (wq == null) {
             WqueueDTO newWqueue = new WqueueDTO();
             newWqueue.visitId = visitId;
             newWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
-            dbBackend.txProc(b -> b.enterWqueue(newWqueue));
+            dbBackend.txProc(backend -> backend.enterWqueue(newWqueue));
+        } else {
+            WqueueDTO newWqueue = WqueueDTO.copy(wq);
+            newWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
+            dbBackend.txProc(backend -> backend.updateWqueue(newWqueue));
         }
-        PharmaQueueDTO pharmaQueue = dbBackend.query(b -> b.getPharmaQueue(visitId));
-        if (pharmaQueue != null) {
-            dbBackend.txProc(b -> b.deletePharmaQueue(visitId));
-        }
-        if (isToday) {
-            int unprescribed = dbBackend.query(b -> b.countUnprescribedDrug(visitId));
-            if (unprescribed > 0) {
-                PharmaQueueDTO newPharmaQueue = new PharmaQueueDTO();
-                newPharmaQueue.visitId = visitId;
-                newPharmaQueue.pharmaState = PharmaQueueState.WaitPack.getCode();
-                dbBackend.txProc(b -> b.enterPharmaQueue(newPharmaQueue));
+    }
+
+    public void enterDrug(DrugDTO drug) {
+        DrugWithAttrDTO drugWithAttr = new DrugWithAttrDTO();
+        drugWithAttr.drug = drug;
+        drugWithAttr.attr = null;
+        enterDrugWithAttr(drugWithAttr);
+    }
+
+    public void updateDrug(DrugDTO drug){
+        DrugAttrDTO attr = dbBackend.query(backend -> backend.getDrugAttr(drug.drugId));
+        DrugWithAttrDTO drugWithAttr = new DrugWithAttrDTO();
+        drugWithAttr.drug = drug;
+        drugWithAttr.attr = attr;
+        updateDrugWithAttr(drugWithAttr);
+    }
+
+    public void enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        dbBackend.txProc(backend -> {
+            DrugDTO drug = drugWithAttr.drug;
+            backend.enterDrug(drug);
+            if( drugWithAttr.attr != null ){
+                drugWithAttr.attr.drugId = drug.drugId;
+                backend.enterDrugAttr(drugWithAttr.attr);
+            }
+        });
+        DrugDTO drug = drugWithAttr.drug;
+        if( drug.prescribed == 0 ) {
+            WqueueDTO wq = dbBackend.query(backend -> backend.getWqueue(drug.visitId));
+            if (wq != null) {
+                if (wq.waitState == WqueueWaitState.WaitCashier.getCode() ||
+                        wq.waitState == WqueueWaitState.WaitDrug.getCode()) {
+                    PharmaQueueDTO pharmaQueue = dbBackend.query(backend -> backend.getPharmaQueue(drug.visitId));
+                    if( pharmaQueue == null ){
+                        PharmaQueueDTO newPharmaQueue = new PharmaQueueDTO();
+                        newPharmaQueue.visitId = drug.visitId;
+                        newPharmaQueue.pharmaState = PharmaQueueState.WaitPack.getCode();
+                        dbBackend.txProc(backend -> backend.enterPharmaQueue(newPharmaQueue));
+                    }
+                }
             }
         }
+    }
+
+    public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr){
+        DrugDTO drug = drugWithAttr.drug;
+        DrugAttrDTO attr = drugWithAttr.attr;
+        DrugAttrDTO prevAttr = dbBackend.query(backend -> backend.getDrugAttr(drug.drugId));
+        dbBackend.txProc(backend -> {
+            backend.updateDrug(drug);
+            if( attr == null || DrugAttrDTO.isEmpty(attr) ){
+                if( prevAttr != null ){
+                    backend.deleteDrugAttr(drug.drugId);
+                }
+            } else {
+                if( prevAttr == null ){
+                    backend.enterDrugAttr(attr);
+                } else {
+                    backend.updateDrugAttr(attr);
+                }
+            }
+        });
+        WqueueDTO wq = dbBackend.query(backend -> backend.getWqueue(drug.visitId));
+        if (wq != null) {
+            if (wq.waitState == WqueueWaitState.WaitCashier.getCode() ||
+                    wq.waitState == WqueueWaitState.WaitDrug.getCode()) {
+                int unprescribed = dbBackend.query(backend -> backend.countUnprescribedDrug(drug.visitId));
+                if( unprescribed > 0 ){
+                    PharmaQueueDTO pharmaQueue = dbBackend.query(backend -> backend.getPharmaQueue(drug.visitId));
+                    if( pharmaQueue == null ){
+                        PharmaQueueDTO newPharmaQueue = new PharmaQueueDTO();
+                        newPharmaQueue.visitId = drug.visitId;
+                        newPharmaQueue.pharmaState = PharmaQueueState.WaitPack.getCode();
+                        dbBackend.txProc(backend -> backend.enterPharmaQueue(newPharmaQueue));
+                    } else {
+                        if( pharmaQueue.pharmaState == PharmaQueueState.PackDone.getCode() ){
+                            PharmaQueueDTO updated = PharmaQueueDTO.copy(pharmaQueue);
+                            updated.pharmaState = PharmaQueueState.WaitPack.getCode();
+                            dbBackend.txProc(backend -> backend.updatePharmaQueue(updated));
+                        }
+                    }
+                } else {
+                    // Do nothing!
+                    // PharmaQueue is deleted explicitly by calling deletePharmaQueue (from pharma program)
+                }
+            }
+        }
+    }
+
+    public void deleteDrug(int drugId){
+        DrugAttrDTO attr = dbBackend.query(backend -> backend.getDrugAttr(drugId));
+        dbBackend.txProc(backend -> {
+            backend.deleteDrug(drugId);
+            if( attr != null ){
+                backend.deleteDrugAttr(drugId);
+            }
+        });
     }
 
 }
