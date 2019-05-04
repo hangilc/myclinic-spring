@@ -328,6 +328,7 @@ class DrugTester extends TesterBase {
 
     @DbTest
     public void testMarkPrescribed(){
+        int logIndex = getCurrentPracticeLogIndex();
         VisitDTO visit = startExam();
         DrugDTO drug1 = new DrugDTO();
         drug1.visitId = visit.visitId;
@@ -348,9 +349,100 @@ class DrugTester extends TesterBase {
         drug2.prescribed = 0;
         dbBackendService.enterDrug(drug2);
         endExam(visit.visitId, 640);
-        dbBackend.txProc(backend -> backend.markDrugsAsPrescribed(visit.visitId));
+        int count = dbBackend.query(backend -> backend.markDrugsAsPrescribed(visit.visitId));
+        confirm(count == 2);
         confirm(dbBackend.query(backend -> backend.getDrug(drug1.drugId).prescribed == 1));
         confirm(dbBackend.query(backend -> backend.getDrug(drug2.drugId).prescribed == 1));
+        confirmSingleLog(logIndex, log -> log.getDrugUpdated()
+                .map(drugUpdated -> {
+                    DrugDTO prev = drugUpdated.prev;
+                    DrugDTO updated = drugUpdated.updated;
+                    return prev.drugId == drug1.drugId && prev.prescribed == 0 &&
+                            updated.drugId == drug1.drugId && updated.prescribed == 1;
+                })
+                .orElse(false));
+        confirmSingleLog(logIndex, log -> log.getDrugUpdated()
+                .map(drugUpdated -> {
+                    DrugDTO prev = drugUpdated.prev;
+                    DrugDTO updated = drugUpdated.updated;
+                    return prev.drugId == drug2.drugId && prev.prescribed == 0 &&
+                            updated.drugId == drug2.drugId && updated.prescribed == 1;
+                })
+                .orElse(false));
+    }
+
+    @DbTest
+    public void testUpdateDrugDays(){
+        int logIndex = getCurrentPracticeLogIndex();
+        VisitDTO visit = startExam();
+        DrugDTO drug1 = new DrugDTO();
+        drug1.visitId = visit.visitId;
+        drug1.iyakuhincode = SampleData.calonal.iyakuhincode;
+        drug1.amount = 3;
+        drug1.usage = "分３　毎食後";
+        drug1.days = 5;
+        drug1.category = DrugCategory.Naifuku.getCode();
+        drug1.prescribed = 0;
+        dbBackendService.enterDrug(drug1);
+        DrugDTO drug2 = new DrugDTO();
+        drug2.visitId = visit.visitId;
+        drug2.iyakuhincode = SampleData.loxonin.iyakuhincode;
+        drug2.amount = 1;
+        drug2.usage = "頭痛時";
+        drug2.days = 10;
+        drug2.category = DrugCategory.Tonpuku.getCode();
+        drug2.prescribed = 0;
+        dbBackendService.enterDrug(drug2);
+        DrugDTO drug3 = new DrugDTO();
+        drug3.visitId = visit.visitId;
+        drug3.iyakuhincode = SampleData.loxonin.iyakuhincode;
+        drug3.amount = 1;
+        drug3.usage = "分１　朝食後";
+        drug3.days = 10;
+        drug3.category = DrugCategory.Naifuku.getCode();
+        drug3.prescribed = 0;
+        dbBackendService.enterDrug(drug3);
+        DrugDTO drug4 = new DrugDTO();
+        drug4.visitId = visit.visitId;
+        drug4.iyakuhincode = SampleData.loxoninGaiyouDrug.iyakuhincode;
+        drug4.amount = 51;
+        drug4.usage = "１日２回、頸部に塗布";
+        drug4.days = 1;
+        drug4.category = DrugCategory.Tonpuku.getCode();
+        drug4.prescribed = 0;
+        dbBackendService.enterDrug(drug4);
+        endExam(visit.visitId, 640);
+        int count = dbBackend.query(backend -> backend.batchUpdateDrugDays(
+                List.of(drug1.drugId, drug3.drugId, drug4.drugId),
+                14
+        ));
+        confirm(count == 2);
+        confirm(dbBackend.query(backend -> backend.getDrug(drug1.drugId).days == 14));
+        confirm(dbBackend.query(backend -> backend.getDrug(drug2.drugId).days == 10));
+        confirm(dbBackend.query(backend -> backend.getDrug(drug3.drugId).days == 14));
+        confirm(dbBackend.query(backend -> backend.getDrug(drug4.drugId).days == 1));
+        confirmSingleLog(logIndex, log -> log.getDrugUpdated()
+                .map(drugUpdated -> {
+                    DrugDTO prev = drugUpdated.prev;
+                    DrugDTO updated = drugUpdated.updated;
+                    return prev.drugId == drug1.drugId && prev.days == 5 &&
+                            updated.drugId == drug1.drugId && updated.days == 14;
+                })
+                .orElse(false));
+        confirmNoLog(logIndex, log -> log.getDrugUpdated()
+                .map(drugUpdated -> drugUpdated.prev.drugId == drug2.drugId)
+                .orElse(false));
+        confirmSingleLog(logIndex, log -> log.getDrugUpdated()
+                .map(drugUpdated -> {
+                    DrugDTO prev = drugUpdated.prev;
+                    DrugDTO updated = drugUpdated.updated;
+                    return prev.drugId == drug3.drugId && prev.days == 10 &&
+                            updated.drugId == drug3.drugId && updated.days == 14;
+                })
+                .orElse(false));
+        confirmNoLog(logIndex, log -> log.getDrugUpdated()
+                .map(drugUpdated -> drugUpdated.prev.drugId == drug4.drugId)
+                .orElse(false));
     }
 
 }

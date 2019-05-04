@@ -221,7 +221,7 @@ public class VisitTester extends TesterBase {
         dbBackend.txProc(b -> b.enterPatient(patient));
         VisitDTO visit = dbBackendService.startVisit(patient.patientId, LocalDateTime.now());
         int logIndex = getCurrentPracticeLogIndex();
-        dbBackend.txProc(b -> b.deleteVisitSafely(visit.visitId));
+        dbBackendService.deleteVisit(visit.visitId);
         confirm(dbBackend.query(b -> b.getVisit(visit.visitId)) == null);
         confirm(dbBackend.query(b -> b.getWqueue(visit.visitId)) == null);
         confirm(dbBackend.query(b -> b.getPharmaQueue(visit.visitId)) == null);
@@ -246,13 +246,11 @@ public class VisitTester extends TesterBase {
             private boolean catched;
         }
         Local local = new Local();
-        dbBackend.txProc(b -> {
-            try {
-                b.deleteVisitSafely(visit.visitId);
-            } catch (CannotDeleteVisitSafelyException e) {
-                local.catched = true;
-            }
-        });
+        try {
+            dbBackendService.deleteVisit(visit.visitId);
+        } catch (CannotDeleteVisitSafelyException e) {
+            local.catched = true;
+        }
         confirm(local.catched);
         confirm(dbBackend.query(b -> b.getVisit(visit.visitId) != null));
         confirm(dbBackend.query(b -> b.getText(text.textId) != null));

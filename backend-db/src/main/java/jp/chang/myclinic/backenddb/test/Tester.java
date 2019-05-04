@@ -11,7 +11,7 @@ public class Tester {
         new DrugTester(dbBackend).test();
         new ShinryouTester(dbBackend).test();
         new ConductTester(dbBackend).test();
-//        new DiseaseTester(dbBackend).test();
+        new DiseaseTester(dbBackend).test();
 //        new ShinryouMasterTester(dbBackend).test();
 //        new IyakuhinMasterTester(dbBackend).test();
 //        new KizaiMasterTester(dbBackend).test();

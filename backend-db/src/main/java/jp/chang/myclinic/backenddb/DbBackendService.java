@@ -1,5 +1,6 @@
 package jp.chang.myclinic.backenddb;
 
+import jp.chang.myclinic.backenddb.exception.CannotDeleteVisitSafelyException;
 import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
@@ -8,6 +9,7 @@ import jp.chang.myclinic.util.DateTimeUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -20,6 +22,8 @@ public class DbBackendService {
     public DbBackendService(DbBackend dbBackend) {
         this.dbBackend = dbBackend;
     }
+
+    // Wqueue /////////////////////////////////////////////////////////////////////////////////
 
     private void setWqueueState(int visitId, WqueueWaitState state) {
         WqueueDTO wqueue = dbBackend.query(b -> b.getWqueue(visitId));
@@ -34,6 +38,8 @@ public class DbBackendService {
             dbBackend.txProc(b -> b.updateWqueue(updatedWqueue));
         }
     }
+
+    // Visit ///////////////////////////////////////////////////////////////////////////////////
 
     public void backendEnterVisit(VisitDTO visit) {
         dbBackend.txProc(backend -> backend.enterVisit(visit));
@@ -131,6 +137,40 @@ public class DbBackendService {
         }
     }
 
+    public void deleteVisit(int visitId) {
+        if (dbBackend.query(backend -> backend.countTextForVisit(visitId)) > 0) {
+            throw new CannotDeleteVisitSafelyException("文章があるので、診察を削除できません。");
+        }
+        if (dbBackend.query(backend -> backend.countDrugForVisit(visitId)) > 0) {
+            throw new CannotDeleteVisitSafelyException("投薬があるので、診察を削除できません。");
+        }
+        if (dbBackend.query(backend -> backend.countShinryouForVisit(visitId)) > 0) {
+            throw new CannotDeleteVisitSafelyException("診療行為があるので、診察を削除できません。");
+        }
+        if (dbBackend.query(backend -> backend.countConductForVisit(visitId)) > 0) {
+            throw new CannotDeleteVisitSafelyException("処置があるので、診察を削除できません。");
+        }
+        ChargeDTO charge = dbBackend.query(backend -> backend.getCharge(visitId));
+        if (charge != null) {
+            throw new CannotDeleteVisitSafelyException("請求があるので、診察を削除できません。");
+        }
+        List<PaymentDTO> payments = dbBackend.query(backend -> backend.listPayment(visitId));
+        if (payments.size() > 0) {
+            throw new CannotDeleteVisitSafelyException("支払い記録があるので、診察を削除できません。");
+        }
+        WqueueDTO wqueue = dbBackend.query(backend -> backend.getWqueue(visitId));
+        if (wqueue != null) {
+            dbBackend.txProc(backend -> backend.deleteWqueue(visitId));
+        }
+        PharmaQueueDTO pharmaQueue = dbBackend.query(backend -> backend.getPharmaQueue(visitId));
+        if (pharmaQueue != null) {
+            dbBackend.txProc(backend -> backend.deletePharmaQueue(visitId));
+        }
+        dbBackend.txProc(backend -> backend.deleteVisit(visitId));
+    }
+
+    // Charge //////////////////////////////////////////////////////////////////////////////////////
+
     public void backendEnterCharge(ChargeDTO charge) {
         dbBackend.txProc(backend -> backend.enterCharge(charge));
     }
@@ -165,6 +205,8 @@ public class DbBackendService {
         }
     }
 
+    // Drug /////////////////////////////////////////////////////////////////////////////////
+
     public void enterDrug(DrugDTO drug) {
         DrugWithAttrDTO drugWithAttr = new DrugWithAttrDTO();
         drugWithAttr.drug = drug;
@@ -172,7 +214,7 @@ public class DbBackendService {
         enterDrugWithAttr(drugWithAttr);
     }
 
-    public void updateDrug(DrugDTO drug){
+    public void updateDrug(DrugDTO drug) {
         DrugAttrDTO attr = dbBackend.query(backend -> backend.getDrugAttr(drug.drugId));
         DrugWithAttrDTO drugWithAttr = new DrugWithAttrDTO();
         drugWithAttr.drug = drug;
@@ -184,19 +226,19 @@ public class DbBackendService {
         dbBackend.txProc(backend -> {
             DrugDTO drug = drugWithAttr.drug;
             backend.enterDrug(drug);
-            if( drugWithAttr.attr != null ){
+            if (drugWithAttr.attr != null) {
                 drugWithAttr.attr.drugId = drug.drugId;
                 backend.enterDrugAttr(drugWithAttr.attr);
             }
         });
         DrugDTO drug = drugWithAttr.drug;
-        if( drug.prescribed == 0 ) {
+        if (drug.prescribed == 0) {
             WqueueDTO wq = dbBackend.query(backend -> backend.getWqueue(drug.visitId));
             if (wq != null) {
                 if (wq.waitState == WqueueWaitState.WaitCashier.getCode() ||
                         wq.waitState == WqueueWaitState.WaitDrug.getCode()) {
                     PharmaQueueDTO pharmaQueue = dbBackend.query(backend -> backend.getPharmaQueue(drug.visitId));
-                    if( pharmaQueue == null ){
+                    if (pharmaQueue == null) {
                         PharmaQueueDTO newPharmaQueue = new PharmaQueueDTO();
                         newPharmaQueue.visitId = drug.visitId;
                         newPharmaQueue.pharmaState = PharmaQueueState.WaitPack.getCode();
@@ -207,18 +249,18 @@ public class DbBackendService {
         }
     }
 
-    public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr){
+    public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
         DrugDTO drug = drugWithAttr.drug;
         DrugAttrDTO attr = drugWithAttr.attr;
         DrugAttrDTO prevAttr = dbBackend.query(backend -> backend.getDrugAttr(drug.drugId));
         dbBackend.txProc(backend -> {
             backend.updateDrug(drug);
-            if( attr == null || DrugAttrDTO.isEmpty(attr) ){
-                if( prevAttr != null ){
+            if (attr == null || DrugAttrDTO.isEmpty(attr)) {
+                if (prevAttr != null) {
                     backend.deleteDrugAttr(drug.drugId);
                 }
             } else {
-                if( prevAttr == null ){
+                if (prevAttr == null) {
                     backend.enterDrugAttr(attr);
                 } else {
                     backend.updateDrugAttr(attr);
@@ -230,15 +272,15 @@ public class DbBackendService {
             if (wq.waitState == WqueueWaitState.WaitCashier.getCode() ||
                     wq.waitState == WqueueWaitState.WaitDrug.getCode()) {
                 int unprescribed = dbBackend.query(backend -> backend.countUnprescribedDrug(drug.visitId));
-                if( unprescribed > 0 ){
+                if (unprescribed > 0) {
                     PharmaQueueDTO pharmaQueue = dbBackend.query(backend -> backend.getPharmaQueue(drug.visitId));
-                    if( pharmaQueue == null ){
+                    if (pharmaQueue == null) {
                         PharmaQueueDTO newPharmaQueue = new PharmaQueueDTO();
                         newPharmaQueue.visitId = drug.visitId;
                         newPharmaQueue.pharmaState = PharmaQueueState.WaitPack.getCode();
                         dbBackend.txProc(backend -> backend.enterPharmaQueue(newPharmaQueue));
                     } else {
-                        if( pharmaQueue.pharmaState == PharmaQueueState.PackDone.getCode() ){
+                        if (pharmaQueue.pharmaState == PharmaQueueState.PackDone.getCode()) {
                             PharmaQueueDTO updated = PharmaQueueDTO.copy(pharmaQueue);
                             updated.pharmaState = PharmaQueueState.WaitPack.getCode();
                             dbBackend.txProc(backend -> backend.updatePharmaQueue(updated));
@@ -252,36 +294,36 @@ public class DbBackendService {
         }
     }
 
-    public void deleteDrug(int drugId){
+    public void deleteDrug(int drugId) {
         DrugAttrDTO attr = dbBackend.query(backend -> backend.getDrugAttr(drugId));
         dbBackend.txProc(backend -> {
             backend.deleteDrug(drugId);
-            if( attr != null ){
+            if (attr != null) {
                 backend.deleteDrugAttr(drugId);
             }
         });
     }
 
     public void batchDeleteDrugs(List<Integer> drugIds) {
-       for(Integer drugId: drugIds){
-           deleteDrug(drugId);
-       }
+        for (Integer drugId : drugIds) {
+            deleteDrug(drugId);
+        }
     }
 
-    public void enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr){
+    public void enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
         ShinryouDTO shinryou = shinryouWithAttr.shinryou;
         ShinryouAttrDTO attr = shinryouWithAttr.attr == null || ShinryouAttrDTO.isEmpty(shinryouWithAttr.attr) ?
                 null : shinryouWithAttr.attr;
         dbBackend.txProc(backend -> {
             backend.enterShinryou(shinryou);
-            if( attr != null ){
+            if (attr != null) {
                 attr.shinryouId = shinryou.shinryouId;
                 backend.enterShinryouAttr(attr);
             }
         });
     }
 
-    public void enterShinryou(ShinryouDTO shinryou){
+    public void enterShinryou(ShinryouDTO shinryou) {
         ShinryouWithAttrDTO shinryouWithAttr = new ShinryouWithAttrDTO();
         shinryouWithAttr.shinryou = shinryou;
         shinryouWithAttr.attr = null;
@@ -289,23 +331,23 @@ public class DbBackendService {
     }
 
     public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-        for(ShinryouDTO shinryou: shinryouList){
+        for (ShinryouDTO shinryou : shinryouList) {
             enterShinryou(shinryou);
         }
     }
 
-    public void deleteShinryou(int shinryouId){
+    public void deleteShinryou(int shinryouId) {
         ShinryouAttrDTO attr = dbBackend.query(backend -> backend.getShinryouAttr(shinryouId));
         dbBackend.txProc(backend -> {
             backend.deleteShinryou(shinryouId);
-            if( attr != null ){
+            if (attr != null) {
                 backend.deleteShinryouAttr(shinryouId);
             }
         });
     }
 
-    public void batchDeleteShinryou(List<Integer> shinryouIds){
-        for(Integer shinryouId: shinryouIds){
+    public void batchDeleteShinryou(List<Integer> shinryouIds) {
+        for (Integer shinryouId : shinryouIds) {
             deleteShinryou(shinryouId);
         }
     }
@@ -410,5 +452,67 @@ public class DbBackendService {
         }
         return result;
     }
+
+    // Disease //////////////////////////////////////////////////////////////////////////////////
+
+    public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+        if (diseaseModifyDTO.shuushokugocodes == null) {
+            diseaseModifyDTO.shuushokugocodes = Collections.emptyList();
+        }
+        DiseaseDTO disease = diseaseModifyDTO.disease;
+        DiseaseDTO prevDisease = dbBackend.query(backend -> backend.getDisease(disease.diseaseId));
+        if (!disease.equals(prevDisease)) {
+            dbBackend.txProc(backend -> backend.updateDisease(disease));
+        }
+        List<DiseaseAdjDTO> prevAdjList = dbBackend.query(backend -> backend.listDiseaseAdj(disease.diseaseId));
+        List<Integer> prevAdjCodes = prevAdjList.stream().map(adj -> adj.shuushokugocode).collect(toList());
+        if (!prevAdjCodes.equals(diseaseModifyDTO.shuushokugocodes)) {
+            List<Integer> prevAdjIds = prevAdjList.stream().map(adj -> adj.diseaseAdjId).collect(toList());
+            for (Integer diseaseAdjId : prevAdjIds) {
+                dbBackend.txProc(backend -> backend.deleteDiseaseAdj(diseaseAdjId));
+            }
+            for(Integer shuushokugocode: diseaseModifyDTO.shuushokugocodes){
+                DiseaseAdjDTO adj = new DiseaseAdjDTO();
+                adj.diseaseId = disease.diseaseId;
+                adj.shuushokugocode = shuushokugocode;
+                dbBackend.txProc(backend -> backend.enterDiseaseAdj(adj));
+            }
+        }
+    }
+
+    // Cashier //////////////////////////////////////////////////////////////////////////////////
+
+    public void finishCashier(PaymentDTO payment) {
+        int visitId = payment.visitId;
+        dbBackend.txProc(backend -> backend.enterPayment(payment));
+        PharmaQueueDTO pharmaQueue = dbBackend.query(backend -> backend.getPharmaQueue(visitId));
+        WqueueDTO wqueue = dbBackend.query(backend -> backend.getWqueue(visitId));
+        if (pharmaQueue != null) {
+            if (wqueue != null) {
+                WqueueDTO modified = WqueueDTO.copy(wqueue);
+                modified.waitState = WqueueWaitState.WaitDrug.getCode();
+                dbBackend.txProc(backend -> backend.updateWqueue(modified));
+            }
+        } else {
+            if (wqueue != null) {
+                dbBackend.txProc(backend -> backend.deleteWqueue(visitId));
+            }
+        }
+    }
+
+    // Pharma ////////////////////////////////////////////////////////////////////////////
+
+    public void prescDone(int visitId) {
+        dbBackend.txProc(backend -> backend.markDrugsAsPrescribed(visitId));
+        PharmaQueueDTO pharmaQueue = dbBackend.query(backend -> backend.getPharmaQueue(visitId));
+        if (pharmaQueue != null) {
+            dbBackend.txProc(backend -> backend.deletePharmaQueue(visitId));
+        }
+        WqueueDTO wqueue = dbBackend.query(backend -> backend.getWqueue(visitId));
+        if (wqueue != null) {
+            dbBackend.txProc(backend -> backend.deleteWqueue(visitId));
+        }
+    }
+
 
 }

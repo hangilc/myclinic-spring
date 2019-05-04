@@ -3,8 +3,7 @@ package jp.chang.myclinic.backenddb;
 import jp.chang.myclinic.backenddb.annotation.ExcludeFromFrontend;
 import jp.chang.myclinic.backenddb.exception.CannotDeleteVisitSafelyException;
 import jp.chang.myclinic.backenddb.exception.IntegrityException;
-import jp.chang.myclinic.consts.MyclinicConsts;
-import jp.chang.myclinic.consts.PharmaQueueState;
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.HotlineLogger;
@@ -13,13 +12,13 @@ import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static jp.chang.myclinic.backenddb.Query.NullableProjector;
 import static jp.chang.myclinic.backenddb.Query.Projector;
 import static jp.chang.myclinic.backenddb.SqlTranslator.TableInfo;
@@ -86,20 +85,20 @@ public class Backend {
     }
 
     @ExcludeFromFrontend
-    public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
+    private String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
                         TableInfo tableInfo2, String alias2) {
         return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2);
     }
 
     @ExcludeFromFrontend
-    public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
+    private String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
                         TableInfo tableInfo2, String alias2, TableInfo tableInfo3, String alias3) {
         return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2,
                 tableInfo3, alias3);
     }
 
     @ExcludeFromFrontend
-    public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
+    private String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
                         TableInfo tableInfo2, String alias2, TableInfo tableInfo3, String alias3,
                         TableInfo tableInfo4, String alias4) {
         return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2,
@@ -124,6 +123,9 @@ public class Backend {
 
     public void updatePatient(PatientDTO patient) {
         PatientDTO prev = ts.patientTable.getByIdForUpdate(patient.patientId, ts.dialect.forUpdate());
+        if( prev == null ){
+            throw new RuntimeException("Cannot find previous patient to update: " + patient);
+        }
         ts.patientTable.update(patient);
         practiceLogger.logPatientUpdated(prev, patient);
     }
@@ -162,39 +164,112 @@ public class Backend {
         }
     }
 
-    public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
-        String sql = xlate("select * from Shahokokuho where patientId = ? and " +
-                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
-                ts.shahokokuhoTable);
-        return getQuery().query(sql, ts.shahokokuhoTable, patientId, at, at);
-    }
-
-    public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
-        String sql = xlate("select * from Koukikourei where patientId = ? and " +
-                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
-                ts.koukikoureiTable);
-        return getQuery().query(sql, ts.koukikoureiTable, patientId, at, at);
-    }
-
-    public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
-        String sql = xlate("select * from Roujin where patientId = ? and " +
-                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
-                ts.roujinTable);
-        return getQuery().query(sql, ts.roujinTable, patientId, at, at);
-    }
-
-    public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at) {
-        String sql = xlate("select * from Kouhi where patientId = ? and " +
-                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
-                ts.kouhiTable);
-        return getQuery().query(sql, ts.kouhiTable, patientId, at, at);
-    }
-
     // Visit ////////////////////////////////////////////////////////////////////////
 
-    public void enterVisit(VisitDTO visit) {
+    void enterVisit(VisitDTO visit) {
         ts.visitTable.insert(visit);
         practiceLogger.logVisitCreated(visit);
+    }
+
+    public VisitDTO getVisit(int visitId) {
+        return ts.visitTable.getById(visitId);
+    }
+
+    private void updateVisit(VisitDTO visit) {
+        VisitDTO prev = ts.visitTable.getByIdForUpdate(visit.visitId, forUpdate);
+        if( prev == null ){
+            throw new RuntimeException("Cannot find previous visit to update: " + visit);
+        }
+        ts.visitTable.update(visit);
+        practiceLogger.logVisitUpdated(prev, visit);
+    }
+
+    void deleteVisit(int visitId) {
+        VisitDTO visit = ts.visitTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
+        ts.visitTable.delete(visitId);
+        practiceLogger.logVisitDeleted(visit);
+    }
+
+    public List<VisitPatientDTO> listRecentVisitWithPatient(int page, int itemsPerPage) {
+        String sql = "select v.*, p.* from Visit v, Patient p where v.patientId = p.patientId " +
+                " order by v.visitId desc limit ? offset ? ";
+        sql = xlate(sql, ts.visitTable, "v", ts.patientTable, "p");
+        return getQuery().query(sql,
+                (rs, ctx) -> {
+                    VisitPatientDTO vp = new VisitPatientDTO();
+                    vp.visit = ts.visitTable.project(rs, ctx);
+                    vp.patient = ts.patientTable.project(rs, ctx);
+                    return vp;
+                },
+                itemsPerPage,
+                page * itemsPerPage);
+    }
+
+    public List<VisitPatientDTO> listTodaysVisit() {
+        String sql = xlate("select v.*, p.* from Visit v, Patient p where date(v.visitedAt) = ? " +
+                        " and v.patientId = p.patientId order by v.visitId",
+                ts.visitTable, "v", ts.patientTable, "p");
+        return getQuery().query(sql,
+                biProjector(ts.visitTable, ts.patientTable, VisitPatientDTO::create),
+                LocalDate.now().toString());
+    }
+
+    private int countVisitByPatient(int patientId) {
+        String sql = xlate("select count(*) from Visit where patientId = ?",
+                ts.visitTable);
+        return getQuery().get(sql, intProjector, patientId);
+    }
+
+    public VisitFull2PageDTO listVisitFull2(int patientId, int page) {
+        int itemsPerPage = 10;
+        int nVisit = countVisitByPatient(patientId);
+        List<VisitDTO> visits = Collections.emptyList();
+        if (nVisit > 0) {
+            String sql = xlate("select * from Visit where patientId = ? " +
+                            " order by visitId desc limit ? offset ?",
+                    ts.visitTable);
+            visits = getQuery().query(sql, ts.visitTable, patientId,
+                    itemsPerPage, itemsPerPage * page);
+        }
+        VisitFull2PageDTO visitFull2PageDTO = new VisitFull2PageDTO();
+        visitFull2PageDTO.totalPages = numberOfPages(nVisit, itemsPerPage);
+        visitFull2PageDTO.page = page;
+        visitFull2PageDTO.visits = visits.stream().map(this::getVisitFull2).collect(toList());
+        return visitFull2PageDTO;
+    }
+
+    public VisitFullDTO getVisitFull(int visitId) {
+        VisitDTO visit = getVisit(visitId);
+        return getVisitFull(visit);
+    }
+
+    public VisitFull2DTO getVisitFull2(int visitId) {
+        VisitDTO visit = getVisit(visitId);
+        return getVisitFull2(visit);
+    }
+
+    private VisitFullDTO getVisitFull(VisitDTO visitDTO) {
+        int visitId = visitDTO.visitId;
+        VisitFullDTO visitFullDTO = new VisitFullDTO();
+        visitFullDTO.visit = visitDTO;
+        visitFullDTO.texts = listText(visitId);
+        visitFullDTO.shinryouList = listShinryouFull(visitId);
+        visitFullDTO.drugs = listDrugFull(visitId);
+        visitFullDTO.conducts = listConductFull(visitId);
+        return visitFullDTO;
+    }
+
+    private VisitFull2DTO getVisitFull2(VisitDTO visit) {
+        int visitId = visit.visitId;
+        VisitFull2DTO visitFull2DTO = new VisitFull2DTO();
+        visitFull2DTO.visit = visit;
+        visitFull2DTO.texts = listText(visitId);
+        visitFull2DTO.shinryouList = listShinryouFull(visitId);
+        visitFull2DTO.drugs = listDrugFull(visitId);
+        visitFull2DTO.conducts = listConductFull(visitId);
+        visitFull2DTO.hoken = getHoken(visit);
+        visitFull2DTO.charge = getCharge(visitId);
+        return visitFull2DTO;
     }
 
     // Charge /////////////////////////////////////////////////////////////////////////////
@@ -225,19 +300,19 @@ public class Backend {
         return getQuery().query(sql, ts.paymentTable, visitId);
     }
 
-    private void enterPayment(PaymentDTO payment) {
+    void enterPayment(PaymentDTO payment) {
         ts.paymentTable.insert(payment);
         practiceLogger.logPaymentCreated(payment);
     }
 
     // Wqueue /////////////////////////////////////////////////////////////////////////////
 
-    public void enterWqueue(WqueueDTO wqueue) {
+    void enterWqueue(WqueueDTO wqueue) {
         ts.wqueueTable.insert(wqueue);
         practiceLogger.logWqueueCreated(wqueue);
     }
 
-    public void updateWqueue(WqueueDTO wqueue){
+    void updateWqueue(WqueueDTO wqueue){
         WqueueDTO prev = ts.wqueueTable.getByIdForUpdate(wqueue.visitId, forUpdate);
         if( prev == null ){
             throw new RuntimeException("cannot find previous wqueue: " + wqueue);
@@ -250,12 +325,8 @@ public class Backend {
         return ts.wqueueTable.getById(visitId);
     }
 
-    public void deleteWqueue(int visitId) {
+    void deleteWqueue(int visitId) {
         WqueueDTO wqueue = ts.wqueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
-        deleteWqueue(wqueue);
-    }
-
-    private void deleteWqueue(WqueueDTO wqueue) {
         if (wqueue != null) {
             ts.wqueueTable.delete(wqueue.visitId);
             practiceLogger.logWqueueDeleted(wqueue);
@@ -347,7 +418,7 @@ public class Backend {
         updated.kouhi1Id = visit.kouhi1Id;
         updated.kouhi2Id = visit.kouhi2Id;
         updated.kouhi3Id = visit.kouhi3Id;
-        updateVisit(origVisit, updated);
+        updateVisit(updated);
     }
 
     // Drug ///////////////////////////////////////////////////////////////////////////
@@ -363,7 +434,7 @@ public class Backend {
         return result;
     }
 
-    private int countDrugForVisit(int visitId) {
+    int countDrugForVisit(int visitId) {
         String sql = "select count(*) from Drug where visitId = ?";
         return getQuery().get(xlate(sql, ts.drugTable), intProjector, visitId);
     }
@@ -400,13 +471,33 @@ public class Backend {
         }
     }
 
-    public void batchUpdateDrugDays(List<Integer> drugIds, int days) {
-        drugIds.forEach(drugId -> {
+    public int batchUpdateDrugDays(List<Integer> drugIds, int days) {
+        int count = 0;
+        for(Integer drugId: drugIds){
             DrugDTO prev = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
-            DrugDTO drug = DrugDTO.copy(prev);
-            drug.days = days;
-            updateDrug(drug);
-        });
+            if( prev.category == DrugCategory.Naifuku.getCode() && prev.days != days ) {
+                DrugDTO drug = DrugDTO.copy(prev);
+                drug.days = days;
+                updateDrug(drug);
+                count += 1;
+            }
+        }
+        return count;
+    }
+
+    public int markDrugsAsPrescribed(int visitId) {
+        String sql = "select * from Drug where visitId = ? " + forUpdate;
+        List<DrugDTO> drugs = getQuery().query(xlate(sql, ts.drugTable), ts.drugTable, visitId);
+        int count = 0;
+        for(DrugDTO drug: drugs){
+            if( drug.prescribed == 0 ) {
+                DrugDTO updated = DrugDTO.copy(drug);
+                updated.prescribed = 1;
+                updateDrug(updated);
+                count += 1;
+            }
+        }
+        return count;
     }
 
     void deleteDrug(int drugId) {
@@ -445,6 +536,11 @@ public class Backend {
         return getQuery().query(sql,
                 biProjector(ts.drugTable, nullableDrugAttrProjector, DrugWithAttrDTO::create),
                 visitId);
+    }
+
+    public List<DrugDTO> listDrug(int visitId){
+        String sql = "select * from Drug where visitId = ? order by drugId";
+        return getQuery().query(xlate(sql, ts.drugTable), ts.drugTable, visitId);
     }
 
     public List<DrugFullDTO> listDrugFull(int visitId) {
@@ -536,11 +632,6 @@ public class Backend {
         return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), visitId);
     }
 
-    public void markDrugsAsPrescribed(int visitId) {
-        String sql = xlate("update Drug set prescribed = 1 where visitId = ?", ts.drugTable);
-        getQuery().proc(sql, visitId);
-    }
-
     // DrugAttr /////////////////////////////////////////////////////////////////////////
 
     public DrugAttrDTO getDrugAttr(int drugId) {
@@ -598,137 +689,6 @@ public class Backend {
         }
     }
 
-    // Visit ////////////////////////////////////////////////////////////////////////////
-
-    public VisitDTO getVisit(int visitId) {
-        return ts.visitTable.getById(visitId);
-    }
-
-    private void updateVisit(VisitDTO prev, VisitDTO visit) {
-        ts.visitTable.update(visit);
-        practiceLogger.logVisitUpdated(prev, visit);
-    }
-
-    public void deleteVisitSafely(int visitId) {
-        if (countTextForVisit(visitId) > 0) {
-            throw new CannotDeleteVisitSafelyException("文章があるので、診察を削除できません。");
-        }
-        if (countDrugForVisit(visitId) > 0) {
-            throw new CannotDeleteVisitSafelyException("投薬があるので、診察を削除できません。");
-        }
-        if (countShinryouForVisit(visitId) > 0) {
-            throw new CannotDeleteVisitSafelyException("診療行為があるので、診察を削除できません。");
-        }
-        if (countConductForVisit(visitId) > 0) {
-            throw new CannotDeleteVisitSafelyException("処置があるので、診察を削除できません。");
-        }
-        ChargeDTO charge = getCharge(visitId);
-        if (charge != null) {
-            throw new CannotDeleteVisitSafelyException("請求があるので、診察を削除できません。");
-        }
-        List<PaymentDTO> payments = listPayment(visitId);
-        if (payments.size() > 0) {
-            throw new CannotDeleteVisitSafelyException("支払い記録があるので、診察を削除できません。");
-        }
-        WqueueDTO wqueue = ts.wqueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
-        if (wqueue != null) {
-            deleteWqueue(visitId);
-        }
-        PharmaQueueDTO pharmaQueue = ts.pharmaQueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
-        if (pharmaQueue != null) {
-            deletePharmaQueue(pharmaQueue);
-        }
-        deleteVisit(visitId);
-    }
-
-    private void deleteVisit(int visitId) {
-        VisitDTO visit = ts.visitTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
-        ts.visitTable.delete(visitId);
-        practiceLogger.logVisitDeleted(visit);
-    }
-
-    public List<VisitPatientDTO> listRecentVisitWithPatient(int page, int itemsPerPage) {
-        String sql = "select v.*, p.* from Visit v, Patient p where v.patientId = p.patientId " +
-                " order by v.visitId desc limit ? offset ? ";
-        sql = xlate(sql, ts.visitTable, "v", ts.patientTable, "p");
-        return getQuery().query(sql,
-                (rs, ctx) -> {
-                    VisitPatientDTO vp = new VisitPatientDTO();
-                    vp.visit = ts.visitTable.project(rs, ctx);
-                    vp.patient = ts.patientTable.project(rs, ctx);
-                    return vp;
-                },
-                itemsPerPage,
-                page * itemsPerPage);
-    }
-
-    public List<VisitPatientDTO> listTodaysVisit() {
-        String sql = xlate("select v.*, p.* from Visit v, Patient p where date(v.visitedAt) = ? " +
-                        " and v.patientId = p.patientId order by v.visitId",
-                ts.visitTable, "v", ts.patientTable, "p");
-        return getQuery().query(sql,
-                biProjector(ts.visitTable, ts.patientTable, VisitPatientDTO::create),
-                LocalDate.now().toString());
-    }
-
-    private int countVisitByPatient(int patientId) {
-        String sql = xlate("select count(*) from Visit where patientId = ?",
-                ts.visitTable);
-        return getQuery().get(sql, intProjector, patientId);
-    }
-
-    public VisitFull2PageDTO listVisitFull2(int patientId, int page) {
-        int itemsPerPage = 10;
-        int nVisit = countVisitByPatient(patientId);
-        List<VisitDTO> visits = Collections.emptyList();
-        if (nVisit > 0) {
-            String sql = xlate("select * from Visit where patientId = ? " +
-                            " order by visitId desc limit ? offset ?",
-                    ts.visitTable);
-            visits = getQuery().query(sql, ts.visitTable, patientId,
-                    itemsPerPage, itemsPerPage * page);
-        }
-        VisitFull2PageDTO visitFull2PageDTO = new VisitFull2PageDTO();
-        visitFull2PageDTO.totalPages = numberOfPages(nVisit, itemsPerPage);
-        visitFull2PageDTO.page = page;
-        visitFull2PageDTO.visits = visits.stream().map(this::getVisitFull2).collect(toList());
-        return visitFull2PageDTO;
-    }
-
-    public VisitFullDTO getVisitFull(int visitId) {
-        VisitDTO visit = getVisit(visitId);
-        return getVisitFull(visit);
-    }
-
-    public VisitFull2DTO getVisitFull2(int visitId) {
-        VisitDTO visit = getVisit(visitId);
-        return getVisitFull2(visit);
-    }
-
-    private VisitFullDTO getVisitFull(VisitDTO visitDTO) {
-        int visitId = visitDTO.visitId;
-        VisitFullDTO visitFullDTO = new VisitFullDTO();
-        visitFullDTO.visit = visitDTO;
-        visitFullDTO.texts = listText(visitId);
-        visitFullDTO.shinryouList = listShinryouFull(visitId);
-        visitFullDTO.drugs = listDrugFull(visitId);
-        visitFullDTO.conducts = listConductFull(visitId);
-        return visitFullDTO;
-    }
-
-    private VisitFull2DTO getVisitFull2(VisitDTO visit) {
-        int visitId = visit.visitId;
-        VisitFull2DTO visitFull2DTO = new VisitFull2DTO();
-        visitFull2DTO.visit = visit;
-        visitFull2DTO.texts = listText(visitId);
-        visitFull2DTO.shinryouList = listShinryouFull(visitId);
-        visitFull2DTO.drugs = listDrugFull(visitId);
-        visitFull2DTO.conducts = listConductFull(visitId);
-        visitFull2DTO.hoken = getHoken(visit);
-        visitFull2DTO.charge = getCharge(visitId);
-        return visitFull2DTO;
-    }
-
     // Shouki //////////////////////////////////////////////////////////////////////////
 
     public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
@@ -770,7 +730,7 @@ public class Backend {
         practiceLogger.logTextDeleted(text);
     }
 
-    private int countTextForVisit(int visitId) {
+    int countTextForVisit(int visitId) {
         String sql = "select count(*) from Text where visitId = ?";
         return getQuery().get(xlate(sql, ts.textTable), intProjector, visitId);
     }
@@ -841,7 +801,7 @@ public class Backend {
         return result;
     }
 
-    private int countShinryouForVisit(int visitId) {
+    int countShinryouForVisit(int visitId) {
         String sql = "select count(*) from Shinryou where visitId = ?";
         return getQuery().get(xlate(sql, ts.shinryouTable), intProjector, visitId);
     }
@@ -1010,7 +970,7 @@ public class Backend {
         practiceLogger.logConductCreated(conduct);
     }
 
-    private int countConductForVisit(int visitId) {
+    int countConductForVisit(int visitId) {
         String sql = "select count(*) from Conduct where visitId = ?";
         return getQuery().get(xlate(sql, ts.conductTable), intProjector, visitId);
     }
@@ -1264,25 +1224,6 @@ public class Backend {
                 conductId);
     }
 
-    // Cashier //////////////////////////////////////////////////////////////////////////////////
-
-    public void finishCashier(PaymentDTO payment) {
-        enterPayment(payment);
-        PharmaQueueDTO pharmaQueue = ts.pharmaQueueTable.getByIdForUpdate(payment.visitId, forUpdate);
-        WqueueDTO wqueue = ts.wqueueTable.getByIdForUpdate(payment.visitId, forUpdate);
-        if (pharmaQueue != null) {
-            if (wqueue != null) {
-                WqueueDTO modified = WqueueDTO.copy(wqueue);
-                modified.waitState = WqueueWaitState.WaitDrug.getCode();
-                updateWqueue(modified);
-            }
-        } else {
-            if (wqueue != null) {
-                deleteWqueue(wqueue);
-            }
-        }
-    }
-
     // Shahokokuho //////////////////////////////////////////////////////////////////////////////
 
     public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
@@ -1294,10 +1235,24 @@ public class Backend {
         practiceLogger.logShahokokuhoCreated(shahokokuho);
     }
 
+    public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
+        String sql = xlate("select * from Shahokokuho where patientId = ? and " +
+                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.shahokokuhoTable);
+        return getQuery().query(sql, ts.shahokokuhoTable, patientId, at, at);
+    }
+
     // Koukikourei //////////////////////////////////////////////////////////////////////////////
 
     public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
         return ts.koukikoureiTable.getById(koukikoureiId);
+    }
+
+    public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
+        String sql = xlate("select * from Koukikourei where patientId = ? and " +
+                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.koukikoureiTable);
+        return getQuery().query(sql, ts.koukikoureiTable, patientId, at, at);
     }
 
     // Roujin ////////////////////////////////////////////////////////////////////////////////////
@@ -1306,10 +1261,24 @@ public class Backend {
         return ts.roujinTable.getById(roujinId);
     }
 
+    public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
+        String sql = xlate("select * from Roujin where patientId = ? and " +
+                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.roujinTable);
+        return getQuery().query(sql, ts.roujinTable, patientId, at, at);
+    }
+
     // Kouhi //////////////////////////////////////////////////////////////////////////////////////
 
     public KouhiDTO getKouhi(int kouhiId) {
         return ts.kouhiTable.getById(kouhiId);
+    }
+
+    public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at) {
+        String sql = xlate("select * from Kouhi where patientId = ? and " +
+                        ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.kouhiTable);
+        return getQuery().query(sql, ts.kouhiTable, patientId, at, at);
     }
 
     // Disease ////////////////////////////////////////////////////////////////////////////////////
@@ -1336,10 +1305,9 @@ public class Backend {
 
     public void updateDisease(DiseaseDTO disease) {
         DiseaseDTO prev = ts.diseaseTable.getByIdForUpdate(disease.diseaseId, forUpdate);
-        updateDisease(prev, disease);
-    }
-
-    private void updateDisease(DiseaseDTO prev, DiseaseDTO disease) {
+        if( prev == null ){
+            throw new RuntimeException("Cannot find previous disease to update: "+ disease);
+        }
         ts.diseaseTable.update(disease);
         practiceLogger.logDiseaseUpdated(prev, disease);
     }
@@ -1389,45 +1357,33 @@ public class Backend {
             DiseaseDTO d = DiseaseDTO.copy(prev);
             d.endDate = modify.endDate;
             d.endReason = modify.endReason;
-            updateDisease(prev, d);
-        }
-    }
-
-    public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
-        DiseaseDTO disease = diseaseModifyDTO.disease;
-        DiseaseDTO prevDisease = ts.diseaseTable.getByIdForUpdate(disease.diseaseId, forUpdate);
-        if (!disease.equals(prevDisease)) {
-            updateDisease(disease);
-        }
-        String sql = "select * from DiseaseAdj where diseaseId = ? " + forUpdate;
-        List<DiseaseAdjDTO> prevAdjList = getQuery().query(xlate(sql, ts.diseaseAdjTable),
-                ts.diseaseAdjTable, disease.diseaseId);
-        List<Integer> prevAdjCodes = prevAdjList.stream().map(adj -> adj.shuushokugocode).collect(toList());
-        if (!prevAdjCodes.equals(diseaseModifyDTO.shuushokugocodes)) {
-            prevAdjList.forEach(this::deleteDiseaseAdj);
-            if (diseaseModifyDTO.shuushokugocodes != null) {
-                diseaseModifyDTO.shuushokugocodes.forEach(shuushokugocode -> {
-                    DiseaseAdjDTO adj = new DiseaseAdjDTO();
-                    adj.diseaseId = disease.diseaseId;
-                    adj.shuushokugocode = shuushokugocode;
-                    enterDiseaseAdj(adj);
-                });
-            }
+            updateDisease(d);
         }
     }
 
     // DiseaseAdj ////////////////////////////////////////////////////////////////////////
 
-    private void enterDiseaseAdj(DiseaseAdjDTO adj) {
+    public void enterDiseaseAdj(DiseaseAdjDTO adj) {
         ts.diseaseAdjTable.insert(adj);
         practiceLogger.logDiseaseAdjCreated(adj);
     }
 
-    private void deleteDiseaseAdj(DiseaseAdjDTO adj) {
+    public void deleteDiseaseAdj(int diseaseAdjId) {
+        DiseaseAdjDTO adj = ts.diseaseAdjTable.getByIdForUpdate(diseaseAdjId, forUpdate);
         if (adj != null) {
             ts.diseaseAdjTable.delete(adj.diseaseAdjId);
             practiceLogger.logDiseaseAdjDeleted(adj);
         }
+    }
+
+    public int deleteDiseaseAdjForDisease(DiseaseDTO disease){
+        String sql = "delete from DiseaseAdj where diseaseId = ?";
+        return getQuery().update(xlate(sql, ts.diseaseAdjTable), setter -> setter.setInt(1, disease.diseaseId));
+    }
+
+    public List<DiseaseAdjDTO> listDiseaseAdj(int diseaseId){
+        String sql = "select * from DiseaseAdj where diseaseId = ?";
+        return getQuery().query(xlate(sql, ts.diseaseAdjTable), ts.diseaseAdjTable, diseaseId);
     }
 
     // PharmaQueue ///////////////////////////////////////////////////////////////////////
@@ -1693,82 +1649,68 @@ public class Backend {
 
     // BatchEnterByNames /////////////////////////////////////////////////////////////////
 
-    public BatchEnterResultDTO batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
-        VisitDTO visit = getVisit(visitId);
-        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
-        BatchEnterResultDTO result = new BatchEnterResultDTO();
-        result.shinryouIds = new ArrayList<>();
-        result.conductIds = new ArrayList<>();
-        if (req.shinryouNames != null) {
-            req.shinryouNames.forEach(key -> {
-                ShinryouMasterDTO m = resolveShinryouMasterByKey(key, at);
-                if (m == null) {
-                    throw new RuntimeException("Cannot find shinryou master: " + key);
-                }
-                ShinryouDTO shinryou = new ShinryouDTO();
-                shinryou.visitId = visitId;
-                shinryou.shinryoucode = m.shinryoucode;
-                enterShinryou(shinryou);
-                result.shinryouIds.add(shinryou.shinryouId);
-            });
-        }
-        if (req.conducts != null) {
-            req.conducts.forEach(conductReq -> {
-                ConductDTO conduct = new ConductDTO();
-                conduct.visitId = visitId;
-                conduct.kind = conductReq.kind;
-                enterConduct(conduct);
-                int conductId = conduct.conductId;
-                if (conductReq.gazouLabel != null) {
-                    GazouLabelDTO gazouLabel = new GazouLabelDTO();
-                    gazouLabel.conductId = conductId;
-                    gazouLabel.label = conductReq.gazouLabel;
-                    enterGazouLabel(gazouLabel);
-                }
-                if (conductReq.shinryouNames != null) {
-                    conductReq.shinryouNames.forEach(key -> {
-                        ShinryouMasterDTO master = resolveShinryouMasterByKey(key, at);
-                        if (master == null) {
-                            throw new RuntimeException("Cannot find shinryou master: " + key);
-                        }
-                        ConductShinryouDTO shinryou = new ConductShinryouDTO();
-                        shinryou.conductId = conductId;
-                        shinryou.shinryoucode = master.shinryoucode;
-                        enterConductShinryou(shinryou);
-                    });
-                }
-                if (conductReq.kizaiList != null) {
-                    conductReq.kizaiList.forEach(kizaiReq -> {
-                        KizaiMasterDTO master = resolveKizaiMasterByKey(kizaiReq.name, at);
-                        if (master == null) {
-                            throw new RuntimeException("Cannot find kizai master: " + kizaiReq.name);
-                        }
-                        ConductKizaiDTO kizai = new ConductKizaiDTO();
-                        kizai.conductId = conductId;
-                        kizai.kizaicode = master.kizaicode;
-                        kizai.amount = kizaiReq.amount;
-                        enterConductKizai(kizai);
-                    });
-                }
-                result.conductIds.add(conductId);
-            });
-        }
-        return result;
-    }
-
-    // Pharma ////////////////////////////////////////////////////////////////////////////
-
-    public void prescDone(int visitId) {
-        markDrugsAsPrescribed(visitId);
-        PharmaQueueDTO pharmaQueue = ts.pharmaQueueTable.getByIdForUpdate(visitId, forUpdate);
-        if (pharmaQueue != null) {
-            deletePharmaQueue(pharmaQueue);
-        }
-        WqueueDTO wqueue = ts.wqueueTable.getByIdForUpdate(visitId, forUpdate);
-        if (wqueue != null) {
-            deleteWqueue(wqueue);
-        }
-    }
+//    public BatchEnterResultDTO batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
+//        VisitDTO visit = getVisit(visitId);
+//        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
+//        BatchEnterResultDTO result = new BatchEnterResultDTO();
+//        result.shinryouIds = new ArrayList<>();
+//        result.conductIds = new ArrayList<>();
+//        if (req.shinryouNames != null) {
+//            req.shinryouNames.forEach(key -> {
+//                ShinryouMasterDTO m = resolveShinryouMasterByKey(key, at);
+//                if (m == null) {
+//                    throw new RuntimeException("Cannot find shinryou master: " + key);
+//                }
+//                ShinryouDTO shinryou = new ShinryouDTO();
+//                shinryou.visitId = visitId;
+//                shinryou.shinryoucode = m.shinryoucode;
+//                enterShinryou(shinryou);
+//                result.shinryouIds.add(shinryou.shinryouId);
+//            });
+//        }
+//        if (req.conducts != null) {
+//            req.conducts.forEach(conductReq -> {
+//                ConductDTO conduct = new ConductDTO();
+//                conduct.visitId = visitId;
+//                conduct.kind = conductReq.kind;
+//                enterConduct(conduct);
+//                int conductId = conduct.conductId;
+//                if (conductReq.gazouLabel != null) {
+//                    GazouLabelDTO gazouLabel = new GazouLabelDTO();
+//                    gazouLabel.conductId = conductId;
+//                    gazouLabel.label = conductReq.gazouLabel;
+//                    enterGazouLabel(gazouLabel);
+//                }
+//                if (conductReq.shinryouNames != null) {
+//                    conductReq.shinryouNames.forEach(key -> {
+//                        ShinryouMasterDTO master = resolveShinryouMasterByKey(key, at);
+//                        if (master == null) {
+//                            throw new RuntimeException("Cannot find shinryou master: " + key);
+//                        }
+//                        ConductShinryouDTO shinryou = new ConductShinryouDTO();
+//                        shinryou.conductId = conductId;
+//                        shinryou.shinryoucode = master.shinryoucode;
+//                        enterConductShinryou(shinryou);
+//                    });
+//                }
+//                if (conductReq.kizaiList != null) {
+//                    conductReq.kizaiList.forEach(kizaiReq -> {
+//                        KizaiMasterDTO master = resolveKizaiMasterByKey(kizaiReq.name, at);
+//                        if (master == null) {
+//                            throw new RuntimeException("Cannot find kizai master: " + kizaiReq.name);
+//                        }
+//                        ConductKizaiDTO kizai = new ConductKizaiDTO();
+//                        kizai.conductId = conductId;
+//                        kizai.kizaicode = master.kizaicode;
+//                        kizai.amount = kizaiReq.amount;
+//                        enterConductKizai(kizai);
+//                    });
+//                }
+//                result.conductIds.add(conductId);
+//            });
+//        }
+//        return result;
+//    }
 
     // DiseaseExample ////////////////////////////////////////////////////////////////////
 

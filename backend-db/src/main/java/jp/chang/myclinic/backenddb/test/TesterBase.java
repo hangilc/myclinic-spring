@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.DbBackendService;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
+import jp.chang.myclinic.consts.DiseaseEndReason;
+import jp.chang.myclinic.dto.DiseaseDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
@@ -13,6 +15,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,17 @@ class TesterBase {
     static private ObjectMapper mapper = new ObjectMapper();
     private static final List<PracticeLogDTO> practiceLogList = new ArrayList<>();  // synchronized by this
     PatientDTO defaultPatient;
+
+    static int dis_急性咽頭炎 = 8832280;
+    static int dis_急性気管支炎 = 4660009;
+    static int dis_アレルギー性鼻炎 = 4779004;
+    static int dis_湿疹 = 6923002;
+    static int dis_糖尿病 = 2500013;
+
+    static int adj_の疑い = 8002;
+    static int adj_胸部 = 1015;
+    static int adj_小児 = 6004;
+    static int adj_急性 = 4012;
 
     TesterBase(DbBackend dbBackend) {
         this.dbBackend = dbBackend;
@@ -80,6 +94,12 @@ class TesterBase {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    PatientDTO newPatient(){
+        PatientDTO patient = mock.pickPatient();
+        dbBackend.txProc(backend -> backend.enterPatient(patient));
+        return patient;
     }
 
     VisitDTO startVisit(){
