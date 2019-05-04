@@ -1015,91 +1015,16 @@ public class Backend {
         return getQuery().get(xlate(sql, ts.conductTable), intProjector, visitId);
     }
 
-    public ConductFullDTO enterConductFull(ConductEnterRequestDTO req) {
-        ConductFullDTO result = new ConductFullDTO();
-        ConductDTO conduct = new ConductDTO();
-        conduct.visitId = req.visitId;
-        conduct.kind = req.kind;
-        enterConduct(conduct);
-        result.conduct = conduct;
-        int conductId = conduct.conductId;
-        if (req.gazouLabel != null) {
-            GazouLabelDTO gazouLabel = new GazouLabelDTO();
-            gazouLabel.conductId = conductId;
-            gazouLabel.label = req.gazouLabel;
-            enterGazouLabel(gazouLabel);
-            result.gazouLabel = gazouLabel;
-        }
-        if (req.shinryouList != null) {
-            result.conductShinryouList = new ArrayList<>();
-            req.shinryouList.forEach(shinryou -> {
-                shinryou.conductId = conductId;
-                enterConductShinryou(shinryou);
-                result.conductShinryouList.add(getConductShinryouFull(shinryou.conductShinryouId));
-            });
-        }
-        if (req.drugs != null) {
-            result.conductDrugs = new ArrayList<>();
-            req.drugs.forEach(drug -> {
-                drug.conductId = conductId;
-                enterConductDrug(drug);
-                result.conductDrugs.add(getConductDrugFull(drug.conductDrugId));
-            });
-        }
-        if (req.kizaiList != null) {
-            result.conductKizaiList = new ArrayList<>();
-            req.kizaiList.forEach(kizai -> {
-                kizai.conductId = conductId;
-                enterConductKizai(kizai);
-                result.conductKizaiList.add(getConductKizaiFull(kizai.conductKizaiId));
-            });
-        }
-        return result;
-    }
-
     public ConductDTO getConduct(int conductId) {
         return ts.conductTable.getById(conductId);
     }
 
-    private void deleteConduct(int conductId) {
+    void deleteConduct(int conductId) {
         ConductDTO conduct = ts.conductTable.getByIdForUpdate(conductId, ts.dialect.forUpdate());
-        deleteConduct(conduct);
-    }
-
-    private void deleteConduct(ConductDTO conduct) {
         if (conduct != null) {
             ts.conductTable.delete(conduct.conductId);
             practiceLogger.logConductDeleted(conduct);
         }
-    }
-
-    public void deleteConductCascading(int conductId) {
-        GazouLabelDTO gazouLabel = ts.gazouLabelTable.getByIdForUpdate(conductId, forUpdate);
-        if (gazouLabel != null) {
-            deleteGazouLabel(gazouLabel);
-        }
-        {
-            String sql = "select * from ConductShinryou where conductId = ? " + forUpdate;
-            for (ConductShinryouDTO shinryou :
-                    getQuery().query(xlate(sql, ts.conductShinryouTable), ts.conductShinryouTable, conductId)) {
-                deleteConductShinryou(shinryou);
-            }
-        }
-        {
-            String sql = "select * from ConductDrug where conductId = ? " + forUpdate;
-            for (ConductDrugDTO drug :
-                    getQuery().query(xlate(sql, ts.conductDrugTable), ts.conductDrugTable, conductId)) {
-                deleteConductDrug(drug);
-            }
-        }
-        {
-            String sql = "select * from ConductKizai where conductId = ? " + forUpdate;
-            for (ConductKizaiDTO kizai :
-                    getQuery().query(xlate(sql, ts.conductKizaiTable), ts.conductKizaiTable, conductId)) {
-                deleteConductKizai(kizai);
-            }
-        }
-        deleteConduct(conductId);
     }
 
     private void updateConduct(ConductDTO prev, ConductDTO conduct) {
@@ -1136,6 +1061,9 @@ public class Backend {
 
     public ConductFullDTO getConductFull(int conductId) {
         ConductDTO conduct = ts.conductTable.getById(conductId);
+        if( conduct == null ){
+            return null;
+        }
         return extendConduct(conduct);
     }
 
@@ -1156,13 +1084,9 @@ public class Backend {
 
     public void deleteGazouLabel(int conductId) {
         GazouLabelDTO deleted = ts.gazouLabelTable.getByIdForUpdate(conductId, forUpdate);
-        deleteGazouLabel(deleted);
-    }
-
-    private void deleteGazouLabel(GazouLabelDTO gazouLabel) {
-        if (gazouLabel != null) {
-            ts.gazouLabelTable.delete(gazouLabel.conductId);
-            practiceLogger.logGazouLabelDeleted(gazouLabel);
+        if (deleted != null) {
+            ts.gazouLabelTable.delete(deleted.conductId);
+            practiceLogger.logGazouLabelDeleted(deleted);
         }
     }
 
@@ -1203,13 +1127,9 @@ public class Backend {
 
     public void deleteConductShinryou(int conductShinryouId) {
         ConductShinryouDTO deleted = ts.conductShinryouTable.getByIdForUpdate(conductShinryouId, forUpdate);
-        deleteConductShinryou(deleted);
-    }
-
-    private void deleteConductShinryou(ConductShinryouDTO shinryou) {
-        if (shinryou != null) {
-            ts.conductShinryouTable.delete(shinryou.conductShinryouId);
-            practiceLogger.logConductShinryouDeleted(shinryou);
+        if (deleted != null) {
+            ts.conductShinryouTable.delete(deleted.conductShinryouId);
+            practiceLogger.logConductShinryouDeleted(deleted);
         }
     }
 
@@ -1257,13 +1177,9 @@ public class Backend {
 
     public void deleteConductDrug(int conductDrugId) {
         ConductDrugDTO deleted = getConductDrug(conductDrugId);
-        deleteConductDrug(deleted);
-    }
-
-    private void deleteConductDrug(ConductDrugDTO drug) {
-        if (drug != null) {
-            ts.conductDrugTable.delete(drug.conductDrugId);
-            practiceLogger.logConductDrugDeleted(drug);
+        if (deleted != null) {
+            ts.conductDrugTable.delete(deleted.conductDrugId);
+            practiceLogger.logConductDrugDeleted(deleted);
         }
     }
 
@@ -1311,13 +1227,9 @@ public class Backend {
 
     public void deleteConductKizai(int conductKizaiId) {
         ConductKizaiDTO deleted = ts.conductKizaiTable.getByIdForUpdate(conductKizaiId, forUpdate);
-        deleteConductKizai(deleted);
-    }
-
-    private void deleteConductKizai(ConductKizaiDTO kizai) {
-        if (kizai != null) {
-            ts.conductKizaiTable.delete(kizai.conductKizaiId);
-            practiceLogger.logConductKizaiDeleted(kizai);
+        if (deleted != null) {
+            ts.conductKizaiTable.delete(deleted.conductKizaiId);
+            practiceLogger.logConductKizaiDeleted(deleted);
         }
     }
 
@@ -1777,46 +1689,6 @@ public class Backend {
                 ts.prescExampleTable, "p", ts.iyakuhinMasterTable, "m");
         return getQuery().query(sql,
                 biProjector(ts.prescExampleTable, ts.iyakuhinMasterTable, PrescExampleFullDTO::create));
-    }
-
-    // BatchEnter ////////////////////////////////////////////////////////////////////////
-
-    public BatchEnterResultDTO batchEnter(BatchEnterRequestDTO req) {
-        BatchEnterResultDTO result = new BatchEnterResultDTO();
-        result.drugIds = new ArrayList<>();
-        result.shinryouIds = new ArrayList<>();
-        result.conductIds = new ArrayList<>();
-        if (req.drugs != null) {
-            req.drugs.forEach(drugWithAttr -> {
-                DrugDTO drug = drugWithAttr.drug;
-                DrugAttrDTO attr = drugWithAttr.attr;
-                enterDrug(drug);
-                if (attr != null) {
-                    attr.drugId = drug.drugId;
-                    enterDrugAttr(attr);
-                }
-                result.drugIds.add(drug.drugId);
-            });
-        }
-        if (req.shinryouList != null) {
-            req.shinryouList.forEach(shinryouWithAttr -> {
-                ShinryouDTO shinryou = shinryouWithAttr.shinryou;
-                ShinryouAttrDTO attr = shinryouWithAttr.attr;
-                enterShinryou(shinryou);
-                if (attr != null) {
-                    attr.shinryouId = shinryou.shinryouId;
-                    enterShinryouAttr(attr);
-                }
-                result.shinryouIds.add(shinryou.shinryouId);
-            });
-        }
-        if (req.conducts != null) {
-            req.conducts.forEach(conductReq -> {
-                ConductFullDTO c = enterConductFull(conductReq);
-                result.conductIds.add(c.conduct.conductId);
-            });
-        }
-        return result;
     }
 
     // BatchEnterByNames /////////////////////////////////////////////////////////////////

@@ -7,6 +7,7 @@ import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -319,6 +320,95 @@ public class DbBackendService {
                     return s.shinryouId;
                 })
                 .collect(toList());
+    }
+
+    // Conduct ////////////////////////////////////////////////////////////////////////////////
+
+    public ConductFullDTO enterConductFull(ConductEnterRequestDTO req) {
+        ConductFullDTO result = new ConductFullDTO();
+        ConductDTO conduct = new ConductDTO();
+        conduct.visitId = req.visitId;
+        conduct.kind = req.kind;
+        dbBackend.txProc(backend -> backend.enterConduct(conduct));
+        result.conduct = conduct;
+        int conductId = conduct.conductId;
+        if (req.gazouLabel != null) {
+            GazouLabelDTO gazouLabel = new GazouLabelDTO();
+            gazouLabel.conductId = conductId;
+            gazouLabel.label = req.gazouLabel;
+            dbBackend.txProc(backend -> backend.enterGazouLabel(gazouLabel));
+            result.gazouLabel = gazouLabel;
+        }
+        if (req.shinryouList != null) {
+            result.conductShinryouList = new ArrayList<>();
+            req.shinryouList.forEach(shinryou -> {
+                shinryou.conductId = conductId;
+                dbBackend.txProc(backend -> backend.enterConductShinryou(shinryou));
+                result.conductShinryouList.add(dbBackend.query(backend ->
+                        backend.getConductShinryouFull(shinryou.conductShinryouId)));
+            });
+        }
+        if (req.drugs != null) {
+            result.conductDrugs = new ArrayList<>();
+            req.drugs.forEach(drug -> {
+                drug.conductId = conductId;
+                dbBackend.txProc(backend -> backend.enterConductDrug(drug));
+                result.conductDrugs.add(dbBackend.query(backend ->
+                        backend.getConductDrugFull(drug.conductDrugId)));
+            });
+        }
+        if (req.kizaiList != null) {
+            result.conductKizaiList = new ArrayList<>();
+            req.kizaiList.forEach(kizai -> {
+                kizai.conductId = conductId;
+                dbBackend.txProc(backend -> backend.enterConductKizai(kizai));
+                result.conductKizaiList.add(dbBackend.query(backend ->
+                        backend.getConductKizaiFull(kizai.conductKizaiId)));
+            });
+        }
+        return result;
+    }
+
+    public void deleteConduct(int conductId) {
+        GazouLabelDTO gazouLabel = dbBackend.query(backend -> backend.getGazouLabel(conductId));
+        if (gazouLabel != null) {
+            dbBackend.txProc(backend -> backend.deleteGazouLabel(conductId));
+        }
+        dbBackend.query(backend -> backend.listConductShinryou(conductId))
+                .forEach(s -> dbBackend.txProc(backend -> backend.deleteConductShinryou(s.conductShinryouId)));
+        dbBackend.query(backend -> backend.listConductDrug(conductId))
+                .forEach(d -> dbBackend.txProc(backend -> backend.deleteConductDrug(d.conductDrugId)));
+        dbBackend.query(backend -> backend.listConductKizai(conductId))
+                .forEach(k -> dbBackend.txProc(backend -> backend.deleteConductKizai(k.conductKizaiId)));
+        dbBackend.txProc(backend -> backend.deleteConduct(conductId));
+    }
+
+    // BatchEnter ////////////////////////////////////////////////////////////////////////
+
+    public BatchEnterResultDTO batchEnter(BatchEnterRequestDTO req) {
+        BatchEnterResultDTO result = new BatchEnterResultDTO();
+        result.drugIds = new ArrayList<>();
+        result.shinryouIds = new ArrayList<>();
+        result.conductIds = new ArrayList<>();
+        if (req.drugs != null) {
+            req.drugs.forEach(drugWithAttr -> {
+                enterDrugWithAttr(drugWithAttr);
+                result.drugIds.add(drugWithAttr.drug.drugId);
+            });
+        }
+        if (req.shinryouList != null) {
+            req.shinryouList.forEach(shinryouWithAttr -> {
+                enterShinryouWithAttr(shinryouWithAttr);
+                result.shinryouIds.add(shinryouWithAttr.shinryou.shinryouId);
+            });
+        }
+        if (req.conducts != null) {
+            req.conducts.forEach(conductReq -> {
+                ConductFullDTO c = enterConductFull(conductReq);
+                result.conductIds.add(c.conduct.conductId);
+            });
+        }
+        return result;
     }
 
 }
