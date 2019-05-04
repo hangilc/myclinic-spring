@@ -97,6 +97,51 @@ class ShinryouTester extends TesterBase {
         confirm(saved.stream().map(s -> s.shinryoucode).collect(toSet()).equals(Set.of(初診, 再診, 調基)));
     }
 
+    @DbTest
+    public void testDeleteDuplicateWithAttr(){
+        int logIndex = getCurrentPracticeLogIndex();
+        VisitDTO visit = startExam();
+        ShinryouDTO sa = createShinryou(visit.visitId, 初診);
+        ShinryouDTO sb1 = createShinryou(visit.visitId, 再診);
+        ShinryouDTO sb2 = createShinryou(visit.visitId, 再診);
+        ShinryouDTO sc1 = createShinryou(visit.visitId, 調基);
+        ShinryouDTO sc2 = createShinryou(visit.visitId, 調基);
+        ShinryouAttrDTO aa = createAttr("A1");
+        ShinryouAttrDTO ab1 = createAttr("B1");
+        ShinryouAttrDTO ab2 = createAttr("B2");
+        ShinryouAttrDTO ac1 = createAttr("C1");
+        ShinryouAttrDTO ac2 = createAttr("C2");
+        enter(sa, aa);
+        enter(sb1, ab1);
+        enter(sb2, ab2);
+        enter(sc1, ac1);
+        enter(sc2, ac2);
+        dbBackendService.deleteDuplicateShinryou(visit.visitId);
+        endExam(visit.visitId, 120);
+        List<ShinryouDTO> saved = dbBackend.query(backend -> backend.listShinryou(visit.visitId));
+        confirm(saved.size() == 3);
+        confirm(saved.stream().map(s -> s.shinryoucode).collect(toSet()).equals(Set.of(初診, 再診, 調基)));
+        confirm(dbBackend.query(backend -> backend.getShinryouAttr(sa.shinryouId)).equals(aa));
+        ShinryouDTO savedSaishin = saved.stream().filter(s -> s.shinryoucode == 再診).findFirst().orElse(null);
+        confirmNotNull(savedSaishin);
+        if( savedSaishin.shinryouId == sb1.shinryouId ){
+            confirm(dbBackend.query(backend -> backend.getShinryouAttr(sb1.shinryouId)).equals(ab1));
+            confirm(dbBackend.query(backend -> backend.getShinryouAttr(sb2.shinryouId)) == null);
+        } else {
+            confirm(dbBackend.query(backend -> backend.getShinryouAttr(sb2.shinryouId)).equals(ab2));
+            confirm(dbBackend.query(backend -> backend.getShinryouAttr(sb1.shinryouId)) == null);
+        }
+        ShinryouDTO savedChouki = saved.stream().filter(s -> s.shinryoucode == 調基).findFirst().orElse(null);
+        confirmNotNull(savedChouki);
+        if( savedChouki.shinryouId == sc1.shinryouId ){
+            confirm(dbBackend.query(backend -> backend.getShinryouAttr(sc1.shinryouId)).equals(ac1));
+            confirm(dbBackend.query(backend -> backend.getShinryouAttr(sc2.shinryouId)) == null);
+        } else {
+            confirm(dbBackend.query(backend -> backend.getShinryouAttr(sc2.shinryouId)).equals(ac2));
+            confirm(dbBackend.query(backend -> backend.getShinryouAttr(sc1.shinryouId)) == null);
+        }
+    }
+
 //    @DbTest
 //    public void testGetShinryouFull(Backend backend){
 //        ShinryouFullDTO result = backend.getShinryouFull(2012);
