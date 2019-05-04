@@ -9,6 +9,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+
 public class DbBackendService {
 
     private DbBackend dbBackend;
@@ -262,6 +265,60 @@ public class DbBackendService {
        for(Integer drugId: drugIds){
            deleteDrug(drugId);
        }
+    }
+
+    public void enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr){
+        ShinryouDTO shinryou = shinryouWithAttr.shinryou;
+        ShinryouAttrDTO attr = shinryouWithAttr.attr == null || ShinryouAttrDTO.isEmpty(shinryouWithAttr.attr) ?
+                null : shinryouWithAttr.attr;
+        dbBackend.txProc(backend -> {
+            backend.enterShinryou(shinryou);
+            if( attr != null ){
+                attr.shinryouId = shinryou.shinryouId;
+                backend.enterShinryouAttr(attr);
+            }
+        });
+    }
+
+    public void enterShinryou(ShinryouDTO shinryou){
+        ShinryouWithAttrDTO shinryouWithAttr = new ShinryouWithAttrDTO();
+        shinryouWithAttr.shinryou = shinryou;
+        shinryouWithAttr.attr = null;
+        enterShinryouWithAttr(shinryouWithAttr);
+    }
+
+    public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+        for(ShinryouDTO shinryou: shinryouList){
+            enterShinryou(shinryou);
+        }
+    }
+
+    public void deleteShinryou(int shinryouId){
+        ShinryouAttrDTO attr = dbBackend.query(backend -> backend.getShinryouAttr(shinryouId));
+        dbBackend.txProc(backend -> {
+            backend.deleteShinryou(shinryouId);
+            if( attr != null ){
+                backend.deleteShinryouAttr(shinryouId);
+            }
+        });
+    }
+
+    public void batchDeleteShinryou(List<Integer> shinryouIds){
+        for(Integer shinryouId: shinryouIds){
+            deleteShinryou(shinryouId);
+        }
+    }
+
+    public List<Integer> deleteDuplicateShinryou(int visitId) {
+        return dbBackend.query(backend -> backend.listShinryou(visitId)).stream()
+                .collect(groupingBy(s -> s.shinryoucode))
+                .values().stream()
+                .flatMap(g -> g.subList(1, g.size()).stream())
+                .map(s -> {
+                    deleteShinryou(s.shinryouId);
+                    return s.shinryouId;
+                })
+                .collect(toList());
     }
 
 }

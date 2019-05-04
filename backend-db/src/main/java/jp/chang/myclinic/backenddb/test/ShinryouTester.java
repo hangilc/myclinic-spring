@@ -1,26 +1,100 @@
 package jp.chang.myclinic.backenddb.test;
 
-import jp.chang.myclinic.backenddb.Backend;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
-import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.dto.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.dto.ShinryouAttrDTO;
+import jp.chang.myclinic.dto.ShinryouDTO;
+import jp.chang.myclinic.dto.ShinryouWithAttrDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 class ShinryouTester extends TesterBase {
 
-
     ShinryouTester(DbBackend dbBackend) {
         super(dbBackend);
+    }
+
+    private static int 初診 = 111000110;
+    private static int 再診 = 112007410;
+    private static int 処方料 = 120001210;
+    private static int 処方せん料 = 120002910;
+    private static int 調基 = 120001810;
+    private static int 特定疾患処方 = 120002270;
+    private static int 特定疾患処方管理加算処方せん料 = 120002570;
+    private static int 長期処方 = 120003170;
+    private static int 長期投薬加算処方せん料 = 120003270;
+    private static int 特定疾患管理 = 113001810;
+    private static int 薬剤情報提供 = 120002370;
+    private static int 手帳記載加算 = 113701310;
+
+    private ShinryouDTO createShinryou(int visitId, int shinryoucode){
+        ShinryouDTO shinryou = new ShinryouDTO();
+        shinryou.visitId = visitId;
+        shinryou.shinryoucode = shinryoucode;
+        return shinryou;
+    }
+
+    private ShinryouAttrDTO createAttr(String tekiyou){
+        ShinryouAttrDTO attr = new ShinryouAttrDTO();
+        attr.tekiyou = tekiyou;
+        return attr;
+    }
+
+    private void enter(ShinryouDTO shinryou, ShinryouAttrDTO attr){
+        ShinryouWithAttrDTO withAttr = new ShinryouWithAttrDTO();
+        withAttr.shinryou = shinryou;
+        withAttr.attr = attr;
+        dbBackendService.enterShinryouWithAttr(withAttr);
+    }
+
+    @DbTest
+    public void testEnter(){
+        int logIndex = getCurrentPracticeLogIndex();
+        VisitDTO visit = startExam();
+        ShinryouDTO shinryou = createShinryou(visit.visitId, 初診);
+        dbBackendService.enterShinryou(shinryou);
+        endExam(visit.visitId, 10);
+        confirm(dbBackend.query(backend -> backend.getShinryou(shinryou.shinryouId)).equals(shinryou));
+        confirmSingleLog(logIndex, log -> log.getShinryouCreated()
+                .map(sc -> sc.created.equals(shinryou))
+                .orElse(false));
+    }
+
+    @DbTest
+    public void testEnterWithAttr(){
+        int logIndex = getCurrentPracticeLogIndex();
+        VisitDTO visit = startExam();
+        ShinryouDTO shinryou = createShinryou(visit.visitId, 初診);
+        ShinryouAttrDTO attr = createAttr("摘要テスト");
+        enter(shinryou, attr);
+        endExam(visit.visitId, 10);
+        confirm(dbBackend.query(backend -> backend.getShinryou(shinryou.shinryouId)).equals(shinryou));
+        confirm(dbBackend.query(backend -> backend.getShinryouAttr(shinryou.shinryouId).equals(attr)), "enterWithAttr",
+                () -> System.out.println(attr));
+        confirmSingleLog(logIndex, log -> log.getShinryouCreated()
+                .map(sc -> sc.created.equals(shinryou))
+                .orElse(false));
+    }
+
+    @DbTest
+    public void testDeleteDuplicate(){
+        int logIndex = getCurrentPracticeLogIndex();
+        VisitDTO visit = startExam();
+        dbBackendService.enterShinryou(createShinryou(visit.visitId, 初診));
+        dbBackendService.enterShinryou(createShinryou(visit.visitId, 再診));
+        dbBackendService.enterShinryou(createShinryou(visit.visitId, 再診));
+        dbBackendService.enterShinryou(createShinryou(visit.visitId, 調基));
+        dbBackendService.enterShinryou(createShinryou(visit.visitId, 調基));
+        dbBackendService.deleteDuplicateShinryou(visit.visitId);
+        endExam(visit.visitId, 120);
+        List<ShinryouDTO> saved = dbBackend.query(backend -> backend.listShinryou(visit.visitId));
+        confirm(saved.size() == 3);
+        confirm(saved.stream().map(s -> s.shinryoucode).collect(toSet()).equals(Set.of(初診, 再診, 調基)));
     }
 
 //    @DbTest

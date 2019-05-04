@@ -846,44 +846,44 @@ public class Backend {
         return getQuery().get(xlate(sql, ts.shinryouTable), intProjector, visitId);
     }
 
-    public void enterShinryou(ShinryouDTO shinryou) {
+    void enterShinryou(ShinryouDTO shinryou) {
         ts.shinryouTable.insert(shinryou);
         practiceLogger.logShinryouCreated(shinryou);
     }
 
-    public ShinryouDTO enterShinryouByName(int visitId, String name) {
-        int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(name);
-        if (shinryoucode == 0) {
-            throw new RuntimeException("Cannot find shinryou: " + name);
-        }
-        VisitDTO visit = getVisit(visitId);
-        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
-        ShinryouMasterDTO master = getShinryouMaster(shinryoucode, at);
-        if (master == null) {
-            throw new RuntimeException(String.format("Shinryou (%s) is not available at %s", name, at.toString()));
-        }
-        ShinryouDTO shinryou = new ShinryouDTO();
-        shinryou.visitId = visitId;
-        shinryou.shinryoucode = shinryoucode;
-        enterShinryou(shinryou);
-        return shinryou;
-    }
+//    public ShinryouDTO enterShinryouByName(int visitId, String name) {
+//        int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(name);
+//        if (shinryoucode == 0) {
+//            throw new RuntimeException("Cannot find shinryou: " + name);
+//        }
+//        VisitDTO visit = getVisit(visitId);
+//        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
+//        ShinryouMasterDTO master = getShinryouMaster(shinryoucode, at);
+//        if (master == null) {
+//            throw new RuntimeException(String.format("Shinryou (%s) is not available at %s", name, at.toString()));
+//        }
+//        ShinryouDTO shinryou = new ShinryouDTO();
+//        shinryou.visitId = visitId;
+//        shinryou.shinryoucode = shinryoucode;
+//        enterShinryou(shinryou);
+//        return shinryou;
+//    }
 
-    public void deleteShinryou(int shinryouId) {
+    void deleteShinryou(int shinryouId) {
         ShinryouDTO shinryou = ts.shinryouTable.getByIdForUpdate(shinryouId, ts.dialect.forUpdate());
         ts.shinryouTable.delete(shinryouId);
         practiceLogger.logShinryouDeleted(shinryou);
     }
 
-    public void deleteShinryouCascading(int shinryouId) {
-        deleteShinryouAttr(shinryouId);
-        deleteShinryou(shinryouId);
-    }
-
-    public void batchDeleteShinryouCascading(List<Integer> shinryouIds) {
-        shinryouIds.forEach(this::deleteShinryouCascading);
-    }
-
+//    public void deleteShinryouCascading(int shinryouId) {
+//        deleteShinryouAttr(shinryouId);
+//        deleteShinryou(shinryouId);
+//    }
+//
+//    public void batchDeleteShinryouCascading(List<Integer> shinryouIds) {
+//        shinryouIds.forEach(this::deleteShinryouCascading);
+//    }
+//
     public ShinryouFullDTO getShinryouFull(int shinryouId) {
         String sql = xlate("select s.*, m.* from Shinryou s, ShinryouMaster m, Visit v " +
                         " where s.shinryouId = ? and s.visitId = v.visitId and s.shinryoucode = m.shinryoucode " +
@@ -901,10 +901,10 @@ public class Backend {
         return result;
     }
 
-    public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-        shinryouList.forEach(this::enterShinryou);
-    }
-
+//    public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+//        shinryouList.forEach(this::enterShinryou);
+//    }
+//
     public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds) {
         return shinryouIds.stream().map(this::getShinryouFull).collect(toList());
     }
@@ -955,19 +955,19 @@ public class Backend {
                 visitId);
     }
 
-    public List<Integer> deleteDuplicateShinryou(int visitId) {
-        String sql = "select * from Shinryou where visitId = ?" + ts.dialect.forUpdate();
-        getQuery().query(xlate(sql, ts.shinryouTable), ts.shinryouTable, visitId);
-        return listShinryou(visitId).stream()
-                .collect(groupingBy(s -> s.shinryoucode))
-                .values().stream()
-                .flatMap(g -> g.subList(1, g.size()).stream())
-                .map(s -> {
-                    deleteShinryou(s.shinryouId);
-                    return s.shinryouId;
-                })
-                .collect(toList());
-    }
+//    public List<Integer> deleteDuplicateShinryou(int visitId) {
+//        String sql = "select * from Shinryou where visitId = ?" + ts.dialect.forUpdate();
+//        getQuery().query(xlate(sql, ts.shinryouTable), ts.shinryouTable, visitId);
+//        return listShinryou(visitId).stream()
+//                .collect(groupingBy(s -> s.shinryoucode))
+//                .values().stream()
+//                .flatMap(g -> g.subList(1, g.size()).stream())
+//                .map(s -> {
+//                    deleteShinryou(s.shinryouId);
+//                    return s.shinryouId;
+//                })
+//                .collect(toList());
+//    }
 
     // ShinryouAttr /////////////////////////////////////////////////////////////////////////////
 
@@ -983,7 +983,7 @@ public class Backend {
         ts.shinryouAttrTable.insert(shinryouAttr);
     }
 
-    private void deleteShinryouAttr(int shinryouId) {
+    public void deleteShinryouAttr(int shinryouId) {
         ts.shinryouAttrTable.delete(shinryouId);
     }
 

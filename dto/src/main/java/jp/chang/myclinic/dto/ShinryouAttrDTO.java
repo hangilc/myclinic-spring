@@ -2,6 +2,8 @@ package jp.chang.myclinic.dto;
 
 import jp.chang.myclinic.dto.annotation.Primary;
 
+import java.util.Objects;
+
 public class ShinryouAttrDTO {
     @Primary
     public int shinryouId;
@@ -46,6 +48,20 @@ public class ShinryouAttrDTO {
             }
             return attr;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ShinryouAttrDTO that = (ShinryouAttrDTO) o;
+        return shinryouId == that.shinryouId &&
+                Objects.equals(tekiyou, that.tekiyou);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(shinryouId, tekiyou);
     }
 
     @Override
