@@ -258,4 +258,10 @@ public class DbBackendService {
         });
     }
 
+    public void batchDeleteDrugs(List<Integer> drugIds) {
+       for(Integer drugId: drugIds){
+           deleteDrug(drugId);
+       }
+    }
+
 }

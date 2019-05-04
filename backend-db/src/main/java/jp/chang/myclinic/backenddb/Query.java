@@ -111,6 +111,25 @@ public class Query {
         }
     }
 
+    public void proc(String sql, Object... params) {
+        if (dumpSql) {
+            System.out.println(sql);
+        }
+        try {
+            PreparedStatement stmt = getConnection().prepareStatement(sql);
+            int index = 1;
+            for (Object param : params) {
+                stmt.setObject(index++, param);
+            }
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new IntegrityException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public <T> T get(String sql, Projector<T> projector,
                      Object... params) {
         if (dumpSql) {

@@ -326,4 +326,31 @@ class DrugTester extends TesterBase {
         dbBackendService.enterDrugWithAttr(drugWithAttr);
     }
 
+    @DbTest
+    public void testMarkPrescribed(){
+        VisitDTO visit = startExam();
+        DrugDTO drug1 = new DrugDTO();
+        drug1.visitId = visit.visitId;
+        drug1.iyakuhincode = SampleData.calonal.iyakuhincode;
+        drug1.amount = 3;
+        drug1.usage = "分３　毎食後";
+        drug1.days = 5;
+        drug1.category = DrugCategory.Naifuku.getCode();
+        drug1.prescribed = 0;
+        dbBackendService.enterDrug(drug1);
+        DrugDTO drug2 = new DrugDTO();
+        drug2.visitId = visit.visitId;
+        drug2.iyakuhincode = SampleData.loxonin.iyakuhincode;
+        drug2.amount = 1;
+        drug2.usage = "頭痛時";
+        drug2.days = 10;
+        drug2.category = DrugCategory.Tonpuku.getCode();
+        drug2.prescribed = 0;
+        dbBackendService.enterDrug(drug2);
+        endExam(visit.visitId, 640);
+        dbBackend.txProc(backend -> backend.markDrugsAsPrescribed(visit.visitId));
+        confirm(dbBackend.query(backend -> backend.getDrug(drug1.drugId).prescribed == 1));
+        confirm(dbBackend.query(backend -> backend.getDrug(drug2.drugId).prescribed == 1));
+    }
+
 }

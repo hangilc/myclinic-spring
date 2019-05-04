@@ -421,15 +421,6 @@ public class Backend {
         }
     }
 
-    public void deleteDrugCascading(int drugId) {
-        deleteDrugAttr(drugId);
-        deleteDrug(drugId);
-    }
-
-    public void batchDeleteDrugs(List<Integer> drugIds) {
-        drugIds.forEach(this::deleteDrug);
-    }
-
     public DrugFullDTO getDrugFull(int drugId) {
         String sql = xlate("select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
                         " where d.drugId = ? and d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
@@ -546,14 +537,8 @@ public class Backend {
     }
 
     public void markDrugsAsPrescribed(int visitId) {
-        String sql = xlate("select drugId from Drug where visitId = ?", ts.drugTable);
-        List<Integer> drugIds = getQuery().query(sql, intProjector, visitId);
-        for (Integer drugId : drugIds) {
-            DrugDTO prev = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
-            DrugDTO drug = DrugDTO.copy(prev);
-            drug.prescribed = 1;
-            updateDrug(drug);
-        }
+        String sql = xlate("update Drug set prescribed = 1 where visitId = ?", ts.drugTable);
+        getQuery().proc(sql, visitId);
     }
 
     // DrugAttr /////////////////////////////////////////////////////////////////////////
