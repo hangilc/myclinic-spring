@@ -16,6 +16,17 @@ class DrugTester extends TesterBase {
         super(dbBackend);
     }
 
+    private DrugDTO createNaifukuCalonal(int visitId){
+        DrugDTO drug = new DrugDTO();
+        drug.visitId = visitId;
+        drug.iyakuhincode = SampleData.calonal.iyakuhincode;
+        drug.amount = 3;
+        drug.usage = "分３　毎食後";
+        drug.days = 5;
+        drug.category = DrugCategory.Naifuku.getCode();
+        return drug;
+    }
+
     @DbTest
     public void testEnter() {
         int logIndex = getCurrentPracticeLogIndex();
@@ -443,6 +454,28 @@ class DrugTester extends TesterBase {
         confirmNoLog(logIndex, log -> log.getDrugUpdated()
                 .map(drugUpdated -> drugUpdated.prev.drugId == drug4.drugId)
                 .orElse(false));
+    }
+
+    @DbTest
+    public void testSetDrugTekiyou(){
+        VisitDTO visit = startExam();
+        DrugDTO drug = createNaifukuCalonal(visit.visitId);
+        dbBackendService.enterDrug(drug);
+        dbBackendService.setDrugTekiyou(drug.drugId, "摘要");
+        confirm(dbBackend.query(backend -> backend.getDrugAttr(drug.drugId)).tekiyou.equals("摘要"));
+        endExam(visit.visitId, 0);
+    }
+
+    @DbTest
+    public void testDeleteDrugTekiyou(){
+        VisitDTO visit = startExam();
+        DrugDTO drug = createNaifukuCalonal(visit.visitId);
+        dbBackendService.enterDrug(drug);
+        dbBackendService.setDrugTekiyou(drug.drugId, "摘要");
+        confirm(dbBackend.query(backend -> backend.getDrugAttr(drug.drugId)).tekiyou.equals("摘要"));
+        dbBackendService.deleteDrugTekiyou(drug.drugId);
+        confirm(dbBackend.query(backend -> backend.getDrugAttr(drug.drugId)) == null);
+        endExam(visit.visitId, 0);
     }
 
 }

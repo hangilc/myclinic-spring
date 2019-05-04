@@ -1,6 +1,7 @@
 package jp.chang.myclinic.backenddb;
 
 import jp.chang.myclinic.backenddb.exception.CannotDeleteVisitSafelyException;
+import jp.chang.myclinic.backenddb.exception.IntegrityException;
 import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
@@ -309,6 +310,46 @@ public class DbBackendService {
             deleteDrug(drugId);
         }
     }
+
+    public DrugAttrDTO setDrugTekiyou(int drugId, String tekiyou) {
+        DrugAttrDTO curr = dbBackend.query(backend -> backend.getDrugAttr(drugId));
+        if( curr != null ){
+            DrugAttrDTO attr = DrugAttrDTO.copy(curr);
+            attr.tekiyou = tekiyou;
+            if( DrugAttrDTO.isEmpty(attr) ){
+                dbBackend.txProc(backend -> backend.deleteDrugAttr(drugId));
+                return null;
+            } else {
+                dbBackend.txProc(backend -> backend.updateDrugAttr(attr));
+                return attr;
+            }
+        } else {
+            if( tekiyou != null && !tekiyou.isEmpty() ){
+                DrugAttrDTO attr = new DrugAttrDTO();
+                attr.drugId = drugId;
+                attr.tekiyou = tekiyou;
+                dbBackend.txProc(backend -> backend.enterDrugAttr(attr));
+                return attr;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public void deleteDrugTekiyou(int drugId) {
+        DrugAttrDTO attr = dbBackend.query(backend -> backend.getDrugAttr(drugId));
+        if (attr != null) {
+            DrugAttrDTO updated = DrugAttrDTO.copy(attr);
+            updated.tekiyou = null;
+            if (DrugAttrDTO.isEmpty(updated)) {
+                dbBackend.txProc(backend -> backend.deleteDrugAttr(drugId));
+            } else {
+                dbBackend.txProc(backend -> backend.updateDrugAttr(updated));
+            }
+        }
+    }
+
+    // Shinryou /////////////////////////////////////////////////////////////////////////////
 
     public void enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
         ShinryouDTO shinryou = shinryouWithAttr.shinryou;

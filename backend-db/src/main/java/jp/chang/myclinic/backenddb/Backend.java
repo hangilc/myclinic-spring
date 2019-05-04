@@ -453,24 +453,6 @@ public class Backend {
         practiceLogger.logDrugUpdated(prev, drug);
     }
 
-    public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-        int drugId = drugWithAttr.drug.drugId;
-        DrugDTO prevDrug = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
-        DrugAttrDTO prevAttr = ts.drugAttrTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
-        updateDrug(drugWithAttr.drug);
-        if (prevAttr == null) {
-            if (drugWithAttr.attr != null) {
-                enterDrugAttr(drugWithAttr.attr);
-            }
-        } else {
-            if (drugWithAttr.attr == null) {
-                deleteDrugAttr(drugId);
-            } else {
-                updateDrugAttr(drugWithAttr.attr);
-            }
-        }
-    }
-
     public int batchUpdateDrugDays(List<Integer> drugIds, int days) {
         int count = 0;
         for(Integer drugId: drugIds){
@@ -502,10 +484,6 @@ public class Backend {
 
     void deleteDrug(int drugId) {
         DrugDTO drug = ts.drugTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
-        deleteDrug(drug);
-    }
-
-    private void deleteDrug(DrugDTO drug) {
         if (drug != null) {
             ts.drugTable.delete(drug.drugId);
             practiceLogger.logDrugDeleted(drug);
@@ -657,35 +635,6 @@ public class Backend {
             String sql = "select * from DrugAttr where drugId in (" +
                     drugIds.stream().map(Object::toString).collect(joining(",")) + ")";
             return getQuery().query(xlate(sql, ts.drugAttrTable), ts.drugAttrTable);
-        }
-    }
-
-    public DrugAttrDTO setDrugTekiyou(int drugId, String tekiyou) {
-        DrugAttrDTO newDrugAttr = new DrugAttrDTO();
-        newDrugAttr.drugId = drugId;
-        newDrugAttr.tekiyou = tekiyou;
-        try {
-            ts.drugAttrTable.insert(newDrugAttr);
-            return newDrugAttr;
-        } catch(IntegrityException e){
-            DrugAttrDTO attr = ts.drugAttrTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
-            DrugAttrDTO updated = DrugAttrDTO.copy(attr);
-            updated.tekiyou = tekiyou;
-            updateDrugAttr(updated);
-            return updated;
-        }
-    }
-
-    public void deleteDrugTekiyou(int drugId) {
-        DrugAttrDTO attr = ts.drugAttrTable.getByIdForUpdate(drugId, ts.dialect.forUpdate());
-        if (attr != null) {
-            DrugAttrDTO updated = DrugAttrDTO.copy(attr);
-            updated.tekiyou = null;
-            if (DrugAttrDTO.isEmpty(updated)) {
-                deleteDrugAttr(drugId);
-            } else {
-                updateDrugAttr(updated);
-            }
         }
     }
 
