@@ -70,7 +70,7 @@ public class Test implements Runnable {
                 .host(dbHost);
         DataSource ds = MysqlDataSourceProvider.create(config);
         DB db = new DBImpl(ds);
-        DbBackend dbBackend = new DbBackend(db, MysqlTableSet::create, createSupportSet());
+        DbBackend dbBackend = new DbBackend(db, MysqlTableSet::create);
         confirmTestDatabase(dbBackend);
         if( threadSize == 1 ) {
             new Tester().test(dbBackend);

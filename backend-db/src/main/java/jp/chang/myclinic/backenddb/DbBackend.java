@@ -20,11 +20,11 @@ public class DbBackend {
     private TableSet ts;
     private Backend backend;
 
-    public DbBackend(DB db, Function<Query, TableSet> tableSetCreator, SupportSet ss){
+    public DbBackend(DB db, Function<Query, TableSet> tableSetCreator){
         this.db = db;
         this.query = new Query(db.getConnectionProvider());
         this.ts = tableSetCreator.apply(query);
-        this.backend = new Backend(ts, query, ss);
+        this.backend = new Backend(ts, query);
     }
 
     public void setPracticeLogPublisher(Consumer<String> publisher){

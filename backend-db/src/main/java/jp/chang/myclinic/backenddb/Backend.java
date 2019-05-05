@@ -1,15 +1,12 @@
 package jp.chang.myclinic.backenddb;
 
 import jp.chang.myclinic.backenddb.annotation.ExcludeFromFrontend;
-import jp.chang.myclinic.backenddb.exception.CannotDeleteVisitSafelyException;
-import jp.chang.myclinic.backenddb.exception.IntegrityException;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -30,18 +27,18 @@ public class Backend {
     private SqlTranslator sqlTranslator = new SqlTranslator();
     private PracticeLogger practiceLogger;
     private HotlineLogger hotlineLogger;
-    private SupportSet ss;
+    //private SupportSet ss;
     private Projector<DrugAttrDTO> nullableDrugAttrProjector;
     private Projector<ShinryouAttrDTO> nullableShinryouAttrProjector;
     private String forUpdate;
 
-    public Backend(TableSet ts, Query query, SupportSet ss) {
+    public Backend(TableSet ts, Query query) {
         this.ts = ts;
         this.query = query;
         this.practiceLogger = new PracticeLogger();
         practiceLogger.setSaver(this::enterPracticeLog);
         this.hotlineLogger = new HotlineLogger();
-        this.ss = ss;
+        //this.ss = ss;
         this.nullableDrugAttrProjector = new NullableProjector<>(
                 ts.drugAttrTable,
                 attr -> attr.drugId == 0
@@ -1296,7 +1293,10 @@ public class Backend {
 
     public int deleteDiseaseAdjForDisease(DiseaseDTO disease){
         int count = 0;
-        for(DiseaseAdjDTO adj: listDiseaseAdj(disease.diseaseId)){
+        String sql = "select * from DiseaseAdj where diseaseId = ? " + forUpdate;
+        List<DiseaseAdjDTO> adjList = getQuery().query(xlate(sql, ts.diseaseAdjTable), ts.diseaseAdjTable,
+                disease.diseaseId);
+        for(DiseaseAdjDTO adj: adjList){
             deleteDiseaseAdj(adj.diseaseAdjId);
             count += 1;
         }
@@ -1627,39 +1627,39 @@ public class Backend {
 
     // DiseaseExample ////////////////////////////////////////////////////////////////////
 
-    public List<DiseaseExampleDTO> listDiseaseExample() {
-        return ss.diseaseExampleProvider.listDiseaseExample();
-    }
+//    public List<DiseaseExampleDTO> listDiseaseExample() {
+//        return ss.diseaseExampleProvider.listDiseaseExample();
+//    }
 
     // Meisai ////////////////////////////////////////////////////////////////////////////
 
-    public MeisaiDTO getMeisai(int visitId) {
-        VisitDTO visit = getVisit(visitId);
-        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
-        return ss.meisaiService.getMeisai(
-                getPatient(visit.patientId),
-                getHoken(visit),
-                at,
-                listShinryouFull(visitId),
-                ss.houkatsuKensaService.getRevision(at),
-                listDrugFull(visitId),
-                listConductFull(visitId)
-        );
-    }
+//    public MeisaiDTO getMeisai(int visitId) {
+//        VisitDTO visit = getVisit(visitId);
+//        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
+//        return ss.meisaiService.getMeisai(
+//                getPatient(visit.patientId),
+//                getHoken(visit),
+//                at,
+//                listShinryouFull(visitId),
+//                ss.houkatsuKensaService.getRevision(at),
+//                listDrugFull(visitId),
+//                listConductFull(visitId)
+//        );
+//    }
 
     // StockDrug /////////////////////////////////////////////////////////////////////////
 
-    public IyakuhinMasterDTO resolveStockDrug(int iyakuhincode, LocalDate at) {
-        iyakuhincode = ss.stockDrugService.resolve(iyakuhincode, at);
-        return getIyakuhinMaster(iyakuhincode, at);
-    }
-
-    public List<ResolvedStockDrugDTO> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
-        return iyakuhincodes.stream()
-                .map(code ->
-                        ResolvedStockDrugDTO.create(code, ss.stockDrugService.resolve(code, at)))
-                .collect(toList());
-    }
+//    public IyakuhinMasterDTO resolveStockDrug(int iyakuhincode, LocalDate at) {
+//        iyakuhincode = ss.stockDrugService.resolve(iyakuhincode, at);
+//        return getIyakuhinMaster(iyakuhincode, at);
+//    }
+//
+//    public List<ResolvedStockDrugDTO> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
+//        return iyakuhincodes.stream()
+//                .map(code ->
+//                        ResolvedStockDrugDTO.create(code, ss.stockDrugService.resolve(code, at)))
+//                .collect(toList());
+//    }
 
     // ClinicInfo ////////////////////////////////////////////////////////////////////////
 
