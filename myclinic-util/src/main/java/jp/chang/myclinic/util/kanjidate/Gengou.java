@@ -13,7 +13,8 @@ public enum Gengou {
     Meiji(LocalDate.of(1873, 1, 1), "明治", "Meiji"),
     Taishou(LocalDate.of(1912, 7, 30), "大正", "Taishou"),
     Shouwa(LocalDate.of(1926, 12, 25), "昭和", "Shouwa"),
-    Heisei(LocalDate.of(1989, 1, 8), "平成", "Heisei");
+    Heisei(LocalDate.of(1989, 1, 8), "平成", "Heisei"),
+    Reiwa(LocalDate.of(2019, 5, 1), "令和", "Reiwa");
 
     private LocalDate startDate;
     private String kanjiRep;
@@ -59,11 +60,12 @@ public enum Gengou {
 
     public static Gengou Current = Heisei;
 
-    public static List<Gengou> Recent = new ArrayList<Gengou>();
+    public static List<Gengou> Recent = new ArrayList<>();
     static {
+        Recent.add(Reiwa);
         Recent.add(Heisei);
     }
 
-    public static Gengou MostRecent = Heisei;
+    public static Gengou MostRecent = Reiwa;
 
 }
