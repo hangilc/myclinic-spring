@@ -13,11 +13,6 @@ import java.util.function.Supplier;
 public class SerialDB implements DB{
 
     private DB delegate;
-    private ExecutorService executorService = Executors.newSingleThreadExecutor(r -> {
-        Thread thread = new Thread(r);
-        thread.setDaemon(true);
-        return thread;
-    });
 
     public SerialDB(DB delegate) {
         this.delegate = delegate;
@@ -30,25 +25,15 @@ public class SerialDB implements DB{
 
     @Override
     public <T> T query(Proc<T> proc) {
-        Future<T> future = executorService.submit(() -> delegate.query(proc));
-        try {
-            return future.get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e.getCause());
+        synchronized(SerialDB.class){
+            return delegate.query(proc);
         }
     }
 
     @Override
     public <T> T tx(Proc<T> proc) {
-        Future<T> future = executorService.submit(() -> delegate.tx(proc));
-        try {
-            return future.get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e.getCause());
+        synchronized(SerialDB.class){
+            return delegate.tx(proc);
         }
     }
 

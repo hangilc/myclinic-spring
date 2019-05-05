@@ -52,11 +52,11 @@ public class Test implements Runnable {
         DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
         DB db = new DBImpl(ds);
         if( threadSize == 1 ) {
-            DbBackend dbBackend = new DbBackend(db, SqliteTableSet::create, createSupportSet());
+            DbBackend dbBackend = new DbBackend(db, SqliteTableSet::create);
             new Tester().test(dbBackend);
         } else {
             db = new SerialDB(db);
-            DbBackend dbBackend = new DbBackend(db, SqliteTableSet::create, createSupportSet());
+            DbBackend dbBackend = new DbBackend(db, SqliteTableSet::create);
             List<Future<Void>> futures = new ArrayList<>();
             for(int i=0;i<threadSize;i++){
                 ExecutorService service = Executors.newSingleThreadExecutor();
