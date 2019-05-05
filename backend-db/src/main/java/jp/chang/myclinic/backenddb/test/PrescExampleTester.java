@@ -16,14 +16,15 @@ class PrescExampleTester extends TesterBase {
     }
 
     @DbTest
-    public void testSearchPrescExample(Backend backend){
-        List<PrescExampleFullDTO> result = backend.searchPrescExample("アムロ");
-        //System.out.println(result);
+    public void testSearchPrescExample(){
+        List<PrescExampleFullDTO> result = dbBackend.query(backend ->
+                backend.searchPrescExample("アムロ"));
+        confirm(result.size() > 0);
     }
 
     @DbTest
-    public void tesListAllPrescExample(Backend backend){
-        List<PrescExampleFullDTO> result = backend.listAllPrescExample();
-        //System.out.println(result);
+    public void tesListAllPrescExample(){
+        List<PrescExampleFullDTO> result = dbBackend.query(Backend::listAllPrescExample);
+        confirm(result.size() > 0);
     }
 }

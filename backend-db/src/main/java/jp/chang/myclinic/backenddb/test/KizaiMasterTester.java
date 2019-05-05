@@ -18,9 +18,10 @@ class KizaiMasterTester extends TesterBase {
     }
 
     @DbTest
-    public void testSearchKizaiMaster(Backend backend){
-        List<KizaiMasterDTO> result = backend.searchKizaiMaster("切", LocalDate.now());
-        //System.out.println(result);
+    public void testSearchKizaiMaster(){
+        List<KizaiMasterDTO> result = dbBackend.query(backend ->
+                backend.searchKizaiMaster("切", LocalDate.now()));
+        confirm(result.size() > 0);
     }
 
 }

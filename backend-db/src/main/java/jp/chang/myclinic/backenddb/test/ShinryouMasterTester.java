@@ -18,9 +18,10 @@ class ShinryouMasterTester extends TesterBase {
     }
 
     @DbTest
-    public void testSearchShinryouMaster(Backend backend){
-        List<ShinryouMasterDTO> result = backend.searchShinryouMaster("再診", LocalDate.now());
-        //System.out.println(result);
+    public void testSearchShinryouMaster(){
+        List<ShinryouMasterDTO> result = dbBackend.query(backend ->
+                backend.searchShinryouMaster("再診", LocalDate.now()));
+        confirm(result.size() > 0);
     }
 
 //    @DbTest

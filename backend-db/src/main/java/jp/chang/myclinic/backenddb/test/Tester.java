@@ -13,12 +13,12 @@ public class Tester {
         new ConductTester(dbBackend).test();
         new GazouLabelTester(dbBackend).test();
         new DiseaseTester(dbBackend).test();
-//        new ShinryouMasterTester(dbBackend).test();
-//        new IyakuhinMasterTester(dbBackend).test();
-//        new KizaiMasterTester(dbBackend).test();
-//        new ByoumeiMasterTester(dbBackend).test();
-//        new ShuushokugoMasterTester(dbBackend).test();
-//        new PrescExampleTester(dbBackend).test();
+        new ShinryouMasterTester(dbBackend).test();
+        new IyakuhinMasterTester(dbBackend).test();
+        new KizaiMasterTester(dbBackend).test();
+        new ByoumeiMasterTester(dbBackend).test();
+        new ShuushokugoMasterTester(dbBackend).test();
+        new PrescExampleTester(dbBackend).test();
     }
 
 }

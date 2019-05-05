@@ -17,8 +17,9 @@ class ShuushokugoMasterTester extends TesterBase {
     }
 
     @DbTest
-    public void testSearchShuushokugo(Backend backend){
-        List<ShuushokugoMasterDTO> result = backend.searchShuushokugoMaster("胸", LocalDate.now());
-        //System.out.println(result);
+    public void testSearchShuushokugo(){
+        List<ShuushokugoMasterDTO> result = dbBackend.query(backend ->
+                backend.searchShuushokugoMaster("胸", LocalDate.now()));
+        confirm(result.size() > 0);
     }
 }

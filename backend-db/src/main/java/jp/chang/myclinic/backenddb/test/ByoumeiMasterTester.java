@@ -17,8 +17,9 @@ class ByoumeiMasterTester extends TesterBase {
     }
 
     @DbTest
-    public void testSearchByoumei(Backend backend){
-        List<ByoumeiMasterDTO> result = backend.searchByoumeiMaster("高血圧", LocalDate.now());
-        //System.out.println(result);
+    public void testSearchByoumei(){
+        List<ByoumeiMasterDTO> result = dbBackend.query(backend ->
+                backend.searchByoumeiMaster("高血圧", LocalDate.now()));
+        confirm(result.size() > 0);
     }
 }

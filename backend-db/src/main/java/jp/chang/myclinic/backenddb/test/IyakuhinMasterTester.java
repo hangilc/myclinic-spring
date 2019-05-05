@@ -18,8 +18,9 @@ class IyakuhinMasterTester extends TesterBase {
     }
 
     @DbTest
-    public void testSearchIyakuhinMaster(Backend backend){
-        List<IyakuhinMasterDTO> result = backend.searchIyakuhinMaster("アムロジン", LocalDate.now());
-        //System.out.println(result);
+    public void testSearchIyakuhinMaster(){
+        List<IyakuhinMasterDTO> result = dbBackend.query(backend ->
+                backend.searchIyakuhinMaster("アムロジン", LocalDate.now()));
+        confirm(result.size() > 0);
     }
 }
