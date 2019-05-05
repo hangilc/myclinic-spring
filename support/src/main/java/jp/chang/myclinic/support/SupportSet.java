@@ -1,4 +1,4 @@
-package jp.chang.myclinic.backenddb;
+package jp.chang.myclinic.support;
 
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoProvider;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;

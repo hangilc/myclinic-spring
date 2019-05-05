@@ -167,6 +167,7 @@
     <module>db-copy</module>
     <module>support</module>
     <module>backend-server</module>
+    <module>backend-tester</module>
   </modules>
 
 </project>

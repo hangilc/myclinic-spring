@@ -24,22 +24,22 @@ public class RestServer {
         this.dbBackend = dbBackend;
     }
 
-    @GET
-    @Path("get-patient")
-    @Produces(MediaType.APPLICATION_JSON)
-    public PatientDTO getPatient(@QueryParam("patient-id") int patientId) {
-        return dbBackend.query(backend -> backend.getPatient(patientId));
-    }
-
-    @POST
     @Path("enter-patient")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @POST
     public int enterPatient(PatientDTO patient) {
         return dbBackend.tx(backend -> {
             backend.enterPatient(patient);
             return patient.patientId;
         });
+    }
+
+    @Path("get-patient")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public PatientDTO getPatient(@QueryParam("patient-id") int patientId) {
+        return dbBackend.query(backend -> backend.getPatient(patientId));
     }
 
     @Path("update-patient")
@@ -71,75 +71,46 @@ public class RestServer {
         return dbBackend.query(backend -> backend.searchPatient(text));
     }
 
-    @Path("find-available-shahokokuho")
+    @Path("get-visit")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public List<ShahokokuhoDTO> findAvailableShahokokuho(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDate at) {
-        return dbBackend.query(backend -> backend.findAvailableShahokokuho(patientId, at));
+    public VisitDTO getVisit(@QueryParam("visit-id") int visitId) {
+        return dbBackend.query(backend -> backend.getVisit(visitId));
     }
 
-    @Path("find-available-koukikourei")
+    @Path("list-recent-visit-with-patient")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public List<KoukikoureiDTO> findAvailableKoukikourei(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDate at) {
-        return dbBackend.query(backend -> backend.findAvailableKoukikourei(patientId, at));
+    public List<VisitPatientDTO> listRecentVisitWithPatient(@QueryParam("page") int page, @QueryParam("items-per-page") int itemsPerPage) {
+        return dbBackend.query(backend -> backend.listRecentVisitWithPatient(page, itemsPerPage));
     }
 
-    @Path("find-available-roujin")
+    @Path("list-todays-visit")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public List<RoujinDTO> findAvailableRoujin(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDate at) {
-        return dbBackend.query(backend -> backend.findAvailableRoujin(patientId, at));
+    public List<VisitPatientDTO> listTodaysVisit() {
+        return dbBackend.query(backend -> backend.listTodaysVisit());
     }
 
-    @Path("find-available-kouhi")
+    @Path("list-visit-full2")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public List<KouhiDTO> findAvailableKouhi(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDate at) {
-        return dbBackend.query(backend -> backend.findAvailableKouhi(patientId, at));
+    public VisitFull2PageDTO listVisitFull2(@QueryParam("patient-id") int patientId, @QueryParam("page") int page) {
+        return dbBackend.query(backend -> backend.listVisitFull2(patientId, page));
     }
 
-    @Path("start-visit")
+    @Path("get-visit-full")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public VisitDTO startVisit(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDateTime at) {
-        return dbBackend.tx(backend -> backend.startVisit(patientId, at));
+    public VisitFullDTO getVisitFull(@QueryParam("visit-id") int visitId) {
+        return dbBackend.query(backend -> backend.getVisitFull(visitId));
     }
 
-    @Path("start-exam")
+    @Path("get-visit-full2")
     @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void startExam(@QueryParam("visit-id") int visitId) {
-        dbBackend.txProc(backend -> backend.startExam(visitId));
-    }
-
-    @Path("suspend-exam")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void suspendExam(@QueryParam("visit-id") int visitId) {
-        dbBackend.txProc(backend -> backend.suspendExam(visitId));
-    }
-
-    @Path("end-exam")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void endExam(@QueryParam("visit-id") int visitId, @QueryParam("charge") int charge) {
-        dbBackend.txProc(backend -> backend.endExam(visitId, charge));
-    }
-
-    @Path("enter-charge")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public void enterCharge(ChargeDTO charge) {
-        dbBackend.txProc(backend -> backend.enterCharge(charge));
-    }
-
-    @Path("set-charge-of-visit")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void setChargeOfVisit(@QueryParam("visit-id") int visitId, @QueryParam("charge") int charge) {
-        dbBackend.txProc(backend -> backend.setChargeOfVisit(visitId, charge));
+    @GET
+    public VisitFull2DTO getVisitFull2(@QueryParam("visit-id") int visitId) {
+        return dbBackend.query(backend -> backend.getVisitFull2(visitId));
     }
 
     @Path("get-charge")
@@ -161,13 +132,6 @@ public class RestServer {
     @GET
     public WqueueDTO getWqueue(@QueryParam("visit-id") int visitId) {
         return dbBackend.query(backend -> backend.getWqueue(visitId));
-    }
-
-    @Path("delete-wqueue")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void deleteWqueue(@QueryParam("visit-id") int visitId) {
-        dbBackend.txProc(backend -> backend.deleteWqueue(visitId));
     }
 
     @Path("list-wqueue")
@@ -227,53 +191,19 @@ public class RestServer {
         return dbBackend.query(backend -> backend.getDrugWithAttr(drugId));
     }
 
-    @Path("enter-drug")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public int enterDrug(DrugDTO drug) {
-        return dbBackend.tx(backend -> {
-            backend.enterDrug(drug);
-            return drug.drugId;
-        });
-    }
-
-    @Path("update-drug")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public void updateDrug(DrugDTO drug) {
-        dbBackend.txProc(backend -> backend.updateDrug(drug));
-    }
-
     @Path("batch-update-drug-days")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
-    public void batchUpdateDrugDays(List<Integer> drugIds, @QueryParam("days") int days) {
-        dbBackend.txProc(backend -> backend.batchUpdateDrugDays(drugIds, days));
+    public int batchUpdateDrugDays(List<Integer> drugIds, @QueryParam("days") int days) {
+        return dbBackend.tx(backend -> backend.batchUpdateDrugDays(drugIds, days));
     }
 
-    @Path("delete-drug")
+    @Path("mark-drugs-as-prescribed")
     @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void deleteDrug(@QueryParam("drug-id") int drugId) {
-        dbBackend.txProc(backend -> backend.deleteDrug(drugId));
-    }
-
-    @Path("delete-drug-cascading")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void deleteDrugCascading(@QueryParam("drug-id") int drugId) {
-        dbBackend.txProc(backend -> backend.deleteDrugCascading(drugId));
-    }
-
-    @Path("batch-delete-drugs")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public void batchDeleteDrugs(List<Integer> drugIds) {
-        dbBackend.txProc(backend -> backend.batchDeleteDrugs(drugIds));
+    @GET
+    public int markDrugsAsPrescribed(@QueryParam("visit-id") int visitId) {
+        return dbBackend.tx(backend -> backend.markDrugsAsPrescribed(visitId));
     }
 
     @Path("get-drug-full")
@@ -295,6 +225,13 @@ public class RestServer {
     @GET
     public List<DrugWithAttrDTO> listDrugWithAttr(@QueryParam("visit-id") int visitId) {
         return dbBackend.query(backend -> backend.listDrugWithAttr(visitId));
+    }
+
+    @Path("list-drug")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<DrugDTO> listDrug(@QueryParam("visit-id") int visitId) {
+        return dbBackend.query(backend -> backend.listDrug(visitId));
     }
 
     @Path("list-drug-full")
@@ -330,13 +267,6 @@ public class RestServer {
     @GET
     public int countUnprescribedDrug(@QueryParam("visit-id") int visitId) {
         return dbBackend.query(backend -> backend.countUnprescribedDrug(visitId));
-    }
-
-    @Path("mark-drugs-as-prescribed")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void markDrugsAsPrescribed(@QueryParam("visit-id") int visitId) {
-        dbBackend.txProc(backend -> backend.markDrugsAsPrescribed(visitId));
     }
 
     @Path("get-drug-attr")
@@ -375,69 +305,6 @@ public class RestServer {
     @POST
     public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
         return dbBackend.tx(backend -> backend.batchGetDrugAttr(drugIds));
-    }
-
-    @Path("set-drug-tekiyou")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public DrugAttrDTO setDrugTekiyou(@QueryParam("drug-id") int drugId, @QueryParam("tekiyou") String tekiyou) {
-        return dbBackend.tx(backend -> backend.setDrugTekiyou(drugId, tekiyou));
-    }
-
-    @Path("delete-drug-tekiyou")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void deleteDrugTekiyou(@QueryParam("drug-id") int drugId) {
-        dbBackend.txProc(backend -> backend.deleteDrugTekiyou(drugId));
-    }
-
-    @Path("get-visit")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public VisitDTO getVisit(@QueryParam("visit-id") int visitId) {
-        return dbBackend.query(backend -> backend.getVisit(visitId));
-    }
-
-    @Path("delete-visit-safely")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void deleteVisitSafely(@QueryParam("visit-id") int visitId) {
-        dbBackend.txProc(backend -> backend.deleteVisitSafely(visitId));
-    }
-
-    @Path("list-recent-visit-with-patient")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public List<VisitPatientDTO> listRecentVisitWithPatient(@QueryParam("page") int page, @QueryParam("items-per-page") int itemsPerPage) {
-        return dbBackend.query(backend -> backend.listRecentVisitWithPatient(page, itemsPerPage));
-    }
-
-    @Path("list-todays-visit")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public List<VisitPatientDTO> listTodaysVisit() {
-        return dbBackend.query(backend -> backend.listTodaysVisit());
-    }
-
-    @Path("list-visit-full2")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public VisitFull2PageDTO listVisitFull2(@QueryParam("patient-id") int patientId, @QueryParam("page") int page) {
-        return dbBackend.query(backend -> backend.listVisitFull2(patientId, page));
-    }
-
-    @Path("get-visit-full")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public VisitFullDTO getVisitFull(@QueryParam("visit-id") int visitId) {
-        return dbBackend.query(backend -> backend.getVisitFull(visitId));
-    }
-
-    @Path("get-visit-full2")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public VisitFull2DTO getVisitFull2(@QueryParam("visit-id") int visitId) {
-        return dbBackend.query(backend -> backend.getVisitFull2(visitId));
     }
 
     @Path("batch-get-shouki")
@@ -531,46 +398,6 @@ public class RestServer {
         return dbBackend.query(backend -> backend.getShinryouWithAttr(shinryouId));
     }
 
-    @Path("enter-shinryou")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public int enterShinryou(ShinryouDTO shinryou) {
-        return dbBackend.tx(backend -> {
-            backend.enterShinryou(shinryou);
-            return shinryou.shinryouId;
-        });
-    }
-
-    @Path("enter-shinryou-by-name")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public ShinryouDTO enterShinryouByName(@QueryParam("visit-id") int visitId, @QueryParam("name") String name) {
-        return dbBackend.tx(backend -> backend.enterShinryouByName(visitId, name));
-    }
-
-    @Path("delete-shinryou")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void deleteShinryou(@QueryParam("shinryou-id") int shinryouId) {
-        dbBackend.txProc(backend -> backend.deleteShinryou(shinryouId));
-    }
-
-    @Path("delete-shinryou-cascading")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void deleteShinryouCascading(@QueryParam("shinryou-id") int shinryouId) {
-        dbBackend.txProc(backend -> backend.deleteShinryouCascading(shinryouId));
-    }
-
-    @Path("batch-delete-shinryou-cascading")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public void batchDeleteShinryouCascading(List<Integer> shinryouIds) {
-        dbBackend.txProc(backend -> backend.batchDeleteShinryouCascading(shinryouIds));
-    }
-
     @Path("get-shinryou-full")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -583,14 +410,6 @@ public class RestServer {
     @GET
     public ShinryouFullWithAttrDTO getShinryouFullWithAttr(@QueryParam("shinryou-id") int shinryouId) {
         return dbBackend.query(backend -> backend.getShinryouFullWithAttr(shinryouId));
-    }
-
-    @Path("batch-enter-shinryou")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-        dbBackend.txProc(backend -> backend.batchEnterShinryou(shinryouList));
     }
 
     @Path("list-shinryou-full-by-ids")
@@ -637,13 +456,6 @@ public class RestServer {
         return dbBackend.query(backend -> backend.listShinryouFullWithAttr(visitId));
     }
 
-    @Path("delete-duplicate-shinryou")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public List<Integer> deleteDuplicateShinryou(@QueryParam("visit-id") int visitId) {
-        return dbBackend.tx(backend -> backend.deleteDuplicateShinryou(visitId));
-    }
-
     @Path("batch-get-shinryou-attr")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -667,14 +479,6 @@ public class RestServer {
         dbBackend.txProc(backend -> backend.enterShinryouAttr(shinryouAttr));
     }
 
-    @Path("set-shinryou-attr")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public void setShinryouAttr(@QueryParam("shinryou-id") int shinryouId, ShinryouAttrDTO attr) {
-        dbBackend.txProc(backend -> backend.setShinryouAttr(shinryouId, attr));
-    }
-
     @Path("enter-conduct")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -686,26 +490,11 @@ public class RestServer {
         });
     }
 
-    @Path("enter-conduct-full")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public ConductFullDTO enterConductFull(ConductEnterRequestDTO req) {
-        return dbBackend.tx(backend -> backend.enterConductFull(req));
-    }
-
     @Path("get-conduct")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public ConductDTO getConduct(@QueryParam("conduct-id") int conductId) {
         return dbBackend.query(backend -> backend.getConduct(conductId));
-    }
-
-    @Path("delete-conduct-cascading")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void deleteConductCascading(@QueryParam("conduct-id") int conductId) {
-        dbBackend.txProc(backend -> backend.deleteConductCascading(conductId));
     }
 
     @Path("modify-conduct-kind")
@@ -772,13 +561,6 @@ public class RestServer {
     @POST
     public void updateGazouLabel(GazouLabelDTO gazouLabel) {
         dbBackend.txProc(backend -> backend.updateGazouLabel(gazouLabel));
-    }
-
-    @Path("modify-gazou-label")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void modifyGazouLabel(@QueryParam("conduct-id") int conductId, @QueryParam("label") String label) {
-        dbBackend.txProc(backend -> backend.modifyGazouLabel(conductId, label));
     }
 
     @Path("enter-conduct-shinryou")
@@ -919,14 +701,6 @@ public class RestServer {
         return dbBackend.query(backend -> backend.listConductKizaiFull(conductId));
     }
 
-    @Path("finish-cashier")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public void finishCashier(PaymentDTO payment) {
-        dbBackend.txProc(backend -> backend.finishCashier(payment));
-    }
-
     @Path("get-shahokokuho")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -945,11 +719,25 @@ public class RestServer {
         });
     }
 
+    @Path("find-available-shahokokuho")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<ShahokokuhoDTO> findAvailableShahokokuho(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDate at) {
+        return dbBackend.query(backend -> backend.findAvailableShahokokuho(patientId, at));
+    }
+
     @Path("get-koukikourei")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public KoukikoureiDTO getKoukikourei(@QueryParam("koukikourei-id") int koukikoureiId) {
         return dbBackend.query(backend -> backend.getKoukikourei(koukikoureiId));
+    }
+
+    @Path("find-available-koukikourei")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<KoukikoureiDTO> findAvailableKoukikourei(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDate at) {
+        return dbBackend.query(backend -> backend.findAvailableKoukikourei(patientId, at));
     }
 
     @Path("get-roujin")
@@ -959,11 +747,25 @@ public class RestServer {
         return dbBackend.query(backend -> backend.getRoujin(roujinId));
     }
 
+    @Path("find-available-roujin")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<RoujinDTO> findAvailableRoujin(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDate at) {
+        return dbBackend.query(backend -> backend.findAvailableRoujin(patientId, at));
+    }
+
     @Path("get-kouhi")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public KouhiDTO getKouhi(@QueryParam("kouhi-id") int kouhiId) {
         return dbBackend.query(backend -> backend.getKouhi(kouhiId));
+    }
+
+    @Path("find-available-kouhi")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<KouhiDTO> findAvailableKouhi(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDate at) {
+        return dbBackend.query(backend -> backend.findAvailableKouhi(patientId, at));
     }
 
     @Path("enter-disease")
@@ -974,6 +776,17 @@ public class RestServer {
         return dbBackend.tx(backend -> {
             backend.enterDisease(disease);
             return disease.diseaseId;
+        });
+    }
+
+    @Path("enter-new-disease")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    public int enterNewDisease(DiseaseNewDTO disease) {
+        return dbBackend.tx(backend -> {
+            backend.enterNewDisease(disease);
+            return disease.disease.diseaseId;
         });
     }
 
@@ -1028,12 +841,37 @@ public class RestServer {
         dbBackend.txProc(backend -> backend.batchUpdateDiseaseEndReason(modifications));
     }
 
-    @Path("modify-disease")
+    @Path("enter-disease-adj")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
-    public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
-        dbBackend.txProc(backend -> backend.modifyDisease(diseaseModifyDTO));
+    public int enterDiseaseAdj(DiseaseAdjDTO adj) {
+        return dbBackend.tx(backend -> {
+            backend.enterDiseaseAdj(adj);
+            return adj.diseaseAdjId;
+        });
+    }
+
+    @Path("delete-disease-adj")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void deleteDiseaseAdj(@QueryParam("disease-adj-id") int diseaseAdjId) {
+        dbBackend.txProc(backend -> backend.deleteDiseaseAdj(diseaseAdjId));
+    }
+
+    @Path("list-disease-adj")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<DiseaseAdjDTO> listDiseaseAdj(@QueryParam("disease-id") int diseaseId) {
+        return dbBackend.query(backend -> backend.listDiseaseAdj(diseaseId));
+    }
+
+    @Path("delete-disease-adj-for-disease")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    public int deleteDiseaseAdjForDisease(DiseaseDTO disease) {
+        return dbBackend.tx(backend -> backend.deleteDiseaseAdjForDisease(disease));
     }
 
     @Path("get-pharma-queue")
@@ -1041,6 +879,14 @@ public class RestServer {
     @GET
     public PharmaQueueDTO getPharmaQueue(@QueryParam("visit-id") int visitId) {
         return dbBackend.query(backend -> backend.getPharmaQueue(visitId));
+    }
+
+    @Path("enter-pharma-queue")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    public void enterPharmaQueue(PharmaQueueDTO pharmaQueue) {
+        dbBackend.txProc(backend -> backend.enterPharmaQueue(pharmaQueue));
     }
 
     @Path("delete-pharma-queue")
@@ -1063,13 +909,6 @@ public class RestServer {
     @POST
     public ShinryouMasterDTO resolveShinryouMasterByName(List<String> nameCandidates, @QueryParam("at") LocalDate at) {
         return dbBackend.query(backend -> backend.resolveShinryouMasterByName(nameCandidates, at));
-    }
-
-    @Path("resolve-shinryou-master-by-key")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public ShinryouMasterDTO resolveShinryouMasterByKey(@QueryParam("key") String key, @QueryParam("at") LocalDate at) {
-        return dbBackend.query(backend -> backend.resolveShinryouMasterByKey(key, at));
     }
 
     @Path("batch-resolve-shinryou-names")
@@ -1128,13 +967,6 @@ public class RestServer {
     @POST
     public KizaiMasterDTO resolveKizaiMasterByName(List<String> nameCandidates, @QueryParam("at") LocalDate at) {
         return dbBackend.query(backend -> backend.resolveKizaiMasterByName(nameCandidates, at));
-    }
-
-    @Path("resolve-kizai-master-by-key")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public KizaiMasterDTO resolveKizaiMasterByKey(@QueryParam("key") String key, @QueryParam("at") LocalDate at) {
-        return dbBackend.query(backend -> backend.resolveKizaiMasterByKey(key, at));
     }
 
     @Path("batch-resolve-kizai-names")
@@ -1220,65 +1052,6 @@ public class RestServer {
         return dbBackend.query(backend -> backend.listAllPrescExample());
     }
 
-    @Path("batch-enter")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public BatchEnterResultDTO batchEnter(BatchEnterRequestDTO req) {
-        return dbBackend.tx(backend -> backend.batchEnter(req));
-    }
-
-    @Path("batch-enter-by-names")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public BatchEnterResultDTO batchEnterByNames(@QueryParam("visit-id") int visitId, BatchEnterByNamesRequestDTO req) {
-        return dbBackend.tx(backend -> backend.batchEnterByNames(visitId, req));
-    }
-
-    @Path("presc-done")
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public void prescDone(@QueryParam("visit-id") int visitId) {
-        dbBackend.txProc(backend -> backend.prescDone(visitId));
-    }
-
-    @Path("list-disease-example")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public List<DiseaseExampleDTO> listDiseaseExample() {
-        return dbBackend.query(backend -> backend.listDiseaseExample());
-    }
-
-    @Path("get-meisai")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public MeisaiDTO getMeisai(@QueryParam("visit-id") int visitId) {
-        return dbBackend.query(backend -> backend.getMeisai(visitId));
-    }
-
-    @Path("resolve-stock-drug")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public IyakuhinMasterDTO resolveStockDrug(@QueryParam("iyakuhincode") int iyakuhincode, @QueryParam("at") LocalDate at) {
-        return dbBackend.query(backend -> backend.resolveStockDrug(iyakuhincode, at));
-    }
-
-    @Path("batch-resolve-stock-drug")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public List<ResolvedStockDrugDTO> batchResolveStockDrug(List<Integer> iyakuhincodes, @QueryParam("at") LocalDate at) {
-        return dbBackend.query(backend -> backend.batchResolveStockDrug(iyakuhincodes, at));
-    }
-
-    @Path("get-clinic-info")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public ClinicInfoDTO getClinicInfo() {
-        return dbBackend.query(backend -> backend.getClinicInfo());
-    }
-
     @Path("get-last-practice-log")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -1298,35 +1071,5 @@ public class RestServer {
     @GET
     public List<PracticeLogDTO> listPracticeLogSince(@QueryParam("after-this-id") int afterThisId) {
         return dbBackend.query(backend -> backend.listPracticeLogSince(afterThisId));
-    }
-
-    @Path("enter-drug-with-attr")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public int enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-        return dbBackend.tx(backend -> {
-            backend.enterDrugWithAttr(drugWithAttr);
-            return drugWithAttr.drug.drugId;
-        });
-    }
-
-    @Path("update-drug-with-attr")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-        dbBackend.txProc(backend -> backend.updateDrugWithAttr(drugWithAttr));
-    }
-
-    @Path("enter-new-disease")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public int enterNewDisease(DiseaseNewDTO disease) {
-        return dbBackend.tx(backend -> {
-            backend.enterNewDisease(disease);
-            return disease.disease.diseaseId;
-        });
     }
 }

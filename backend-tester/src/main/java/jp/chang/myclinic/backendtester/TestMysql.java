@@ -1,56 +1,32 @@
-package jp.chang.myclinic.backendmysql;
+package jp.chang.myclinic.backendtester;
 
 import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.backenddb.DBImpl;
 import jp.chang.myclinic.backenddb.DbBackend;
-import jp.chang.myclinic.backenddb.SupportSet;
 import jp.chang.myclinic.backenddb.test.Tester;
+import jp.chang.myclinic.backendmysql.MysqlDataSourceProvider;
+import jp.chang.myclinic.backendmysql.MysqlDataSourceProvider.MysqlDataSourceConfig;
+import jp.chang.myclinic.backendmysql.MysqlTableSet;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
-import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
-import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaFile;
-import jp.chang.myclinic.support.kizaicodes.KizaicodeFileResolver;
-import jp.chang.myclinic.support.meisai.MeisaiServiceImpl;
-import jp.chang.myclinic.support.shinryoucodes.ShinryoucodeFileResolver;
-import jp.chang.myclinic.support.stockdrug.StockDrugFile;
 import picocli.CommandLine;
-import picocli.CommandLine.*;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import jp.chang.myclinic.backendmysql.MysqlDataSourceProvider.MysqlDataSourceConfig;
-
-@Command(name = "test-mysql")
-public class Test implements Runnable {
+@Command(name = "mysql")
+public class TestMysql implements Runnable {
 
     @Option(names = "--host", description = "MySQL database host")
-    private String dbHost = "192.169.33.10";
+    private String dbHost = "192.168.33.10";
 
     @Option(names = "--thread", description = "Number of concurrent threads for testing")
     private int threadSize = 1;
-
-    public static void main(String[] args){
-        CommandLine.run(new Test(), args);
-    }
-
-    private static SupportSet createSupportSet(){
-        SupportSet ss = new SupportSet();
-        ss.stockDrugService = new StockDrugFile(Paths.get("config/stock-drug.txt"));
-        ss.houkatsuKensaService = new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml"));
-        ss.meisaiService = new MeisaiServiceImpl();
-        ss.diseaseExampleProvider = new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml"));
-        ss.shinryoucodeResolver = new ShinryoucodeFileResolver(new File("config/shinryoucodes.yml"));
-        ss.kizaicodeResolver = new KizaicodeFileResolver(new File("config/kizaicodes.yml"));
-        ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml"));
-        return ss;
-    }
 
     private static void confirmTestDatabase(DbBackend dbBackend){
         boolean ok = dbBackend.query(backend -> {
