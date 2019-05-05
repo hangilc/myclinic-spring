@@ -1,6 +1,7 @@
 package jp.chang.myclinic.backendserver;
 
 import jp.chang.myclinic.backenddb.DbBackend;
+import jp.chang.myclinic.backenddb.DbBackendService;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import javax.inject.Inject;
@@ -18,10 +19,12 @@ import static java.util.stream.Collectors.toList;
 public class RestServer {
 
     private DbBackend dbBackend;
+    private DbBackendService dbBackendService;
 
     @Inject
-    RestServer(DbBackend dbBackend) {
+    RestServer(DbBackend dbBackend, DbBackendService dbBackendService) {
         this.dbBackend = dbBackend;
+        this.dbBackendService = dbBackendService;
     }
 
     @Path("enter-patient")
@@ -1071,5 +1074,13 @@ public class RestServer {
     @GET
     public List<PracticeLogDTO> listPracticeLogSince(@QueryParam("after-this-id") int afterThisId) {
         return dbBackend.query(backend -> backend.listPracticeLogSince(afterThisId));
+    }
+
+    @Path("start-visit")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public VisitDTO startVisit(@QueryParam("patient-id") int patientId,
+                               @QueryParam("at") LocalDateTime at){
+        return dbBackendService.startVisit(patientId, at);
     }
 }

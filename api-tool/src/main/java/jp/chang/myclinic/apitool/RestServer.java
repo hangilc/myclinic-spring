@@ -174,31 +174,6 @@ public class RestServer implements Runnable {
                 new FieldAccessExpr(new NameExpr("MediaType"), "APPLICATION_JSON"));
     }
 
-//    private static class AutoIncInfo {
-//        //private Class<?> dtoClass;
-//        private Field autoIncField;
-//    }
-//
-//    private boolean isAutoIncMethod(MethodDeclaration m, Parameter complexParam, AutoIncInfo info) {
-//        if (m.getType().isVoidType() && complexParam != null) {
-//            Class<?> dtoClass = helper.getDtoClassNamed(complexParam.getType().toString());
-//            if (dtoClass != null) {
-//                List<Field> autoIncFields = helper.getAutoIncs(dtoClass);
-//                if (autoIncFields.size() >= 2) {
-//                    System.err.println("Too many autoinc fields: " + m);
-//                    System.exit(1);
-//                } else if (autoIncFields.size() == 1) {
-//                    //info.dtoClass = dtoClass;
-//                    info.autoIncField = autoIncFields.get(0);
-//                    return true;
-//                } else {
-//                    return false;
-//                }
-//            }
-//        }
-//        return false;
-//    }
-
     private BlockStmt createAutoIncBlock(String methodName, String paramName, List<String> fieldNames) {
         FieldAccessExpr fieldAccessExpr = new FieldAccessExpr(
                 new NameExpr(paramName), fieldNames.get(0));

@@ -1,5 +1,6 @@
 package jp.chang.myclinic.backenddb;
 
+import jp.chang.myclinic.backenddb.annotation.ExcludeFromFrontend;
 import jp.chang.myclinic.backenddb.exception.CannotDeleteVisitSafelyException;
 import jp.chang.myclinic.backenddb.exception.IntegrityException;
 import jp.chang.myclinic.consts.PharmaQueueState;
@@ -42,6 +43,7 @@ public class DbBackendService {
 
     // Visit ///////////////////////////////////////////////////////////////////////////////////
 
+    @ExcludeFromFrontend
     public void backendEnterVisit(VisitDTO visit) {
         dbBackend.txProc(backend -> backend.enterVisit(visit));
     }

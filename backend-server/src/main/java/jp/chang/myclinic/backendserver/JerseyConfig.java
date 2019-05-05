@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jp.chang.myclinic.backenddb.DbBackend;
+import jp.chang.myclinic.backenddb.DbBackendService;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -22,14 +23,17 @@ class JerseyConfig extends ResourceConfig {
     private static class Binder extends AbstractBinder {
 
         private DbBackend dbBackend;
+        private DbBackendService dbBackendService;
 
         private Binder(DbBackend dbBackend){
             this.dbBackend = dbBackend;
+            this.dbBackendService = new DbBackendService(dbBackend);
         }
 
         @Override
         protected void configure() {
             bind(dbBackend).to(DbBackend.class);
+            bind(dbBackendService).to(DbBackendService.class);
         }
     }
 
@@ -42,7 +46,6 @@ class JerseyConfig extends ResourceConfig {
         @Override
         public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator,
                               SerializerProvider serializerProvider) throws IOException {
-            System.out.println("serializing");
             jsonGenerator.writeString(DateTimeUtil.toSqlDateTime(localDateTime));
         }
 
