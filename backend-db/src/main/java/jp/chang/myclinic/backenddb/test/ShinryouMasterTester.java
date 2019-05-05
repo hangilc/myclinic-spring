@@ -23,13 +23,13 @@ class ShinryouMasterTester extends TesterBase {
         //System.out.println(result);
     }
 
-    @DbTest
-    public void testResolveShinryouMaster(Backend backend){
-        LocalDate at = LocalDate.now();
-        ShinryouMasterDTO m = backend.resolveShinryouMasterByKey("初診", at);
-        confirm(m.shinryoucode == 111000110);
-        m = backend.resolveShinryouMasterByKey("処方料", at);
-        confirm(m.shinryoucode == 120001210);
-    }
+//    @DbTest
+//    public void testResolveShinryouMaster(Backend backend){
+//        LocalDate at = LocalDate.now();
+//        ShinryouMasterDTO m = backend.resolveShinryouMasterByKey("初診", at);
+//        confirm(m.shinryoucode == 111000110);
+//        m = backend.resolveShinryouMasterByKey("処方料", at);
+//        confirm(m.shinryoucode == 120001210);
+//    }
 
 }

@@ -405,6 +405,21 @@ public class DbBackendService {
                 .collect(toList());
     }
 
+    // ShinryouAttr ///////////////////////////////////////////////////////////////////////////
+
+    public void setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
+        if( attr == null || ShinryouAttrDTO.isEmpty(attr) ){
+            dbBackend.txProc(backend -> backend.deleteShinryouAttr(shinryouId));
+        } else {
+            ShinryouAttrDTO curr = dbBackend.query(backend -> backend.getShinryouAttr(shinryouId));
+            if( curr == null ){
+                dbBackend.txProc(backend -> backend.enterShinryouAttr(attr));
+            } else {
+                dbBackend.txProc(backend -> backend.updateShinryouAttr(attr));
+            }
+        }
+    }
+
     // Conduct ////////////////////////////////////////////////////////////////////////////////
 
     public ConductFullDTO enterConductFull(ConductEnterRequestDTO req) {
@@ -464,6 +479,26 @@ public class DbBackendService {
         dbBackend.query(backend -> backend.listConductKizai(conductId))
                 .forEach(k -> dbBackend.txProc(backend -> backend.deleteConductKizai(k.conductKizaiId)));
         dbBackend.txProc(backend -> backend.deleteConduct(conductId));
+    }
+
+    // GazouLabel ////////////////////////////////////////////////////////////////////////
+
+    public void setGazouLabel(int conductId, String label) {
+        if( label == null || label.isEmpty() ){
+            dbBackend.txProc(backend -> backend.deleteGazouLabel(conductId));
+        } else {
+            GazouLabelDTO gazouLabel = dbBackend.query(backend -> backend.getGazouLabel(conductId));
+            if (gazouLabel == null) {
+                GazouLabelDTO newGazouLabel = new GazouLabelDTO();
+                newGazouLabel.conductId = conductId;
+                newGazouLabel.label = label;
+                dbBackend.txProc(backend -> backend.enterGazouLabel(newGazouLabel));
+            } else {
+                GazouLabelDTO modified = GazouLabelDTO.copy(gazouLabel);
+                modified.label = label;
+                dbBackend.txProc(backend -> backend.updateGazouLabel(modified));
+            }
+        }
     }
 
     // BatchEnter ////////////////////////////////////////////////////////////////////////

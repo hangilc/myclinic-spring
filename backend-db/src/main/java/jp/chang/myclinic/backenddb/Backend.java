@@ -665,18 +665,19 @@ public class Backend {
 
     public void updateText(TextDTO text) {
         TextDTO prev = ts.textTable.getByIdForUpdate(text.textId, ts.dialect.forUpdate());
-        updateText(prev, text);
-    }
-
-    private void updateText(TextDTO prev, TextDTO text) {
+        if( prev == null ){
+            throw new RuntimeException("Cannot find previous text to update: " + text);
+        }
         ts.textTable.update(text);
         practiceLogger.logTextUpdated(prev, text);
     }
 
     public void deleteText(int textId) {
         TextDTO text = ts.textTable.getByIdForUpdate(textId, ts.dialect.forUpdate());
-        ts.textTable.delete(textId);
-        practiceLogger.logTextDeleted(text);
+        if( text != null ) {
+            ts.textTable.delete(textId);
+            practiceLogger.logTextDeleted(text);
+        }
     }
 
     int countTextForVisit(int visitId) {
@@ -780,8 +781,10 @@ public class Backend {
 
     void deleteShinryou(int shinryouId) {
         ShinryouDTO shinryou = ts.shinryouTable.getByIdForUpdate(shinryouId, ts.dialect.forUpdate());
-        ts.shinryouTable.delete(shinryouId);
-        practiceLogger.logShinryouDeleted(shinryou);
+        if( shinryou != null ) {
+            ts.shinryouTable.delete(shinryouId);
+            practiceLogger.logShinryouDeleted(shinryou);
+        }
     }
 
 //    public void deleteShinryouCascading(int shinryouId) {
@@ -864,20 +867,6 @@ public class Backend {
                 visitId);
     }
 
-//    public List<Integer> deleteDuplicateShinryou(int visitId) {
-//        String sql = "select * from Shinryou where visitId = ?" + ts.dialect.forUpdate();
-//        getQuery().query(xlate(sql, ts.shinryouTable), ts.shinryouTable, visitId);
-//        return listShinryou(visitId).stream()
-//                .collect(groupingBy(s -> s.shinryoucode))
-//                .values().stream()
-//                .flatMap(g -> g.subList(1, g.size()).stream())
-//                .map(s -> {
-//                    deleteShinryou(s.shinryouId);
-//                    return s.shinryouId;
-//                })
-//                .collect(toList());
-//    }
-
     // ShinryouAttr /////////////////////////////////////////////////////////////////////////////
 
     public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
@@ -892,24 +881,12 @@ public class Backend {
         ts.shinryouAttrTable.insert(shinryouAttr);
     }
 
-    public void deleteShinryouAttr(int shinryouId) {
+    void deleteShinryouAttr(int shinryouId) {
         ts.shinryouAttrTable.delete(shinryouId);
     }
 
-    private void updateShinryouAttr(ShinryouAttrDTO shinryouAttr) {
+    void updateShinryouAttr(ShinryouAttrDTO shinryouAttr) {
         ts.shinryouAttrTable.update(shinryouAttr);
-    }
-
-    public void setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
-        if( attr == null ){
-            deleteShinryouAttr(shinryouId);
-        } else {
-            try {
-                ts.shinryouAttrTable.insert(attr);
-            } catch (IntegrityException e) {
-                updateShinryouAttr(attr);
-            }
-        }
     }
 
     // Conduct ///////////////////////////////////////////////////////////////////////////////
@@ -1001,26 +978,11 @@ public class Backend {
 
     public void updateGazouLabel(GazouLabelDTO gazouLabel) {
         GazouLabelDTO prev = ts.gazouLabelTable.getByIdForUpdate(gazouLabel.conductId, forUpdate);
-        updateGazouLabel(prev, gazouLabel);
-    }
-
-    private void updateGazouLabel(GazouLabelDTO prev, GazouLabelDTO gazouLabel) {
+        if( prev == null ){
+            throw new RuntimeException("Cannot find previous gazou label to update: " + gazouLabel);
+        }
         ts.gazouLabelTable.update(gazouLabel);
         practiceLogger.logGazouLabelUpdated(prev, gazouLabel);
-    }
-
-    public void modifyGazouLabel(int conductId, String label) {
-        GazouLabelDTO gazouLabel = ts.gazouLabelTable.getByIdForUpdate(conductId, forUpdate);
-        if (gazouLabel == null) {
-            gazouLabel = new GazouLabelDTO();
-            gazouLabel.conductId = conductId;
-            gazouLabel.label = label;
-            enterGazouLabel(gazouLabel);
-        } else {
-            GazouLabelDTO modified = GazouLabelDTO.copy(gazouLabel);
-            modified.label = label;
-            updateGazouLabel(gazouLabel, modified);
-        }
     }
 
     // ConductShinryou //////////////////////////////////////////////////////////////////////
@@ -1263,8 +1225,10 @@ public class Backend {
 
     public void deleteDisease(int diseaseId) {
         DiseaseDTO deleted = ts.diseaseTable.getByIdForUpdate(diseaseId, forUpdate);
-        ts.diseaseTable.delete(diseaseId);
-        practiceLogger.logDiseaseDeleted(deleted);
+        if( deleted != null ) {
+            ts.diseaseTable.delete(diseaseId);
+            practiceLogger.logDiseaseDeleted(deleted);
+        }
     }
 
     public DiseaseFullDTO getDiseaseFull(int diseaseId) {
@@ -1325,14 +1289,18 @@ public class Backend {
         }
     }
 
-    public int deleteDiseaseAdjForDisease(DiseaseDTO disease){
-        String sql = "delete from DiseaseAdj where diseaseId = ?";
-        return getQuery().update(xlate(sql, ts.diseaseAdjTable), setter -> setter.setInt(1, disease.diseaseId));
-    }
-
     public List<DiseaseAdjDTO> listDiseaseAdj(int diseaseId){
         String sql = "select * from DiseaseAdj where diseaseId = ?";
         return getQuery().query(xlate(sql, ts.diseaseAdjTable), ts.diseaseAdjTable, diseaseId);
+    }
+
+    public int deleteDiseaseAdjForDisease(DiseaseDTO disease){
+        int count = 0;
+        for(DiseaseAdjDTO adj: listDiseaseAdj(disease.diseaseId)){
+            deleteDiseaseAdj(adj.diseaseAdjId);
+            count += 1;
+        }
+        return count;
     }
 
     // PharmaQueue ///////////////////////////////////////////////////////////////////////
@@ -1357,11 +1325,7 @@ public class Backend {
 
     public void deletePharmaQueue(int visitId) {
         PharmaQueueDTO pharmaQueue = ts.pharmaQueueTable.getByIdForUpdate(visitId, forUpdate);
-        deletePharmaQueue(pharmaQueue);
-    }
-
-    private void deletePharmaQueue(PharmaQueueDTO pharmaQueue) {
-        if (pharmaQueue != null) {
+        if( pharmaQueue != null ) {
             ts.pharmaQueueTable.delete(pharmaQueue.visitId);
             practiceLogger.logPharmaQueueDeleted(pharmaQueue);
         }
@@ -1390,14 +1354,14 @@ public class Backend {
         return null;
     }
 
-    public ShinryouMasterDTO resolveShinryouMasterByKey(String key, LocalDate at) {
-        int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(key);
-        if (shinryoucode == 0) {
-            return null;
-        } else {
-            return getShinryouMaster(shinryoucode, at);
-        }
-    }
+//    public ShinryouMasterDTO resolveShinryouMasterByKey(String key, LocalDate at) {
+//        int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(key);
+//        if (shinryoucode == 0) {
+//            return null;
+//        } else {
+//            return getShinryouMaster(shinryoucode, at);
+//        }
+//    }
 
     public Map<String, Integer> batchResolveShinryouNames(List<List<String>> args, LocalDate at) {
         Map<String, Integer> result = new LinkedHashMap<>();
@@ -1489,14 +1453,14 @@ public class Backend {
         return null;
     }
 
-    public KizaiMasterDTO resolveKizaiMasterByKey(String key, LocalDate at) {
-        int kizaicode = ss.kizaicodeResolver.resolveKizaicodeByKey(key);
-        if (kizaicode == 0) {
-            return null;
-        } else {
-            return getKizaiMaster(kizaicode, at);
-        }
-    }
+//    public KizaiMasterDTO resolveKizaiMasterByKey(String key, LocalDate at) {
+//        int kizaicode = ss.kizaicodeResolver.resolveKizaicodeByKey(key);
+//        if (kizaicode == 0) {
+//            return null;
+//        } else {
+//            return getKizaiMaster(kizaicode, at);
+//        }
+//    }
 
     public Map<String, Integer> batchResolveKizaiNames(List<List<String>> args, LocalDate at) {
         Map<String, Integer> result = new LinkedHashMap<>();
@@ -1699,9 +1663,9 @@ public class Backend {
 
     // ClinicInfo ////////////////////////////////////////////////////////////////////////
 
-    public ClinicInfoDTO getClinicInfo() {
-        return ss.clinicInfoProvider.getClinicInfo();
-    }
+//    public ClinicInfoDTO getClinicInfo() {
+//        return ss.clinicInfoProvider.getClinicInfo();
+//    }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////
 
