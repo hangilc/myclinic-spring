@@ -295,6 +295,10 @@ public class Helper {
         return Paths.get("backend-db/src/main/java/jp/chang/myclinic/backenddb", "Backend.java");
     }
 
+    public Path getBackendServiceSourcePath() throws IOException {
+        return Paths.get("backend-db/src/main/java/jp/chang/myclinic/backenddb", "DbBackendService.java");
+    }
+
     public Path getBackendServerSourcePath() throws IOException {
         return Paths.get("backend-server/src/main/java/jp/chang/myclinic/backendserver", "RestServer.java");
     }

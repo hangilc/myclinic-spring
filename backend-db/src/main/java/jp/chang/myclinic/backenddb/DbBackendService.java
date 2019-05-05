@@ -174,6 +174,7 @@ public class DbBackendService {
 
     // Charge //////////////////////////////////////////////////////////////////////////////////////
 
+    @ExcludeFromFrontend
     public void backendEnterCharge(ChargeDTO charge) {
         dbBackend.txProc(backend -> backend.enterCharge(charge));
     }

@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 public class RestServer {
 
     private DbBackend dbBackend;
+
     private DbBackendService dbBackendService;
 
     @Inject
@@ -1079,8 +1080,203 @@ public class RestServer {
     @Path("start-visit")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public VisitDTO startVisit(@QueryParam("patient-id") int patientId,
-                               @QueryParam("at") LocalDateTime at){
+    public VisitDTO startVisit(@QueryParam("patient-id") int patientId, @QueryParam("at") LocalDateTime at) {
         return dbBackendService.startVisit(patientId, at);
+    }
+
+    @Path("start-exam")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void startExam(@QueryParam("visit-id") int visitId) {
+        dbBackendService.startExam(visitId);
+    }
+
+    @Path("suspend-exam")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void suspendExam(@QueryParam("visit-id") int visitId) {
+        dbBackendService.suspendExam(visitId);
+    }
+
+    @Path("end-exam")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void endExam(@QueryParam("visit-id") int visitId, @QueryParam("charge") int charge) {
+        dbBackendService.endExam(visitId, charge);
+    }
+
+    @Path("delete-visit")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void deleteVisit(@QueryParam("visit-id") int visitId) {
+        dbBackendService.deleteVisit(visitId);
+    }
+
+    @Path("enter-charge")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void enterCharge(@QueryParam("visit-id") int visitId, @QueryParam("charge") int charge) {
+        dbBackendService.enterCharge(visitId, charge);
+    }
+
+    @Path("update-charge")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void updateCharge(@QueryParam("visit-id") int visitId, @QueryParam("charge") int charge) {
+        dbBackendService.updateCharge(visitId, charge);
+    }
+
+    @Path("enter-drug")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void enterDrug(DrugDTO drug) {
+        dbBackendService.enterDrug(drug);
+    }
+
+    @Path("update-drug")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void updateDrug(DrugDTO drug) {
+        dbBackendService.updateDrug(drug);
+    }
+
+    @Path("enter-drug-with-attr")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        dbBackendService.enterDrugWithAttr(drugWithAttr);
+    }
+
+    @Path("update-drug-with-attr")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        dbBackendService.updateDrugWithAttr(drugWithAttr);
+    }
+
+    @Path("delete-drug")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void deleteDrug(@QueryParam("drug-id") int drugId) {
+        dbBackendService.deleteDrug(drugId);
+    }
+
+    @Path("batch-delete-drugs")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void batchDeleteDrugs(List<Integer> drugIds) {
+        dbBackendService.batchDeleteDrugs(drugIds);
+    }
+
+    @Path("set-drug-tekiyou")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public DrugAttrDTO setDrugTekiyou(@QueryParam("drug-id") int drugId, @QueryParam("tekiyou") String tekiyou) {
+        return dbBackendService.setDrugTekiyou(drugId, tekiyou);
+    }
+
+    @Path("delete-drug-tekiyou")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void deleteDrugTekiyou(@QueryParam("drug-id") int drugId) {
+        dbBackendService.deleteDrugTekiyou(drugId);
+    }
+
+    @Path("enter-shinryou-with-attr")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
+        dbBackendService.enterShinryouWithAttr(shinryouWithAttr);
+    }
+
+    @Path("enter-shinryou")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void enterShinryou(ShinryouDTO shinryou) {
+        dbBackendService.enterShinryou(shinryou);
+    }
+
+    @Path("batch-enter-shinryou")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+        dbBackendService.batchEnterShinryou(shinryouList);
+    }
+
+    @Path("delete-shinryou")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void deleteShinryou(@QueryParam("shinryou-id") int shinryouId) {
+        dbBackendService.deleteShinryou(shinryouId);
+    }
+
+    @Path("batch-delete-shinryou")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void batchDeleteShinryou(List<Integer> shinryouIds) {
+        dbBackendService.batchDeleteShinryou(shinryouIds);
+    }
+
+    @Path("delete-duplicate-shinryou")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public List<Integer> deleteDuplicateShinryou(@QueryParam("visit-id") int visitId) {
+        return dbBackendService.deleteDuplicateShinryou(visitId);
+    }
+
+    @Path("set-shinryou-attr")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void setShinryouAttr(@QueryParam("shinryou-id") int shinryouId, ShinryouAttrDTO attr) {
+        dbBackendService.setShinryouAttr(shinryouId, attr);
+    }
+
+    @Path("enter-conduct-full")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public ConductFullDTO enterConductFull(ConductEnterRequestDTO req) {
+        return dbBackendService.enterConductFull(req);
+    }
+
+    @Path("delete-conduct")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void deleteConduct(@QueryParam("conduct-id") int conductId) {
+        dbBackendService.deleteConduct(conductId);
+    }
+
+    @Path("set-gazou-label")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void setGazouLabel(@QueryParam("conduct-id") int conductId, @QueryParam("label") String label) {
+        dbBackendService.setGazouLabel(conductId, label);
+    }
+
+    @Path("batch-enter")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public BatchEnterResultDTO batchEnter(BatchEnterRequestDTO req) {
+        return dbBackendService.batchEnter(req);
+    }
+
+    @Path("modify-disease")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+        dbBackendService.modifyDisease(diseaseModifyDTO);
+    }
+
+    @Path("finish-cashier")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public void finishCashier(PaymentDTO payment) {
+        dbBackendService.finishCashier(payment);
+    }
+
+    @Path("presc-done")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public void prescDone(@QueryParam("visit-id") int visitId) {
+        dbBackendService.prescDone(visitId);
     }
 }
