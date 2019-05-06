@@ -291,6 +291,10 @@ public class Helper {
         }
     }
 
+    public String getClassNameFromSourcePath(Path path){
+        return path.getFileName().toString().replaceAll("\\.java$", "");
+    }
+
     public Path getBackendSourcePath() throws IOException {
         return Paths.get("backend-db/src/main/java/jp/chang/myclinic/backenddb", "Backend.java");
     }

@@ -47,137 +47,7 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> startExam(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> suspendExam(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> endExam(int visitId, int charge) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> enterCharge(ChargeDTO charge) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> setChargeOfVisit(int visitId, int charge) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<ChargeDTO> getCharge(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<PaymentDTO>> listPayment(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<WqueueDTO> getWqueue(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteWqueue(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<WqueueDTO>> listWqueue() {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<WqueueFullDTO>> listWqueueFull() {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<HokenDTO> getHoken(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> updateHoken(VisitDTO visit) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrugTekiyou(int drugId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Integer> countUnprescribedDrug(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public CompletableFuture<VisitDTO> getVisit(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteVisitSafely(int visitId) {
         throw new RuntimeException("not implemented");
     }
 
@@ -203,6 +73,141 @@ public class FrontendAdapter implements Frontend {
 
     @Override
     public CompletableFuture<VisitFull2DTO> getVisitFull2(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<ChargeDTO> getCharge(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<PaymentDTO>> listPayment(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<WqueueDTO> getWqueue(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<WqueueDTO>> listWqueue() {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<WqueueFullDTO>> listWqueueFull() {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam() {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<HokenDTO> getHoken(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> updateHoken(VisitDTO visit) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<DrugDTO> getDrug(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Integer> batchUpdateDrugDays(List<Integer> drugIds, int days) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Integer> markDrugsAsPrescribed(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<DrugFullDTO> getDrugFull(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<DrugWithAttrDTO>> listDrugWithAttr(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<DrugDTO>> listDrug(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<Integer>> listRepresentativeGaiyouDrugId(String text, int patientId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(String text, int patientId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Integer> countUnprescribedDrug(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDrugAttr(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
         throw new RuntimeException("not implemented");
     }
 
@@ -257,82 +262,12 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<DrugDTO> getDrug(int drugId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Integer> enterDrug(DrugDTO drug) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> updateDrug(DrugDTO drug) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> batchUpdateDrugDays(List<Integer> drugIds, int days) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrug(int drugId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrugCascading(int drugId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<DrugFullDTO> getDrugFull(int drugId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<Integer>> listRepresentativeGaiyouDrugId(String text, int patientId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(String text, int patientId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public CompletableFuture<ShinryouDTO> getShinryou(int shinryouId) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteShinryou(int shinryouId) {
+    public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
         throw new RuntimeException("not implemented");
     }
 
@@ -342,12 +277,7 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req) {
+    public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
         throw new RuntimeException("not implemented");
     }
 
@@ -357,7 +287,27 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
+    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public CompletableFuture<List<ShinryouFullDTO>> listShinryouFull(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
         throw new RuntimeException("not implemented");
     }
 
@@ -382,17 +332,7 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public CompletableFuture<ConductDTO> getConduct(int conductId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteConductCascading(int conductId) {
         throw new RuntimeException("not implemented");
     }
 
@@ -427,22 +367,17 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> modifyGazouLabel(int conductId, String label) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public CompletableFuture<GazouLabelDTO> getGazouLabel(int conductId) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
     public CompletableFuture<Void> deleteGazouLabel(int conductId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
         throw new RuntimeException("not implemented");
     }
 
@@ -542,7 +477,22 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(int patientId, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public CompletableFuture<KoukikoureiDTO> getKoukikourei(int koukikoureiId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(int patientId, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
 
@@ -552,12 +502,27 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
+    public CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public CompletableFuture<KouhiDTO> getKouhi(int kouhiId) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
+    public CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public CompletableFuture<Integer> enterDisease(DiseaseDTO disease) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
         throw new RuntimeException("not implemented");
     }
 
@@ -597,7 +562,32 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Integer> enterDiseaseAdj(DiseaseAdjDTO adj) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDiseaseAdj(int diseaseAdjId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<DiseaseAdjDTO>> listDiseaseAdj(int diseaseId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Integer> deleteDiseaseAdjForDisease(DiseaseDTO disease) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public CompletableFuture<PharmaQueueDTO> getPharmaQueue(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> enterPharmaQueue(PharmaQueueDTO pharmaQueue) {
         throw new RuntimeException("not implemented");
     }
 
@@ -627,7 +617,22 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
+    public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(String text, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
 
@@ -712,167 +717,52 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+    public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
+    public CompletableFuture<Void> startExam(int visitId) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
+    public CompletableFuture<Void> suspendExam(int visitId) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId) {
+    public CompletableFuture<Void> endExam(int visitId, int charge) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
+    public CompletableFuture<Void> deleteVisit(int visitId) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
+    public CompletableFuture<Void> enterCharge(int visitId, int charge) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<Void> markDrugsAsPrescribed(int visitId) {
+    public CompletableFuture<Void> updateCharge(int visitId, int charge) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<Void> prescDone(int visitId) {
+    public CompletableFuture<Void> enterDrug(DrugDTO drug) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam() {
+    public CompletableFuture<Void> updateDrug(DrugDTO drug) {
         throw new RuntimeException("not implemented");
     }
 
     @Override
-    public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrugAttr(int drugId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<DrugWithAttrDTO>> listDrugWithAttr(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+    public CompletableFuture<Void> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
         throw new RuntimeException("not implemented");
     }
 
@@ -882,7 +772,92 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
+    public CompletableFuture<Void> deleteDrug(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDrugTekiyou(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> enterShinryou(ShinryouDTO shinryou) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteShinryou(int shinryouId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> batchDeleteShinryou(List<Integer> shinryouIds) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteConduct(int conductId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> setGazouLabel(int conductId, String label) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> prescDone(int visitId) {
         throw new RuntimeException("not implemented");
     }
 }

@@ -1,6 +1,7 @@
 package jp.chang.myclinic.frontend;
 
 import jp.chang.myclinic.backenddb.DbBackend;
+import jp.chang.myclinic.backenddb.DbBackendService;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import java.time.LocalDate;
@@ -13,8 +14,11 @@ public class FrontendBackend implements Frontend {
 
     private DbBackend dbBackend;
 
+    private DbBackendService dbBackendService;
+
     public FrontendBackend(DbBackend dbBackend) {
         this.dbBackend = dbBackend;
+        this.dbBackendService = new DbBackendService(dbBackend);
     }
 
     private <T> CompletableFuture<T> query(DbBackend.QueryStatement<T> q) {
@@ -30,57 +34,8 @@ public class FrontendBackend implements Frontend {
         return CompletableFuture.completedFuture(null);
     }
 
-    @Override
-    public CompletableFuture<PatientDTO> getPatient(int patientId) {
-        return query(backend -> backend.getPatient(patientId));
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(List<Integer> shinryouIds) {
-        return query(backend -> backend.batchGetShinryouAttr(shinryouIds));
-    }
-
-    @Override
-    public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
-        return query(backend -> backend.batchGetDrugAttr(drugIds));
-    }
-
-    @Override
-    public CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds) {
-        return query(backend -> backend.batchGetShouki(visitIds));
-    }
-
-    @Override
-    public CompletableFuture<Integer> enterText(TextDTO text) {
-        return tx(backend -> {
-            backend.enterText(text);
-            return text.textId;
-        });
-    }
-
-    @Override
-    public CompletableFuture<Void> updateText(TextDTO text) {
-        return txProc(backend -> backend.updateText(text));
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteText(int textId) {
-        return txProc(backend -> backend.deleteText(textId));
-    }
-
-    @Override
-    public CompletableFuture<VisitDTO> getVisit(int visitId) {
-        return query(backend -> backend.getVisit(visitId));
-    }
-
-    @Override
-    public CompletableFuture<List<VisitPatientDTO>> listRecentVisitWithPatient(int page, int itemsPerPage) {
-        return query(backend -> backend.listRecentVisitWithPatient(page, itemsPerPage));
-    }
-
-    @Override
-    public CompletableFuture<HokenDTO> getHoken(int visitId) {
-        return query(be -> be.getHoken(visitId));
+    private <T> CompletableFuture<T> value(T val) {
+        return CompletableFuture.completedFuture(val);
     }
 
     @Override
@@ -89,6 +44,11 @@ public class FrontendBackend implements Frontend {
             backend.enterPatient(patient);
             return patient.patientId;
         });
+    }
+
+    @Override
+    public CompletableFuture<PatientDTO> getPatient(int patientId) {
+        return query(backend -> backend.getPatient(patientId));
     }
 
     @Override
@@ -112,123 +72,13 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(int patientId, LocalDate at) {
-        return query(backend -> backend.findAvailableShahokokuho(patientId, at));
+    public CompletableFuture<VisitDTO> getVisit(int visitId) {
+        return query(backend -> backend.getVisit(visitId));
     }
 
     @Override
-    public CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(int patientId, LocalDate at) {
-        return query(backend -> backend.findAvailableKoukikourei(patientId, at));
-    }
-
-    @Override
-    public CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at) {
-        return query(backend -> backend.findAvailableRoujin(patientId, at));
-    }
-
-    @Override
-    public CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at) {
-        return query(backend -> backend.findAvailableKouhi(patientId, at));
-    }
-
-    @Override
-    public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at) {
-        return tx(backend -> backend.startVisit(patientId, at));
-    }
-
-    @Override
-    public CompletableFuture<Void> startExam(int visitId) {
-        return txProc(backend -> backend.startExam(visitId));
-    }
-
-    @Override
-    public CompletableFuture<Void> suspendExam(int visitId) {
-        return txProc(backend -> backend.suspendExam(visitId));
-    }
-
-    @Override
-    public CompletableFuture<Void> endExam(int visitId, int charge) {
-        return txProc(backend -> backend.endExam(visitId, charge));
-    }
-
-    @Override
-    public CompletableFuture<Void> enterCharge(ChargeDTO charge) {
-        return txProc(backend -> backend.enterCharge(charge));
-    }
-
-    @Override
-    public CompletableFuture<Void> setChargeOfVisit(int visitId, int charge) {
-        return txProc(backend -> backend.setChargeOfVisit(visitId, charge));
-    }
-
-    @Override
-    public CompletableFuture<ChargeDTO> getCharge(int visitId) {
-        return query(backend -> backend.getCharge(visitId));
-    }
-
-    @Override
-    public CompletableFuture<List<PaymentDTO>> listPayment(int visitId) {
-        return query(backend -> backend.listPayment(visitId));
-    }
-
-    @Override
-    public CompletableFuture<WqueueDTO> getWqueue(int visitId) {
-        return query(backend -> backend.getWqueue(visitId));
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteWqueue(int visitId) {
-        return txProc(backend -> backend.deleteWqueue(visitId));
-    }
-
-    @Override
-    public CompletableFuture<List<WqueueDTO>> listWqueue() {
-        return query(backend -> backend.listWqueue());
-    }
-
-    @Override
-    public CompletableFuture<List<WqueueFullDTO>> listWqueueFull() {
-        return query(backend -> backend.listWqueueFull());
-    }
-
-    @Override
-    public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
-        return query(backend -> backend.listAvailableHoken(patientId, visitedAt));
-    }
-
-    @Override
-    public CompletableFuture<Void> updateHoken(VisitDTO visit) {
-        return txProc(backend -> backend.updateHoken(visit));
-    }
-
-    @Override
-    public CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId) {
-        return query(backend -> backend.getDrugAttr(drugId));
-    }
-
-    @Override
-    public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr) {
-        return txProc(backend -> backend.enterDrugAttr(drugAttr));
-    }
-
-    @Override
-    public CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou) {
-        return tx(backend -> backend.setDrugTekiyou(drugId, tekiyou));
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrugTekiyou(int drugId) {
-        return txProc(backend -> backend.deleteDrugTekiyou(drugId));
-    }
-
-    @Override
-    public CompletableFuture<Integer> countUnprescribedDrug(int visitId) {
-        return query(backend -> backend.countUnprescribedDrug(visitId));
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteVisitSafely(int visitId) {
-        return txProc(backend -> backend.deleteVisitSafely(visitId));
+    public CompletableFuture<List<VisitPatientDTO>> listRecentVisitWithPatient(int page, int itemsPerPage) {
+        return query(backend -> backend.listRecentVisitWithPatient(page, itemsPerPage));
     }
 
     @Override
@@ -252,33 +102,48 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> updateShouki(ShoukiDTO shouki) {
-        return txProc(backend -> backend.updateShouki(shouki));
+    public CompletableFuture<ChargeDTO> getCharge(int visitId) {
+        return query(backend -> backend.getCharge(visitId));
     }
 
     @Override
-    public CompletableFuture<Void> deleteShouki(int visitId) {
-        return txProc(backend -> backend.deleteShouki(visitId));
+    public CompletableFuture<List<PaymentDTO>> listPayment(int visitId) {
+        return query(backend -> backend.listPayment(visitId));
     }
 
     @Override
-    public CompletableFuture<TextDTO> getText(int textId) {
-        return query(backend -> backend.getText(textId));
+    public CompletableFuture<WqueueDTO> getWqueue(int visitId) {
+        return query(backend -> backend.getWqueue(visitId));
     }
 
     @Override
-    public CompletableFuture<List<TextDTO>> listText(int visitId) {
-        return query(backend -> backend.listText(visitId));
+    public CompletableFuture<List<WqueueDTO>> listWqueue() {
+        return query(backend -> backend.listWqueue());
     }
 
     @Override
-    public CompletableFuture<TextVisitPageDTO> searchText(int patientId, String text, int page) {
-        return query(backend -> backend.searchText(patientId, text, page));
+    public CompletableFuture<List<WqueueFullDTO>> listWqueueFull() {
+        return query(backend -> backend.listWqueueFull());
     }
 
     @Override
-    public CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(String text, int page) {
-        return query(backend -> backend.searchTextGlobally(text, page));
+    public CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam() {
+        return query(backend -> backend.listWqueueFullForExam());
+    }
+
+    @Override
+    public CompletableFuture<HokenDTO> getHoken(int visitId) {
+        return query(backend -> backend.getHoken(visitId));
+    }
+
+    @Override
+    public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
+        return query(backend -> backend.listAvailableHoken(patientId, visitedAt));
+    }
+
+    @Override
+    public CompletableFuture<Void> updateHoken(VisitDTO visit) {
+        return txProc(backend -> backend.updateHoken(visit));
     }
 
     @Override
@@ -287,41 +152,38 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Integer> enterDrug(DrugDTO drug) {
-        return tx(backend -> {
-            backend.enterDrug(drug);
-            return drug.drugId;
-        });
+    public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
+        return query(backend -> backend.getDrugWithAttr(drugId));
     }
 
     @Override
-    public CompletableFuture<Void> updateDrug(DrugDTO drug) {
-        return txProc(backend -> backend.updateDrug(drug));
+    public CompletableFuture<Integer> batchUpdateDrugDays(List<Integer> drugIds, int days) {
+        return tx(backend -> backend.batchUpdateDrugDays(drugIds, days));
     }
 
     @Override
-    public CompletableFuture<Void> batchUpdateDrugDays(List<Integer> drugIds, int days) {
-        return txProc(backend -> backend.batchUpdateDrugDays(drugIds, days));
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrug(int drugId) {
-        return txProc(backend -> backend.deleteDrug(drugId));
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrugCascading(int drugId) {
-        return txProc(backend -> backend.deleteDrugCascading(drugId));
-    }
-
-    @Override
-    public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
-        return txProc(backend -> backend.batchDeleteDrugs(drugIds));
+    public CompletableFuture<Integer> markDrugsAsPrescribed(int visitId) {
+        return tx(backend -> backend.markDrugsAsPrescribed(visitId));
     }
 
     @Override
     public CompletableFuture<DrugFullDTO> getDrugFull(int drugId) {
         return query(backend -> backend.getDrugFull(drugId));
+    }
+
+    @Override
+    public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
+        return query(backend -> backend.getDrugFullWithAttr(drugId));
+    }
+
+    @Override
+    public CompletableFuture<List<DrugWithAttrDTO>> listDrugWithAttr(int visitId) {
+        return query(backend -> backend.listDrugWithAttr(visitId));
+    }
+
+    @Override
+    public CompletableFuture<List<DrugDTO>> listDrug(int visitId) {
+        return query(backend -> backend.listDrug(visitId));
     }
 
     @Override
@@ -345,21 +207,96 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Integer> countUnprescribedDrug(int visitId) {
+        return query(backend -> backend.countUnprescribedDrug(visitId));
+    }
+
+    @Override
+    public CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId) {
+        return query(backend -> backend.getDrugAttr(drugId));
+    }
+
+    @Override
+    public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr) {
+        return txProc(backend -> backend.enterDrugAttr(drugAttr));
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
+        return txProc(backend -> backend.updateDrugAttr(drugAttr));
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDrugAttr(int drugId) {
+        return txProc(backend -> backend.deleteDrugAttr(drugId));
+    }
+
+    @Override
+    public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
+        return tx(backend -> backend.batchGetDrugAttr(drugIds));
+    }
+
+    @Override
+    public CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds) {
+        return tx(backend -> backend.batchGetShouki(visitIds));
+    }
+
+    @Override
+    public CompletableFuture<Void> updateShouki(ShoukiDTO shouki) {
+        return txProc(backend -> backend.updateShouki(shouki));
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteShouki(int visitId) {
+        return txProc(backend -> backend.deleteShouki(visitId));
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterText(TextDTO text) {
+        return tx(backend -> {
+            backend.enterText(text);
+            return text.textId;
+        });
+    }
+
+    @Override
+    public CompletableFuture<TextDTO> getText(int textId) {
+        return query(backend -> backend.getText(textId));
+    }
+
+    @Override
+    public CompletableFuture<Void> updateText(TextDTO text) {
+        return txProc(backend -> backend.updateText(text));
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteText(int textId) {
+        return txProc(backend -> backend.deleteText(textId));
+    }
+
+    @Override
+    public CompletableFuture<List<TextDTO>> listText(int visitId) {
+        return query(backend -> backend.listText(visitId));
+    }
+
+    @Override
+    public CompletableFuture<TextVisitPageDTO> searchText(int patientId, String text, int page) {
+        return query(backend -> backend.searchText(patientId, text, page));
+    }
+
+    @Override
+    public CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(String text, int page) {
+        return query(backend -> backend.searchTextGlobally(text, page));
+    }
+
+    @Override
     public CompletableFuture<ShinryouDTO> getShinryou(int shinryouId) {
         return query(backend -> backend.getShinryou(shinryouId));
     }
 
     @Override
-    public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou) {
-        return tx(backend -> {
-            backend.enterShinryou(shinryou);
-            return shinryou.shinryouId;
-        });
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteShinryou(int shinryouId) {
-        return txProc(backend -> backend.deleteShinryou(shinryouId));
+    public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
+        return query(backend -> backend.getShinryouWithAttr(shinryouId));
     }
 
     @Override
@@ -368,13 +305,8 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-        return txProc(backend -> backend.batchEnterShinryou(shinryouList));
-    }
-
-    @Override
-    public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req) {
-        return tx(backend -> backend.batchEnter(req));
+    public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
+        return query(backend -> backend.getShinryouFullWithAttr(shinryouId));
     }
 
     @Override
@@ -383,8 +315,33 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds) {
+        return query(backend -> backend.listShinryouFullWithAttrByIds(shinryouIds));
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
+        return query(backend -> backend.listShinryou(visitId));
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
+        return query(backend -> backend.listShinryouWithAttr(visitId));
+    }
+
+    @Override
     public CompletableFuture<List<ShinryouFullDTO>> listShinryouFull(int visitId) {
         return query(backend -> backend.listShinryouFull(visitId));
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
+        return query(backend -> backend.listShinryouFullWithAttr(visitId));
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(List<Integer> shinryouIds) {
+        return tx(backend -> backend.batchGetShinryouAttr(shinryouIds));
     }
 
     @Override
@@ -398,11 +355,6 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
-        return txProc(backend -> backend.setShinryouAttr(shinryouId, attr));
-    }
-
-    @Override
     public CompletableFuture<Integer> enterConduct(ConductDTO conduct) {
         return tx(backend -> {
             backend.enterConduct(conduct);
@@ -411,18 +363,8 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req) {
-        return tx(backend -> backend.enterConductFull(req));
-    }
-
-    @Override
     public CompletableFuture<ConductDTO> getConduct(int conductId) {
         return query(backend -> backend.getConduct(conductId));
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteConductCascading(int conductId) {
-        return txProc(backend -> backend.deleteConductCascading(conductId));
     }
 
     @Override
@@ -456,16 +398,6 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
-        return txProc(backend -> backend.updateGazouLabel(gazouLabel));
-    }
-
-    @Override
-    public CompletableFuture<Void> modifyGazouLabel(int conductId, String label) {
-        return txProc(backend -> backend.modifyGazouLabel(conductId, label));
-    }
-
-    @Override
     public CompletableFuture<GazouLabelDTO> getGazouLabel(int conductId) {
         return query(backend -> backend.getGazouLabel(conductId));
     }
@@ -473,6 +405,11 @@ public class FrontendBackend implements Frontend {
     @Override
     public CompletableFuture<Void> deleteGazouLabel(int conductId) {
         return txProc(backend -> backend.deleteGazouLabel(conductId));
+    }
+
+    @Override
+    public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
+        return txProc(backend -> backend.updateGazouLabel(gazouLabel));
     }
 
     @Override
@@ -580,8 +517,26 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
+        return tx(backend -> {
+            backend.enterShahokokuho(shahokokuho);
+            return shahokokuho.shahokokuhoId;
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(int patientId, LocalDate at) {
+        return query(backend -> backend.findAvailableShahokokuho(patientId, at));
+    }
+
+    @Override
     public CompletableFuture<KoukikoureiDTO> getKoukikourei(int koukikoureiId) {
         return query(backend -> backend.getKoukikourei(koukikoureiId));
+    }
+
+    @Override
+    public CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(int patientId, LocalDate at) {
+        return query(backend -> backend.findAvailableKoukikourei(patientId, at));
     }
 
     @Override
@@ -590,8 +545,18 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at) {
+        return query(backend -> backend.findAvailableRoujin(patientId, at));
+    }
+
+    @Override
     public CompletableFuture<KouhiDTO> getKouhi(int kouhiId) {
         return query(backend -> backend.getKouhi(kouhiId));
+    }
+
+    @Override
+    public CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at) {
+        return query(backend -> backend.findAvailableKouhi(patientId, at));
     }
 
     @Override
@@ -599,6 +564,14 @@ public class FrontendBackend implements Frontend {
         return tx(backend -> {
             backend.enterDisease(disease);
             return disease.diseaseId;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
+        return tx(backend -> {
+            backend.enterNewDisease(disease);
+            return disease.disease.diseaseId;
         });
     }
 
@@ -638,8 +611,36 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Integer> enterDiseaseAdj(DiseaseAdjDTO adj) {
+        return tx(backend -> {
+            backend.enterDiseaseAdj(adj);
+            return adj.diseaseAdjId;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDiseaseAdj(int diseaseAdjId) {
+        return txProc(backend -> backend.deleteDiseaseAdj(diseaseAdjId));
+    }
+
+    @Override
+    public CompletableFuture<List<DiseaseAdjDTO>> listDiseaseAdj(int diseaseId) {
+        return query(backend -> backend.listDiseaseAdj(diseaseId));
+    }
+
+    @Override
+    public CompletableFuture<Integer> deleteDiseaseAdjForDisease(DiseaseDTO disease) {
+        return tx(backend -> backend.deleteDiseaseAdjForDisease(disease));
+    }
+
+    @Override
     public CompletableFuture<PharmaQueueDTO> getPharmaQueue(int visitId) {
         return query(backend -> backend.getPharmaQueue(visitId));
+    }
+
+    @Override
+    public CompletableFuture<Void> enterPharmaQueue(PharmaQueueDTO pharmaQueue) {
+        return txProc(backend -> backend.enterPharmaQueue(pharmaQueue));
     }
 
     @Override
@@ -668,8 +669,23 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at) {
+        return query(backend -> backend.getShinryouMaster(shinryoucode, at));
+    }
+
+    @Override
+    public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
+        return query(backend -> backend.getIyakuhinMaster(iyakuhincode, at));
+    }
+
+    @Override
     public CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(String text, LocalDate at) {
         return query(backend -> backend.searchIyakuhinMaster(text, at));
+    }
+
+    @Override
+    public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
+        return query(backend -> backend.getKizaiMaster(kizaicode, at));
     }
 
     @Override
@@ -756,186 +772,171 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
-        return txProc(backend -> backend.modifyDisease(diseaseModifyDTO));
+    public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at) {
+        return value(dbBackendService.startVisit(patientId, at));
     }
 
     @Override
-    public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
-        return tx(backend -> {
-            backend.enterShahokokuho(shahokokuho);
-            return shahokokuho.shahokokuhoId;
-        });
+    public CompletableFuture<Void> startExam(int visitId) {
+        dbBackendService.startExam(visitId);
+        return value(null);
     }
 
     @Override
-    public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
-        return query(backend -> backend.getIyakuhinMaster(iyakuhincode, at));
+    public CompletableFuture<Void> suspendExam(int visitId) {
+        dbBackendService.suspendExam(visitId);
+        return value(null);
     }
 
     @Override
-    public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId) {
-        return query(backend -> backend.deleteDuplicateShinryou(visitId));
+    public CompletableFuture<Void> endExam(int visitId, int charge) {
+        dbBackendService.endExam(visitId, charge);
+        return value(null);
     }
 
     @Override
-    public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
-        return query(backend -> backend.listShinryou(visitId));
+    public CompletableFuture<Void> deleteVisit(int visitId) {
+        dbBackendService.deleteVisit(visitId);
+        return value(null);
     }
 
     @Override
-    public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
-        return txProc(backend -> backend.finishCashier(payment));
+    public CompletableFuture<Void> enterCharge(int visitId, int charge) {
+        dbBackendService.enterCharge(visitId, charge);
+        return value(null);
     }
 
     @Override
-    public CompletableFuture<Void> markDrugsAsPrescribed(int visitId) {
-        return txProc(backend -> backend.markDrugsAsPrescribed(visitId));
+    public CompletableFuture<Void> updateCharge(int visitId, int charge) {
+        dbBackendService.updateCharge(visitId, charge);
+        return value(null);
     }
 
     @Override
-    public CompletableFuture<Void> prescDone(int visitId) {
-        return txProc(backend -> backend.prescDone(visitId));
+    public CompletableFuture<Void> enterDrug(DrugDTO drug) {
+        dbBackendService.enterDrug(drug);
+        return value(null);
     }
 
     @Override
-    public CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam() {
-        return query(backend -> backend.listWqueueFullForExam());
+    public CompletableFuture<Void> updateDrug(DrugDTO drug) {
+        dbBackendService.updateDrug(drug);
+        return value(null);
     }
 
     @Override
-    public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at) {
-        return query(backend -> backend.getShinryouMaster(shinryoucode, at));
-    }
-
-    @Override
-    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
-        return query(backend -> backend.resolveShinryouMasterByKey(key, at));
-    }
-
-    @Override
-    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
-        return query(backend -> backend.resolveKizaiMasterByKey(key, at));
-    }
-
-    @Override
-    public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
-        return query(backend -> backend.listDiseaseExample());
-    }
-
-    @Override
-    public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
-        return query(backend -> backend.getMeisai(visitId));
-    }
-
-    @Override
-    public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
-        return tx(backend -> backend.batchEnterByNames(visitId, req));
-    }
-
-    @Override
-    public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
-        return query(backend -> backend.resolveStockDrug(iyakuhincode, at));
-    }
-
-    @Override
-    public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
-        return query(backend -> backend.getKizaiMaster(kizaicode, at));
-    }
-
-    @Override
-    public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
-        return query(backend -> backend.getClinicInfo());
-    }
-
-    @Override
-    public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
-        return txProc(backend -> backend.updateDrugAttr(drugAttr));
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrugAttr(int drugId) {
-        return txProc(backend -> backend.deleteDrugAttr(drugId));
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
-        return txProc(backend -> backend.deleteShinryouCascading(shinryouId));
-    }
-
-    @Override
-    public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
-        return txProc(backend -> backend.batchDeleteShinryouCascading(shinryouIds));
-    }
-
-    @Override
-    public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
-        return query(backend -> backend.getDrugWithAttr(drugId));
-    }
-
-    @Override
-    public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
-        return query(backend -> backend.getDrugFullWithAttr(drugId));
-    }
-
-    @Override
-    public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
-        return query(backend -> backend.getShinryouWithAttr(shinryouId));
-    }
-
-    @Override
-    public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
-        return query(backend -> backend.getShinryouFullWithAttr(shinryouId));
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
-        return query(backend -> backend.listShinryouWithAttr(visitId));
-    }
-
-    @Override
-    public CompletableFuture<List<DrugWithAttrDTO>> listDrugWithAttr(int visitId) {
-        return query(backend -> backend.listDrugWithAttr(visitId));
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds) {
-        return query(backend -> backend.listShinryouFullWithAttrByIds(shinryouIds));
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
-        return query(backend -> backend.listShinryouFullWithAttr(visitId));
-    }
-
-    @Override
-    public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
-        return query(backend -> backend.batchResolveStockDrug(iyakuhincodes, at));
-    }
-
-    @Override
-    public CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name) {
-        return tx(backend -> backend.enterShinryouByName(visitId, name));
-    }
-
-    @Override
-    public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-        return tx(backend -> {
-            backend.enterDrugWithAttr(drugWithAttr);
-            return drugWithAttr.drug.drugId;
-        });
+    public CompletableFuture<Void> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        dbBackendService.enterDrugWithAttr(drugWithAttr);
+        return value(null);
     }
 
     @Override
     public CompletableFuture<Void> updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-        return txProc(backend -> backend.updateDrugWithAttr(drugWithAttr));
+        dbBackendService.updateDrugWithAttr(drugWithAttr);
+        return value(null);
     }
 
     @Override
-    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
-        return tx(backend -> {
-            backend.enterNewDisease(disease);
-            return disease.disease.diseaseId;
-        });
+    public CompletableFuture<Void> deleteDrug(int drugId) {
+        dbBackendService.deleteDrug(drugId);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
+        dbBackendService.batchDeleteDrugs(drugIds);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou) {
+        return value(dbBackendService.setDrugTekiyou(drugId, tekiyou));
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDrugTekiyou(int drugId) {
+        dbBackendService.deleteDrugTekiyou(drugId);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<Void> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
+        dbBackendService.enterShinryouWithAttr(shinryouWithAttr);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<Void> enterShinryou(ShinryouDTO shinryou) {
+        dbBackendService.enterShinryou(shinryou);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+        dbBackendService.batchEnterShinryou(shinryouList);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteShinryou(int shinryouId) {
+        dbBackendService.deleteShinryou(shinryouId);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<Void> batchDeleteShinryou(List<Integer> shinryouIds) {
+        dbBackendService.batchDeleteShinryou(shinryouIds);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId) {
+        return value(dbBackendService.deleteDuplicateShinryou(visitId));
+    }
+
+    @Override
+    public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
+        dbBackendService.setShinryouAttr(shinryouId, attr);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req) {
+        return value(dbBackendService.enterConductFull(req));
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteConduct(int conductId) {
+        dbBackendService.deleteConduct(conductId);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<Void> setGazouLabel(int conductId, String label) {
+        dbBackendService.setGazouLabel(conductId, label);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req) {
+        return value(dbBackendService.batchEnter(req));
+    }
+
+    @Override
+    public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+        dbBackendService.modifyDisease(diseaseModifyDTO);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
+        dbBackendService.finishCashier(payment);
+        return value(null);
+    }
+
+    @Override
+    public CompletableFuture<Void> prescDone(int visitId) {
+        dbBackendService.prescDone(visitId);
+        return value(null);
     }
 }
