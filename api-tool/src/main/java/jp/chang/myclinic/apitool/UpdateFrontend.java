@@ -10,8 +10,6 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.ThrowStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import jp.chang.myclinic.apitool.lib.Helper;
 import jp.chang.myclinic.apitool.lib.frontend.*;
@@ -23,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
@@ -81,6 +78,13 @@ class UpdateFrontend implements Runnable {
         return getClassOrInterfaceDeclaration(unit, className);
     }
 
+    private ClassOrInterfaceDeclaration getSupportDeclaration() throws Exception {
+        Path path = Paths.get(backendDir, "SupportService.java");
+        String className = helper.getClassNameFromSourcePath(path);
+        CompilationUnit unit = StaticJavaParser.parse(path);
+        return getClassOrInterfaceDeclaration(unit, className);
+    }
+
     private ClassOrInterfaceDeclaration getClassOrInterfaceDeclaration(CompilationUnit unit, String name) {
         return unit.getClassByName(name)
                 .or(() -> unit.getInterfaceByName(name))
@@ -89,9 +93,8 @@ class UpdateFrontend implements Runnable {
 
     private void updateFrontend() throws Exception {
         update("Frontend", FrontendMethod::createFrontendMethod,
-                (f, b) -> {
-                    f.removeBody();
-                });
+                (f, b) -> f.removeBody(),
+                (f, b)-> f.removeBody());
     }
 
     private void updateFrontendBackend() throws Exception {
@@ -99,13 +102,19 @@ class UpdateFrontend implements Runnable {
                 (f, b) -> {
                     f.setPublic(true);
                     f.addAnnotation(new MarkerAnnotationExpr("Override"));
-                    f.setBody(createFrontendBackendBodyFromService(b));
+                    f.setBody(createFrontendBackendBodyFromServiceOrSupport("dbBackendService", b));
+                },
+                (f, b) -> {
+                    f.setPublic(true);
+                    f.addAnnotation(new MarkerAnnotationExpr("Override"));
+                    f.setBody(createFrontendBackendBodyFromServiceOrSupport("supportService", b));
                 });
     }
 
-    private BlockStmt createFrontendBackendBodyFromService(MethodDeclaration serviceMethod) {
+    private BlockStmt createFrontendBackendBodyFromServiceOrSupport(String serviceOrSuppot,
+                                                                    MethodDeclaration serviceMethod) {
         Expression methodCall = new MethodCallExpr(
-                new NameExpr("dbBackendService"),
+                new NameExpr(serviceOrSuppot),
                 serviceMethod.getNameAsString(),
                 nodeList(serviceMethod.getParameters().stream()
                         .map(p -> new NameExpr(p.getNameAsString()))
@@ -130,30 +139,32 @@ class UpdateFrontend implements Runnable {
     }
 
     private void updateFrontendAdapter() throws Exception {
-        update("FrontendAdapter", FrontendMethod::createFrontendAdapterMethod,
-                (f, b) -> {
-                    f.setPublic(true);
-                    f.addAnnotation(new MarkerAnnotationExpr("Override"));
-                    f.setBody(FrontendMethodHelper.createNotImplementedBlock());
-                });
+        BiConsumer<MethodDeclaration, MethodDeclaration> creator = (f, b) -> {
+            f.setPublic(true);
+            f.addAnnotation(new MarkerAnnotationExpr("Override"));
+            f.setBody(FrontendMethodHelper.createNotImplementedBlock());
+        };
+        update("FrontendAdapter", FrontendMethod::createFrontendAdapterMethod, creator, creator);
     }
 
     private void updateFrontendProxy() throws Exception {
-        update("FrontendProxy", FrontendMethod::createFrontendProxyMethod,
-                (f, b) -> {
-                    f.setPublic(true);
-                    f.addAnnotation(new MarkerAnnotationExpr("Override"));
-                    f.setBody(new BlockStmt(nodeList(
-                            new ReturnStmt(FrontendMethodHelper.createDelegateCall("delegate", b))
-                    )));
-                });
+        BiConsumer<MethodDeclaration, MethodDeclaration> creator = (f, b) -> {
+            f.setPublic(true);
+            f.addAnnotation(new MarkerAnnotationExpr("Override"));
+            f.setBody(new BlockStmt(nodeList(
+                    new ReturnStmt(FrontendMethodHelper.createDelegateCall("delegate", b))
+            )));
+        };
+        update("FrontendProxy", FrontendMethod::createFrontendProxyMethod, creator, creator);
     }
 
     private void update(String frontendClass,
                         Function<FrontendMethod, MethodDeclaration> backendMethodConverter,
-                        BiConsumer<MethodDeclaration, MethodDeclaration> serviceMethodCreater) throws Exception {
+                        BiConsumer<MethodDeclaration, MethodDeclaration> serviceMethodCreater,
+                        BiConsumer<MethodDeclaration, MethodDeclaration> supportMethodCreater) throws Exception {
         ClassOrInterfaceDeclaration backendDecl = getBackendDeclaration();
         ClassOrInterfaceDeclaration serviceDecl = getServiceDeclaration();
+        ClassOrInterfaceDeclaration supportDecl = getSupportDeclaration();
         Path frontendPath = frontendPath(frontendClass);
         CompilationUnit frontendUnit = StaticJavaParser.parse(frontendPath);
         ClassOrInterfaceDeclaration frontendDecl = getClassOrInterfaceDeclaration(frontendUnit,
@@ -162,7 +173,11 @@ class UpdateFrontend implements Runnable {
                 frontendDecl);
         List<MethodDeclaration> unimplementedServiceMethods = listUnimplementedMethods(serviceDecl,
                 frontendDecl);
-        if (unimplementedBackendMethods.size() + unimplementedBackendMethods.size() > 0) {
+        List<MethodDeclaration> unimplementedSupportMethods = listUnimplementedMethods(supportDecl,
+                frontendDecl);
+        int cUnimplemented = unimplementedBackendMethods.size() + unimplementedBackendMethods.size() +
+                unimplementedSupportMethods.size();
+        if ( cUnimplemented > 0) {
             if (!save) {
                 System.out.println("*** " + frontendClass);
             }
@@ -177,6 +192,14 @@ class UpdateFrontend implements Runnable {
             for (MethodDeclaration serviceMethod : unimplementedServiceMethods) {
                 MethodDeclaration frontendMethod = createServiceMethodHead(serviceMethod);
                 serviceMethodCreater.accept(frontendMethod, serviceMethod);
+                frontendDecl.addMember(frontendMethod);
+                if (!save) {
+                    System.out.println(frontendMethod);
+                }
+            }
+            for (MethodDeclaration supportMethod : unimplementedSupportMethods) {
+                MethodDeclaration frontendMethod = createServiceMethodHead(supportMethod);
+                supportMethodCreater.accept(frontendMethod, supportMethod);
                 frontendDecl.addMember(frontendMethod);
                 if (!save) {
                     System.out.println(frontendMethod);

@@ -2,8 +2,10 @@ package jp.chang.myclinic.frontend;
 
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.DbBackendService;
+import jp.chang.myclinic.backenddb.SupportService;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.support.SupportSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,9 +18,12 @@ public class FrontendBackend implements Frontend {
 
     private DbBackendService dbBackendService;
 
-    public FrontendBackend(DbBackend dbBackend) {
+    private SupportService supportService;
+
+    public FrontendBackend(DbBackend dbBackend, SupportSet ss) {
         this.dbBackend = dbBackend;
         this.dbBackendService = new DbBackendService(dbBackend);
+        this.supportService = new SupportService(dbBackend, ss);
     }
 
     private <T> CompletableFuture<T> query(DbBackend.QueryStatement<T> q) {
@@ -938,5 +943,45 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<Void> prescDone(int visitId) {
         dbBackendService.prescDone(visitId);
         return value(null);
+    }
+
+    @Override
+    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
+        return value(supportService.resolveShinryouMasterByKey(key, at));
+    }
+
+    @Override
+    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
+        return value(supportService.resolveKizaiMasterByKey(key, at));
+    }
+
+    @Override
+    public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
+        return value(supportService.batchEnterByNames(visitId, req));
+    }
+
+    @Override
+    public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
+        return value(supportService.listDiseaseExample());
+    }
+
+    @Override
+    public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
+        return value(supportService.getMeisai(visitId));
+    }
+
+    @Override
+    public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
+        return value(supportService.resolveStockDrug(iyakuhincode, at));
+    }
+
+    @Override
+    public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
+        return value(supportService.batchResolveStockDrug(iyakuhincodes, at));
+    }
+
+    @Override
+    public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
+        return value(supportService.getClinicInfo());
     }
 }

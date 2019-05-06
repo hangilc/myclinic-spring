@@ -862,4 +862,44 @@ public class FrontendProxy implements Frontend {
     public CompletableFuture<Void> prescDone(int visitId) {
         return delegate.prescDone(visitId);
     }
+
+    @Override
+    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
+        return delegate.resolveShinryouMasterByKey(key, at);
+    }
+
+    @Override
+    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
+        return delegate.resolveKizaiMasterByKey(key, at);
+    }
+
+    @Override
+    public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
+        return delegate.batchEnterByNames(visitId, req);
+    }
+
+    @Override
+    public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
+        return delegate.listDiseaseExample();
+    }
+
+    @Override
+    public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
+        return delegate.getMeisai(visitId);
+    }
+
+    @Override
+    public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
+        return delegate.resolveStockDrug(iyakuhincode, at);
+    }
+
+    @Override
+    public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
+        return delegate.batchResolveStockDrug(iyakuhincodes, at);
+    }
+
+    @Override
+    public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
+        return delegate.getClinicInfo();
+    }
 }

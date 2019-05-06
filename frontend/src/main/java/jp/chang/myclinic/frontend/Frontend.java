@@ -351,4 +351,20 @@ public interface Frontend {
     CompletableFuture<Void> finishCashier(PaymentDTO payment);
 
     CompletableFuture<Void> prescDone(int visitId);
+
+    CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at);
+
+    CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at);
+
+    CompletableFuture<BatchEnterResultDTO> batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req);
+
+    CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample();
+
+    CompletableFuture<MeisaiDTO> getMeisai(int visitId);
+
+    CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at);
+
+    CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at);
+
+    CompletableFuture<ClinicInfoDTO> getClinicInfo();
 }

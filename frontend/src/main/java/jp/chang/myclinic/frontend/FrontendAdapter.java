@@ -860,4 +860,44 @@ public class FrontendAdapter implements Frontend {
     public CompletableFuture<Void> prescDone(int visitId) {
         throw new RuntimeException("not implemented");
     }
+
+    @Override
+    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
+        throw new RuntimeException("not implemented");
+    }
 }
