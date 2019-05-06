@@ -1,5 +1,6 @@
 package jp.chang.myclinic.apitool.lib;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -309,6 +310,12 @@ public class Helper {
 
     public Path getFrontendRestSourcePath() throws IOException {
         return Paths.get("frontend/src/main/java/jp/chang/myclinic/frontend", "FrontendRest.java");
+    }
+
+    public ClassOrInterfaceDeclaration getClassOrInterfaceDeclaration(CompilationUnit unit, String name) {
+        return unit.getClassByName(name)
+                .or(() -> unit.getInterfaceByName(name))
+                .orElseThrow(() -> new RuntimeException("Cannot find class/interface: " + name));
     }
 
     public List<MethodDeclaration> listUnimplementedMethods(ClassOrInterfaceDeclaration backend,

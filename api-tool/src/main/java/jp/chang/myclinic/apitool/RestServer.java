@@ -17,8 +17,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.toList;
@@ -34,85 +36,135 @@ public class RestServer implements Runnable {
     @Override
     public void run() {
         try {
-            updateFromBackend();
-            updateFromBackendService();
+            Path serverSource = helper.getBackendServerSourcePath();
+            CompilationUnit serverUnit = StaticJavaParser.parse(serverSource);
+            ClassOrInterfaceDeclaration serverDecl = serverUnit.getClassByName("RestServer")
+                    .orElseThrow(() -> new RuntimeException("Cannot find class RestServer."));
+            String backendDir = "backend-db/src/main/java/jp/chang/myclinic/backenddb";
+            Path servicePath = Paths.get(backendDir, "DbBackendService.java");
+            Path supportPath = Paths.get(backendDir, "SupportService.java");
+            updateFromBackend(serverDecl);
+            update(serverDecl, servicePath, (pInfo, dst, src) -> createMethodFromServiceOrSupport(
+                    "dbBackendService", pInfo, dst, src
+            ));
+            update(serverDecl, supportPath, (pInfo, dst, src) -> createMethodFromServiceOrSupport(
+                    "supportService", pInfo, dst, src
+            ));
+            if( save ){
+                helper.saveToFile(serverSource, helper.formatSource(serverUnit.toString()), true);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(1);
         }
     }
 
-    private void updateFromBackendService() throws Exception {
-        Path backendSource = helper.getBackendServiceSourcePath();
-        CompilationUnit serviceUnit = StaticJavaParser.parse(backendSource);
-        ClassOrInterfaceDeclaration serviceDecl = serviceUnit.getClassByName("DbBackendService")
-                .orElseThrow(() -> new RuntimeException("Cannot find class DbBackendService."));
-        Path serverSource = helper.getBackendServerSourcePath();
-        CompilationUnit serverUnit = StaticJavaParser.parse(serverSource);
-        ClassOrInterfaceDeclaration serverDecl = serverUnit.getClassByName("RestServer")
-                .orElseThrow(() -> new RuntimeException("Cannot find class RestServer."));
-        List<MethodDeclaration> unimplementedMethods = helper.listUnimplementedMethods(serviceDecl, serverDecl);
-        for (MethodDeclaration serviceMethodDecl : unimplementedMethods) {
-            MethodDeclaration serverMethod = createServerMethodFromService(serviceMethodDecl);
-            serverDecl.addMember(serverMethod);
-            if (!save) {
-                System.out.println(serverMethod);
-            }
-        }
-        if (save) {
-            helper.saveToFile(serverSource, serverUnit.toString(), true);
-        }
-    }
+//    private void updateFromSupportService() throws Exception {
+//        Path backendSource = helper.getBackendServiceSourcePath();
+//        CompilationUnit serviceUnit = StaticJavaParser.parse(backendSource);
+//        ClassOrInterfaceDeclaration serviceDecl = serviceUnit.getClassByName("SupportService")
+//                .orElseThrow(() -> new RuntimeException("Cannot find class SupportService."));
+//        List<MethodDeclaration> unimplementedMethods = helper.listUnimplementedMethods(serviceDecl, serverDecl);
+//        for (MethodDeclaration serviceMethodDecl : unimplementedMethods) {
+//            MethodDeclaration serverMethod = createServerMethodFromService(serviceMethodDecl);
+//            serverDecl.addMember(serverMethod);
+//            if (!save) {
+//                System.out.println(serverMethod);
+//            }
+//        }
+//        if (save) {
+//            helper.saveToFile(serverSource, serverUnit.toString(), true);
+//        }
+//    }
 
-    private void updateFromBackend() throws Exception {
+//    private void updateFromBackendService() throws Exception {
+//        Path backendSource = helper.getBackendServiceSourcePath();
+//        CompilationUnit serviceUnit = StaticJavaParser.parse(backendSource);
+//        ClassOrInterfaceDeclaration serviceDecl = serviceUnit.getClassByName("DbBackendService")
+//                .orElseThrow(() -> new RuntimeException("Cannot find class DbBackendService."));
+//        Path serverSource = helper.getBackendServerSourcePath();
+//        CompilationUnit serverUnit = StaticJavaParser.parse(serverSource);
+//        ClassOrInterfaceDeclaration serverDecl = serverUnit.getClassByName("RestServer")
+//                .orElseThrow(() -> new RuntimeException("Cannot find class RestServer."));
+//        List<MethodDeclaration> unimplementedMethods = helper.listUnimplementedMethods(serviceDecl, serverDecl);
+//        for (MethodDeclaration serviceMethodDecl : unimplementedMethods) {
+//            MethodDeclaration serverMethod = createServerMethodFromService(serviceMethodDecl);
+//            serverDecl.addMember(serverMethod);
+//            if (!save) {
+//                System.out.println(serverMethod);
+//            }
+//        }
+//        if (save) {
+//            helper.saveToFile(serverSource, serverUnit.toString(), true);
+//        }
+//    }
+
+    private void updateFromBackend(ClassOrInterfaceDeclaration restServerDecl) throws Exception {
         Path backendSource = helper.getBackendSourcePath();
         CompilationUnit backendUnit = StaticJavaParser.parse(backendSource);
         ClassOrInterfaceDeclaration backendDecl = backendUnit.getClassByName("Backend")
                 .orElseThrow(() -> new RuntimeException("Cannot find class Backend."));
-        Path serverSource = helper.getBackendServerSourcePath();
-        CompilationUnit serverUnit = StaticJavaParser.parse(serverSource);
-        ClassOrInterfaceDeclaration serverDecl = serverUnit.getClassByName("RestServer")
-                .orElseThrow(() -> new RuntimeException("Cannot find class RestServer."));
-        List<MethodDeclaration> unimplementedMethods = helper.listUnimplementedMethods(backendDecl, serverDecl);
+        List<MethodDeclaration> unimplementedMethods = helper.listUnimplementedMethods(backendDecl, restServerDecl);
         for (MethodDeclaration backendMethodDecl : unimplementedMethods) {
             MethodDeclaration serverMethod = createServerMethod(backendMethodDecl);
-            serverDecl.addMember(serverMethod);
+            restServerDecl.addMember(serverMethod);
             if (!save) {
                 System.out.println(serverMethod);
             }
         }
-        if (save) {
-            helper.saveToFile(serverSource, serverUnit.toString(), true);
+    }
+
+    private interface MethodCreator {
+        void create(ParamsInfo paramsInfo, MethodDeclaration targetMethod, MethodDeclaration backendMethod);
+    }
+
+    private void update(ClassOrInterfaceDeclaration restServerDecl, Path backendPath,
+                        MethodCreator methodCreator) throws Exception {
+        CompilationUnit backendUnit = StaticJavaParser.parse(backendPath);
+        String backendClassName = helper.getClassNameFromSourcePath(backendPath);
+        ClassOrInterfaceDeclaration backendDecl =
+                helper.getClassOrInterfaceDeclaration(backendUnit, backendClassName);
+        List<MethodDeclaration> unimplementedMethods = helper.listUnimplementedMethods(backendDecl, restServerDecl);
+        for (MethodDeclaration backendMethod : unimplementedMethods) {
+            MethodDeclaration method = new MethodDeclaration();
+            method.addModifier(Keyword.PUBLIC);
+            method.setType(backendMethod.getType());
+            method.setName(backendMethod.getName());
+            ParamsInfo paramsInfo = addParamsToMethod(method, backendMethod.getParameters());
+            String name = backendMethod.getNameAsString();
+            method.addAnnotation(createPathAnnotation(name));
+            method.addAnnotation(createProducesAnnotation());
+            if (paramsInfo.bodyParam != null) {
+                method.addAnnotation(new MarkerAnnotationExpr("POST"));
+                method.addAnnotation(createConsumesAnnotation());
+            } else {
+                method.addAnnotation(new MarkerAnnotationExpr("GET"));
+            }
+            methodCreator.create(paramsInfo, method, backendMethod);
+            restServerDecl.addMember(method);
+            if (!save) {
+                System.out.println(method);
+            }
         }
     }
 
-    private MethodDeclaration createServerMethodFromService(MethodDeclaration serviceMethod){
-        MethodDeclaration method = new MethodDeclaration();
-        method.addModifier(Keyword.PUBLIC);
-        method.setType(serviceMethod.getType());
-        method.setName(serviceMethod.getName());
-        ParamsInfo paramsInfo = addParamsToMethod(method, serviceMethod.getParameters());
-        String name = serviceMethod.getNameAsString();
-        method.addAnnotation(createPathAnnotation(name));
-        method.addAnnotation(createProducesAnnotation());
-        if (paramsInfo.bodyParam != null) {
-            method.addAnnotation(new MarkerAnnotationExpr("POST"));
-        } else {
-            method.addAnnotation(new MarkerAnnotationExpr("GET"));
-        }
+    private MethodDeclaration createMethodFromServiceOrSupport(String delegate,
+                                                            ParamsInfo paramsInfo,
+                                                            MethodDeclaration target,
+                                                            MethodDeclaration serviceMethod){
         // return dbBackendService.startVisit(patientId, at);
         List<Parameter> params = serviceMethod.getParameters();
-        MethodCallExpr methodCall = new MethodCallExpr(new NameExpr("dbBackendService"),
+        MethodCallExpr methodCall = new MethodCallExpr(new NameExpr(delegate),
                 serviceMethod.getNameAsString(),
                 nodeList(params.stream().map(para -> new NameExpr(para.getNameAsString())).collect(toList())));
         Statement stmt;
-        if( method.getType().isVoidType() ){
+        if( target.getType().isVoidType() ){
             stmt = new ExpressionStmt(methodCall);
         } else {
             stmt = new ReturnStmt(methodCall);
         }
-        method.setBody(new BlockStmt(nodeList(stmt)));
-        return method;
+        target.setBody(new BlockStmt(nodeList(stmt)));
+        return target;
     }
 
     private MethodDeclaration createServerMethod(MethodDeclaration backendMethod) {

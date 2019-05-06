@@ -86,9 +86,7 @@ class UpdateFrontend implements Runnable {
     }
 
     private ClassOrInterfaceDeclaration getClassOrInterfaceDeclaration(CompilationUnit unit, String name) {
-        return unit.getClassByName(name)
-                .or(() -> unit.getInterfaceByName(name))
-                .orElseThrow(() -> new RuntimeException("Cannot find class/interface: " + name));
+        return helper.getClassOrInterfaceDeclaration(unit, name);
     }
 
     private void updateFrontend() throws Exception {
