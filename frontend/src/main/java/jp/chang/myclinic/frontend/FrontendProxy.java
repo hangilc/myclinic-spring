@@ -49,138 +49,8 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(int patientId, LocalDate at) {
-        return delegate.findAvailableShahokokuho(patientId, at);
-    }
-
-    @Override
-    public CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(int patientId, LocalDate at) {
-        return delegate.findAvailableKoukikourei(patientId, at);
-    }
-
-    @Override
-    public CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at) {
-        return delegate.findAvailableRoujin(patientId, at);
-    }
-
-    @Override
-    public CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at) {
-        return delegate.findAvailableKouhi(patientId, at);
-    }
-
-    @Override
-    public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at) {
-        return delegate.startVisit(patientId, at);
-    }
-
-    @Override
-    public CompletableFuture<Void> startExam(int visitId) {
-        return delegate.startExam(visitId);
-    }
-
-    @Override
-    public CompletableFuture<Void> suspendExam(int visitId) {
-        return delegate.suspendExam(visitId);
-    }
-
-    @Override
-    public CompletableFuture<Void> endExam(int visitId, int charge) {
-        return delegate.endExam(visitId, charge);
-    }
-
-    @Override
-    public CompletableFuture<Void> enterCharge(ChargeDTO charge) {
-        return delegate.enterCharge(charge);
-    }
-
-    @Override
-    public CompletableFuture<Void> setChargeOfVisit(int visitId, int charge) {
-        return delegate.setChargeOfVisit(visitId, charge);
-    }
-
-    @Override
-    public CompletableFuture<ChargeDTO> getCharge(int visitId) {
-        return delegate.getCharge(visitId);
-    }
-
-    @Override
-    public CompletableFuture<List<PaymentDTO>> listPayment(int visitId) {
-        return delegate.listPayment(visitId);
-    }
-
-    @Override
-    public CompletableFuture<WqueueDTO> getWqueue(int visitId) {
-        return delegate.getWqueue(visitId);
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteWqueue(int visitId) {
-        return delegate.deleteWqueue(visitId);
-    }
-
-    @Override
-    public CompletableFuture<List<WqueueDTO>> listWqueue() {
-        return delegate.listWqueue();
-    }
-
-    @Override
-    public CompletableFuture<List<WqueueFullDTO>> listWqueueFull() {
-        return delegate.listWqueueFull();
-    }
-
-    @Override
-    public CompletableFuture<HokenDTO> getHoken(int visitId) {
-        return delegate.getHoken(visitId);
-    }
-
-    @Override
-    public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
-        return delegate.listAvailableHoken(patientId, visitedAt);
-    }
-
-    @Override
-    public CompletableFuture<Void> updateHoken(VisitDTO visit) {
-        return delegate.updateHoken(visit);
-    }
-
-    @Override
-    public CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId) {
-        return delegate.getDrugAttr(drugId);
-    }
-
-    @Override
-    public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr) {
-        return delegate.enterDrugAttr(drugAttr);
-    }
-
-    @Override
-    public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
-        return delegate.batchGetDrugAttr(drugIds);
-    }
-
-    @Override
-    public CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou) {
-        return delegate.setDrugTekiyou(drugId, tekiyou);
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrugTekiyou(int drugId) {
-        return delegate.deleteDrugTekiyou(drugId);
-    }
-
-    @Override
-    public CompletableFuture<Integer> countUnprescribedDrug(int visitId) {
-        return delegate.countUnprescribedDrug(visitId);
-    }
-
-    @Override
     public CompletableFuture<VisitDTO> getVisit(int visitId) {
         return delegate.getVisit(visitId);
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteVisitSafely(int visitId) {
-        return delegate.deleteVisitSafely(visitId);
     }
 
     @Override
@@ -206,6 +76,141 @@ public class FrontendProxy implements Frontend {
     @Override
     public CompletableFuture<VisitFull2DTO> getVisitFull2(int visitId) {
         return delegate.getVisitFull2(visitId);
+    }
+
+    @Override
+    public CompletableFuture<ChargeDTO> getCharge(int visitId) {
+        return delegate.getCharge(visitId);
+    }
+
+    @Override
+    public CompletableFuture<List<PaymentDTO>> listPayment(int visitId) {
+        return delegate.listPayment(visitId);
+    }
+
+    @Override
+    public CompletableFuture<WqueueDTO> getWqueue(int visitId) {
+        return delegate.getWqueue(visitId);
+    }
+
+    @Override
+    public CompletableFuture<List<WqueueDTO>> listWqueue() {
+        return delegate.listWqueue();
+    }
+
+    @Override
+    public CompletableFuture<List<WqueueFullDTO>> listWqueueFull() {
+        return delegate.listWqueueFull();
+    }
+
+    @Override
+    public CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam() {
+        return delegate.listWqueueFullForExam();
+    }
+
+    @Override
+    public CompletableFuture<HokenDTO> getHoken(int visitId) {
+        return delegate.getHoken(visitId);
+    }
+
+    @Override
+    public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
+        return delegate.listAvailableHoken(patientId, visitedAt);
+    }
+
+    @Override
+    public CompletableFuture<Void> updateHoken(VisitDTO visit) {
+        return delegate.updateHoken(visit);
+    }
+
+    @Override
+    public CompletableFuture<DrugDTO> getDrug(int drugId) {
+        return delegate.getDrug(drugId);
+    }
+
+    @Override
+    public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
+        return delegate.getDrugWithAttr(drugId);
+    }
+
+    @Override
+    public CompletableFuture<Integer> batchUpdateDrugDays(List<Integer> drugIds, int days) {
+        return delegate.batchUpdateDrugDays(drugIds, days);
+    }
+
+    @Override
+    public CompletableFuture<Integer> markDrugsAsPrescribed(int visitId) {
+        return delegate.markDrugsAsPrescribed(visitId);
+    }
+
+    @Override
+    public CompletableFuture<DrugFullDTO> getDrugFull(int drugId) {
+        return delegate.getDrugFull(drugId);
+    }
+
+    @Override
+    public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
+        return delegate.getDrugFullWithAttr(drugId);
+    }
+
+    @Override
+    public CompletableFuture<List<DrugWithAttrDTO>> listDrugWithAttr(int visitId) {
+        return delegate.listDrugWithAttr(visitId);
+    }
+
+    @Override
+    public CompletableFuture<List<DrugDTO>> listDrug(int visitId) {
+        return delegate.listDrug(visitId);
+    }
+
+    @Override
+    public CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId) {
+        return delegate.listDrugFull(visitId);
+    }
+
+    @Override
+    public CompletableFuture<List<Integer>> listRepresentativeGaiyouDrugId(String text, int patientId) {
+        return delegate.listRepresentativeGaiyouDrugId(text, patientId);
+    }
+
+    @Override
+    public CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId) {
+        return delegate.listPrevDrugByPatient(patientId);
+    }
+
+    @Override
+    public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(String text, int patientId) {
+        return delegate.searchPrevDrug(text, patientId);
+    }
+
+    @Override
+    public CompletableFuture<Integer> countUnprescribedDrug(int visitId) {
+        return delegate.countUnprescribedDrug(visitId);
+    }
+
+    @Override
+    public CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId) {
+        return delegate.getDrugAttr(drugId);
+    }
+
+    @Override
+    public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr) {
+        return delegate.enterDrugAttr(drugAttr);
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
+        return delegate.updateDrugAttr(drugAttr);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDrugAttr(int drugId) {
+        return delegate.deleteDrugAttr(drugId);
+    }
+
+    @Override
+    public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
+        return delegate.batchGetDrugAttr(drugIds);
     }
 
     @Override
@@ -259,78 +264,13 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<DrugDTO> getDrug(int drugId) {
-        return delegate.getDrug(drugId);
-    }
-
-    @Override
-    public CompletableFuture<Integer> enterDrug(DrugDTO drug) {
-        return delegate.enterDrug(drug);
-    }
-
-    @Override
-    public CompletableFuture<Void> updateDrug(DrugDTO drug) {
-        return delegate.updateDrug(drug);
-    }
-
-    @Override
-    public CompletableFuture<Void> batchUpdateDrugDays(List<Integer> drugIds, int days) {
-        return delegate.batchUpdateDrugDays(drugIds, days);
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrug(int drugId) {
-        return delegate.deleteDrug(drugId);
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrugCascading(int drugId) {
-        return delegate.deleteDrugCascading(drugId);
-    }
-
-    @Override
-    public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
-        return delegate.batchDeleteDrugs(drugIds);
-    }
-
-    @Override
-    public CompletableFuture<DrugFullDTO> getDrugFull(int drugId) {
-        return delegate.getDrugFull(drugId);
-    }
-
-    @Override
-    public CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId) {
-        return delegate.listDrugFull(visitId);
-    }
-
-    @Override
-    public CompletableFuture<List<Integer>> listRepresentativeGaiyouDrugId(String text, int patientId) {
-        return delegate.listRepresentativeGaiyouDrugId(text, patientId);
-    }
-
-    @Override
-    public CompletableFuture<List<DrugFullDTO>> listPrevDrugByPatient(int patientId) {
-        return delegate.listPrevDrugByPatient(patientId);
-    }
-
-    @Override
-    public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(String text, int patientId) {
-        return delegate.searchPrevDrug(text, patientId);
-    }
-
-    @Override
     public CompletableFuture<ShinryouDTO> getShinryou(int shinryouId) {
         return delegate.getShinryou(shinryouId);
     }
 
     @Override
-    public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou) {
-        return delegate.enterShinryou(shinryou);
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteShinryou(int shinryouId) {
-        return delegate.deleteShinryou(shinryouId);
+    public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
+        return delegate.getShinryouWithAttr(shinryouId);
     }
 
     @Override
@@ -339,13 +279,8 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-        return delegate.batchEnterShinryou(shinryouList);
-    }
-
-    @Override
-    public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req) {
-        return delegate.batchEnter(req);
+    public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
+        return delegate.getShinryouFullWithAttr(shinryouId);
     }
 
     @Override
@@ -354,8 +289,28 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
+    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds) {
+        return delegate.listShinryouFullWithAttrByIds(shinryouIds);
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
+        return delegate.listShinryou(visitId);
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
+        return delegate.listShinryouWithAttr(visitId);
+    }
+
+    @Override
     public CompletableFuture<List<ShinryouFullDTO>> listShinryouFull(int visitId) {
         return delegate.listShinryouFull(visitId);
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
+        return delegate.listShinryouFullWithAttr(visitId);
     }
 
     @Override
@@ -374,28 +329,13 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
-        return delegate.setShinryouAttr(shinryouId, attr);
-    }
-
-    @Override
     public CompletableFuture<Integer> enterConduct(ConductDTO conduct) {
         return delegate.enterConduct(conduct);
     }
 
     @Override
-    public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req) {
-        return delegate.enterConductFull(req);
-    }
-
-    @Override
     public CompletableFuture<ConductDTO> getConduct(int conductId) {
         return delegate.getConduct(conductId);
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteConductCascading(int conductId) {
-        return delegate.deleteConductCascading(conductId);
     }
 
     @Override
@@ -429,16 +369,6 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
-        return delegate.updateGazouLabel(gazouLabel);
-    }
-
-    @Override
-    public CompletableFuture<Void> modifyGazouLabel(int conductId, String label) {
-        return delegate.modifyGazouLabel(conductId, label);
-    }
-
-    @Override
     public CompletableFuture<GazouLabelDTO> getGazouLabel(int conductId) {
         return delegate.getGazouLabel(conductId);
     }
@@ -446,6 +376,11 @@ public class FrontendProxy implements Frontend {
     @Override
     public CompletableFuture<Void> deleteGazouLabel(int conductId) {
         return delegate.deleteGazouLabel(conductId);
+    }
+
+    @Override
+    public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
+        return delegate.updateGazouLabel(gazouLabel);
     }
 
     @Override
@@ -544,8 +479,23 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
+        return delegate.enterShahokokuho(shahokokuho);
+    }
+
+    @Override
+    public CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(int patientId, LocalDate at) {
+        return delegate.findAvailableShahokokuho(patientId, at);
+    }
+
+    @Override
     public CompletableFuture<KoukikoureiDTO> getKoukikourei(int koukikoureiId) {
         return delegate.getKoukikourei(koukikoureiId);
+    }
+
+    @Override
+    public CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(int patientId, LocalDate at) {
+        return delegate.findAvailableKoukikourei(patientId, at);
     }
 
     @Override
@@ -554,13 +504,28 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
+    public CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at) {
+        return delegate.findAvailableRoujin(patientId, at);
+    }
+
+    @Override
     public CompletableFuture<KouhiDTO> getKouhi(int kouhiId) {
         return delegate.getKouhi(kouhiId);
     }
 
     @Override
+    public CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at) {
+        return delegate.findAvailableKouhi(patientId, at);
+    }
+
+    @Override
     public CompletableFuture<Integer> enterDisease(DiseaseDTO disease) {
         return delegate.enterDisease(disease);
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
+        return delegate.enterNewDisease(disease);
     }
 
     @Override
@@ -599,8 +564,33 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Integer> enterDiseaseAdj(DiseaseAdjDTO adj) {
+        return delegate.enterDiseaseAdj(adj);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDiseaseAdj(int diseaseAdjId) {
+        return delegate.deleteDiseaseAdj(diseaseAdjId);
+    }
+
+    @Override
+    public CompletableFuture<List<DiseaseAdjDTO>> listDiseaseAdj(int diseaseId) {
+        return delegate.listDiseaseAdj(diseaseId);
+    }
+
+    @Override
+    public CompletableFuture<Integer> deleteDiseaseAdjForDisease(DiseaseDTO disease) {
+        return delegate.deleteDiseaseAdjForDisease(disease);
+    }
+
+    @Override
     public CompletableFuture<PharmaQueueDTO> getPharmaQueue(int visitId) {
         return delegate.getPharmaQueue(visitId);
+    }
+
+    @Override
+    public CompletableFuture<Void> enterPharmaQueue(PharmaQueueDTO pharmaQueue) {
+        return delegate.enterPharmaQueue(pharmaQueue);
     }
 
     @Override
@@ -629,8 +619,23 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
+    public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at) {
+        return delegate.getShinryouMaster(shinryoucode, at);
+    }
+
+    @Override
+    public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
+        return delegate.getIyakuhinMaster(iyakuhincode, at);
+    }
+
+    @Override
     public CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(String text, LocalDate at) {
         return delegate.searchIyakuhinMaster(text, at);
+    }
+
+    @Override
+    public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
+        return delegate.getKizaiMaster(kizaicode, at);
     }
 
     @Override
@@ -714,167 +719,52 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
-        return delegate.modifyDisease(diseaseModifyDTO);
+    public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at) {
+        return delegate.startVisit(patientId, at);
     }
 
     @Override
-    public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
-        return delegate.enterShahokokuho(shahokokuho);
+    public CompletableFuture<Void> startExam(int visitId) {
+        return delegate.startExam(visitId);
     }
 
     @Override
-    public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
-        return delegate.getIyakuhinMaster(iyakuhincode, at);
+    public CompletableFuture<Void> suspendExam(int visitId) {
+        return delegate.suspendExam(visitId);
     }
 
     @Override
-    public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId) {
-        return delegate.deleteDuplicateShinryou(visitId);
+    public CompletableFuture<Void> endExam(int visitId, int charge) {
+        return delegate.endExam(visitId, charge);
     }
 
     @Override
-    public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
-        return delegate.listShinryou(visitId);
+    public CompletableFuture<Void> deleteVisit(int visitId) {
+        return delegate.deleteVisit(visitId);
     }
 
     @Override
-    public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
-        return delegate.finishCashier(payment);
+    public CompletableFuture<Void> enterCharge(int visitId, int charge) {
+        return delegate.enterCharge(visitId, charge);
     }
 
     @Override
-    public CompletableFuture<Void> markDrugsAsPrescribed(int visitId) {
-        return delegate.markDrugsAsPrescribed(visitId);
+    public CompletableFuture<Void> updateCharge(int visitId, int charge) {
+        return delegate.updateCharge(visitId, charge);
     }
 
     @Override
-    public CompletableFuture<Void> prescDone(int visitId) {
-        return delegate.prescDone(visitId);
+    public CompletableFuture<Void> enterDrug(DrugDTO drug) {
+        return delegate.enterDrug(drug);
     }
 
     @Override
-    public CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam() {
-        return delegate.listWqueueFullForExam();
+    public CompletableFuture<Void> updateDrug(DrugDTO drug) {
+        return delegate.updateDrug(drug);
     }
 
     @Override
-    public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at) {
-        return delegate.getShinryouMaster(shinryoucode, at);
-    }
-
-    @Override
-    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
-        return delegate.resolveShinryouMasterByKey(key, at);
-    }
-
-    @Override
-    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
-        return delegate.resolveKizaiMasterByKey(key, at);
-    }
-
-    @Override
-    public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
-        return delegate.listDiseaseExample();
-    }
-
-    @Override
-    public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
-        return delegate.getMeisai(visitId);
-    }
-
-    @Override
-    public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
-        return delegate.batchEnterByNames(visitId, req);
-    }
-
-    @Override
-    public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
-        return delegate.resolveStockDrug(iyakuhincode, at);
-    }
-
-    @Override
-    public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
-        return delegate.getKizaiMaster(kizaicode, at);
-    }
-
-    @Override
-    public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
-        return delegate.getClinicInfo();
-    }
-
-    @Override
-    public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
-        return delegate.updateDrugAttr(drugAttr);
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteDrugAttr(int drugId) {
-        return delegate.deleteDrugAttr(drugId);
-    }
-
-    @Override
-    public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
-        return delegate.deleteShinryouCascading(shinryouId);
-    }
-
-    @Override
-    public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
-        return delegate.batchDeleteShinryouCascading(shinryouIds);
-    }
-
-    @Override
-    public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
-        return delegate.getDrugWithAttr(drugId);
-    }
-
-    @Override
-    public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
-        return delegate.getDrugFullWithAttr(drugId);
-    }
-
-    @Override
-    public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
-        return delegate.getShinryouWithAttr(shinryouId);
-    }
-
-    @Override
-    public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
-        return delegate.getShinryouFullWithAttr(shinryouId);
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
-        return delegate.listShinryouWithAttr(visitId);
-    }
-
-    @Override
-    public CompletableFuture<List<DrugWithAttrDTO>> listDrugWithAttr(int visitId) {
-        return delegate.listDrugWithAttr(visitId);
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds) {
-        return delegate.listShinryouFullWithAttrByIds(shinryouIds);
-    }
-
-    @Override
-    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
-        return delegate.listShinryouFullWithAttr(visitId);
-    }
-
-    @Override
-    public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
-        return delegate.batchResolveStockDrug(iyakuhincodes, at);
-    }
-
-    @Override
-    public CompletableFuture<ShinryouDTO> enterShinryouByName(int visitId, String name) {
-        return delegate.enterShinryouByName(visitId, name);
-    }
-
-    @Override
-    public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+    public CompletableFuture<Void> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
         return delegate.enterDrugWithAttr(drugWithAttr);
     }
 
@@ -884,7 +774,92 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
-        return delegate.enterNewDisease(disease);
+    public CompletableFuture<Void> deleteDrug(int drugId) {
+        return delegate.deleteDrug(drugId);
+    }
+
+    @Override
+    public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
+        return delegate.batchDeleteDrugs(drugIds);
+    }
+
+    @Override
+    public CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou) {
+        return delegate.setDrugTekiyou(drugId, tekiyou);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDrugTekiyou(int drugId) {
+        return delegate.deleteDrugTekiyou(drugId);
+    }
+
+    @Override
+    public CompletableFuture<Void> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
+        return delegate.enterShinryouWithAttr(shinryouWithAttr);
+    }
+
+    @Override
+    public CompletableFuture<Void> enterShinryou(ShinryouDTO shinryou) {
+        return delegate.enterShinryou(shinryou);
+    }
+
+    @Override
+    public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+        return delegate.batchEnterShinryou(shinryouList);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteShinryou(int shinryouId) {
+        return delegate.deleteShinryou(shinryouId);
+    }
+
+    @Override
+    public CompletableFuture<Void> batchDeleteShinryou(List<Integer> shinryouIds) {
+        return delegate.batchDeleteShinryou(shinryouIds);
+    }
+
+    @Override
+    public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId) {
+        return delegate.deleteDuplicateShinryou(visitId);
+    }
+
+    @Override
+    public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
+        return delegate.setShinryouAttr(shinryouId, attr);
+    }
+
+    @Override
+    public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req) {
+        return delegate.enterConductFull(req);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteConduct(int conductId) {
+        return delegate.deleteConduct(conductId);
+    }
+
+    @Override
+    public CompletableFuture<Void> setGazouLabel(int conductId, String label) {
+        return delegate.setGazouLabel(conductId, label);
+    }
+
+    @Override
+    public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req) {
+        return delegate.batchEnter(req);
+    }
+
+    @Override
+    public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+        return delegate.modifyDisease(diseaseModifyDTO);
+    }
+
+    @Override
+    public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
+        return delegate.finishCashier(payment);
+    }
+
+    @Override
+    public CompletableFuture<Void> prescDone(int visitId) {
+        return delegate.prescDone(visitId);
     }
 }

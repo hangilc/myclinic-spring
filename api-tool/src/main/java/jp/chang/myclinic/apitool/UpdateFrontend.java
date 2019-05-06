@@ -22,6 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.toList;
@@ -160,7 +163,7 @@ class UpdateFrontend implements Runnable {
         }
     }
 
-    private BlockStmt createFrontendBackendBodyFromService(MethodDeclaration serviceMethod){
+    private BlockStmt createFrontendBackendBodyFromService(MethodDeclaration serviceMethod) {
         Expression methodCall = new MethodCallExpr(
                 new NameExpr("dbBackendService"),
                 serviceMethod.getNameAsString(),
@@ -168,7 +171,7 @@ class UpdateFrontend implements Runnable {
                         .map(p -> new NameExpr(p.getNameAsString()))
                         .collect(toList()))
         );
-        if( serviceMethod.getType().isVoidType() ){
+        if (serviceMethod.getType().isVoidType()) {
             return new BlockStmt(nodeList(
                     new ExpressionStmt(methodCall),
                     new ReturnStmt(
@@ -177,11 +180,11 @@ class UpdateFrontend implements Runnable {
             ));
         } else {
             return new BlockStmt(nodeList(
-                new ReturnStmt(new MethodCallExpr(
-                        null,
-                        "value",
-                        nodeList(methodCall)
-                ))
+                    new ReturnStmt(new MethodCallExpr(
+                            null,
+                            "value",
+                            nodeList(methodCall)
+                    ))
             ));
         }
     }
@@ -209,7 +212,7 @@ class UpdateFrontend implements Runnable {
                     System.out.println(method);
                 }
             }
-            for(MethodDeclaration serviceMethod: unimplementedServiceMethods){
+            for (MethodDeclaration serviceMethod : unimplementedServiceMethods) {
                 MethodDeclaration frontendMethod = createServiceMethodHead(serviceMethod);
                 frontendMethod.setPublic(true);
                 frontendMethod.addAnnotation(new MarkerAnnotationExpr("Override"));
@@ -232,31 +235,55 @@ class UpdateFrontend implements Runnable {
         }
     }
 
-    private void updateFrontendProxy() throws Exception {
-        Path frontendProxySrcPath = Paths.get(frontendDir, "FrontendProxy.java");
-        CompilationUnit proxyUnit = StaticJavaParser.parse(frontendProxySrcPath);
-        ClassOrInterfaceDeclaration proxyClass = proxyUnit.getClassByName("FrontendProxy")
-                .orElseThrow(() -> new RuntimeException("cannot find FrontendProxy interface."));
-        ClassOrInterfaceDeclaration backendInterface = getBackendDeclaration();
-        List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendInterface,
-                proxyClass);
-        if (unimplementedBackendMethods.size() > 0) {
+    private void update(String frontendClass,
+                        Function<FrontendMethod, MethodDeclaration> backendMethodConverter,
+                        BiConsumer<MethodDeclaration, MethodDeclaration> serviceMethodCreater) throws Exception {
+        ClassOrInterfaceDeclaration backendDecl = getBackendDeclaration();
+        ClassOrInterfaceDeclaration serviceDecl = getServiceDeclaration();
+        Path frontendPath = frontendPath(frontendClass);
+        CompilationUnit frontendUnit = StaticJavaParser.parse(frontendPath);
+        ClassOrInterfaceDeclaration frontendDecl = getClassOrInterfaceDeclaration(frontendUnit,
+                helper.getClassNameFromSourcePath(frontendPath));
+        List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendDecl,
+                frontendDecl);
+        List<MethodDeclaration> unimplementedServiceMethods = listUnimplementedMethods(serviceDecl,
+                frontendDecl);
+        if (unimplementedBackendMethods.size() + unimplementedBackendMethods.size() > 0) {
             if (!save) {
-                System.out.println("*** FrontendProxy");
+                System.out.println("*** " + frontendClass);
             }
             for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
                 FrontendMethod fm = FrontendMethods.createFrontendMethod(backendMethod);
-                MethodDeclaration method = fm.createFrontendProxyMethod();
-                proxyClass.addMember(method);
+                MethodDeclaration method = backendMethodConverter.apply(fm);
+                frontendDecl.addMember(method);
                 if (!save) {
                     System.out.println(method);
                 }
             }
+            for (MethodDeclaration serviceMethod : unimplementedServiceMethods) {
+                MethodDeclaration frontendMethod = createServiceMethodHead(serviceMethod);
+                serviceMethodCreater.accept(frontendMethod, serviceMethod);
+                frontendDecl.addMember(frontendMethod);
+                if (!save) {
+                    System.out.println(frontendMethod);
+                }
+            }
             if (save) {
-                saveToFile(frontendProxySrcPath.toString(), proxyUnit.toString());
-                System.out.printf("saved to %s\n", frontendProxySrcPath);
+                saveToFile(frontendPath.toString(), frontendUnit.toString());
+                System.out.printf("saved to %s\n", frontendPath);
             }
         }
+    }
+
+    private void updateFrontendProxy() throws Exception {
+        update("FrontendProxy", FrontendMethod::createFrontendProxyMethod,
+                (f, b) -> {
+                    f.setPublic(true);
+                    f.addAnnotation(new MarkerAnnotationExpr("Override"));
+                    f.setBody(new BlockStmt(nodeList(
+                            new ReturnStmt(FrontendMethodHelper.createDelegateCall("delegate", b))
+                    )));
+                });
     }
 
     private List<MethodDeclaration> listUnimplementedMethods(ClassOrInterfaceDeclaration backend,
