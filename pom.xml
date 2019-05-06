@@ -23,6 +23,7 @@
         <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
         <spring.boot.maven.plugin.version>${spring.boot.version}</spring.boot.maven.plugin.version>
         <google.guice.version>4.2.2</google.guice.version>
+        <retrofit2.version>2.5.0</retrofit2.version>
     </properties>
 
     <dependencyManagement>
