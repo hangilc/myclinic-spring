@@ -764,15 +764,6 @@ public class Backend {
         }
     }
 
-//    public void deleteShinryouCascading(int shinryouId) {
-//        deleteShinryouAttr(shinryouId);
-//        deleteShinryou(shinryouId);
-//    }
-//
-//    public void batchDeleteShinryouCascading(List<Integer> shinryouIds) {
-//        shinryouIds.forEach(this::deleteShinryouCascading);
-//    }
-//
     public ShinryouFullDTO getShinryouFull(int shinryouId) {
         String sql = xlate("select s.*, m.* from Shinryou s, ShinryouMaster m, Visit v " +
                         " where s.shinryouId = ? and s.visitId = v.visitId and s.shinryoucode = m.shinryoucode " +
@@ -790,10 +781,6 @@ public class Backend {
         return result;
     }
 
-//    public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-//        shinryouList.forEach(this::enterShinryou);
-//    }
-//
     public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds) {
         return shinryouIds.stream().map(this::getShinryouFull).collect(toList());
     }
@@ -1334,15 +1321,6 @@ public class Backend {
         return null;
     }
 
-//    public ShinryouMasterDTO resolveShinryouMasterByKey(String key, LocalDate at) {
-//        int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(key);
-//        if (shinryoucode == 0) {
-//            return null;
-//        } else {
-//            return getShinryouMaster(shinryoucode, at);
-//        }
-//    }
-
     public Map<String, Integer> batchResolveShinryouNames(List<List<String>> args, LocalDate at) {
         Map<String, Integer> result = new LinkedHashMap<>();
         for (List<String> arg : args) {
@@ -1432,15 +1410,6 @@ public class Backend {
         }
         return null;
     }
-
-//    public KizaiMasterDTO resolveKizaiMasterByKey(String key, LocalDate at) {
-//        int kizaicode = ss.kizaicodeResolver.resolveKizaicodeByKey(key);
-//        if (kizaicode == 0) {
-//            return null;
-//        } else {
-//            return getKizaiMaster(kizaicode, at);
-//        }
-//    }
 
     public Map<String, Integer> batchResolveKizaiNames(List<List<String>> args, LocalDate at) {
         Map<String, Integer> result = new LinkedHashMap<>();
@@ -1539,113 +1508,6 @@ public class Backend {
         return getQuery().query(sql,
                 biProjector(ts.prescExampleTable, ts.iyakuhinMasterTable, PrescExampleFullDTO::create));
     }
-
-    // BatchEnterByNames /////////////////////////////////////////////////////////////////
-
-//    public BatchEnterResultDTO batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
-//        VisitDTO visit = getVisit(visitId);
-//        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
-//        BatchEnterResultDTO result = new BatchEnterResultDTO();
-//        result.shinryouIds = new ArrayList<>();
-//        result.conductIds = new ArrayList<>();
-//        if (req.shinryouNames != null) {
-//            req.shinryouNames.forEach(key -> {
-//                ShinryouMasterDTO m = resolveShinryouMasterByKey(key, at);
-//                if (m == null) {
-//                    throw new RuntimeException("Cannot find shinryou master: " + key);
-//                }
-//                ShinryouDTO shinryou = new ShinryouDTO();
-//                shinryou.visitId = visitId;
-//                shinryou.shinryoucode = m.shinryoucode;
-//                enterShinryou(shinryou);
-//                result.shinryouIds.add(shinryou.shinryouId);
-//            });
-//        }
-//        if (req.conducts != null) {
-//            req.conducts.forEach(conductReq -> {
-//                ConductDTO conduct = new ConductDTO();
-//                conduct.visitId = visitId;
-//                conduct.kind = conductReq.kind;
-//                enterConduct(conduct);
-//                int conductId = conduct.conductId;
-//                if (conductReq.gazouLabel != null) {
-//                    GazouLabelDTO gazouLabel = new GazouLabelDTO();
-//                    gazouLabel.conductId = conductId;
-//                    gazouLabel.label = conductReq.gazouLabel;
-//                    enterGazouLabel(gazouLabel);
-//                }
-//                if (conductReq.shinryouNames != null) {
-//                    conductReq.shinryouNames.forEach(key -> {
-//                        ShinryouMasterDTO master = resolveShinryouMasterByKey(key, at);
-//                        if (master == null) {
-//                            throw new RuntimeException("Cannot find shinryou master: " + key);
-//                        }
-//                        ConductShinryouDTO shinryou = new ConductShinryouDTO();
-//                        shinryou.conductId = conductId;
-//                        shinryou.shinryoucode = master.shinryoucode;
-//                        enterConductShinryou(shinryou);
-//                    });
-//                }
-//                if (conductReq.kizaiList != null) {
-//                    conductReq.kizaiList.forEach(kizaiReq -> {
-//                        KizaiMasterDTO master = resolveKizaiMasterByKey(kizaiReq.name, at);
-//                        if (master == null) {
-//                            throw new RuntimeException("Cannot find kizai master: " + kizaiReq.name);
-//                        }
-//                        ConductKizaiDTO kizai = new ConductKizaiDTO();
-//                        kizai.conductId = conductId;
-//                        kizai.kizaicode = master.kizaicode;
-//                        kizai.amount = kizaiReq.amount;
-//                        enterConductKizai(kizai);
-//                    });
-//                }
-//                result.conductIds.add(conductId);
-//            });
-//        }
-//        return result;
-//    }
-
-    // DiseaseExample ////////////////////////////////////////////////////////////////////
-
-//    public List<DiseaseExampleDTO> listDiseaseExample() {
-//        return ss.diseaseExampleProvider.listDiseaseExample();
-//    }
-
-    // Meisai ////////////////////////////////////////////////////////////////////////////
-
-//    public MeisaiDTO getMeisai(int visitId) {
-//        VisitDTO visit = getVisit(visitId);
-//        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
-//        return ss.meisaiService.getMeisai(
-//                getPatient(visit.patientId),
-//                getHoken(visit),
-//                at,
-//                listShinryouFull(visitId),
-//                ss.houkatsuKensaService.getRevision(at),
-//                listDrugFull(visitId),
-//                listConductFull(visitId)
-//        );
-//    }
-
-    // StockDrug /////////////////////////////////////////////////////////////////////////
-
-//    public IyakuhinMasterDTO resolveStockDrug(int iyakuhincode, LocalDate at) {
-//        iyakuhincode = ss.stockDrugService.resolve(iyakuhincode, at);
-//        return getIyakuhinMaster(iyakuhincode, at);
-//    }
-//
-//    public List<ResolvedStockDrugDTO> batchResolveStockDrug(List<Integer> iyakuhincodes, LocalDate at) {
-//        return iyakuhincodes.stream()
-//                .map(code ->
-//                        ResolvedStockDrugDTO.create(code, ss.stockDrugService.resolve(code, at)))
-//                .collect(toList());
-//    }
-
-    // ClinicInfo ////////////////////////////////////////////////////////////////////////
-
-//    public ClinicInfoDTO getClinicInfo() {
-//        return ss.clinicInfoProvider.getClinicInfo();
-//    }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////
 

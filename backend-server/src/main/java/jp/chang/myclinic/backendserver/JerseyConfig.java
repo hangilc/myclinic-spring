@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.DbBackendService;
+import jp.chang.myclinic.support.SupportSet;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
@@ -24,16 +25,19 @@ class JerseyConfig extends ResourceConfig {
 
         private DbBackend dbBackend;
         private DbBackendService dbBackendService;
+        private SupportSet ss;
 
-        private Binder(DbBackend dbBackend){
+        private Binder(DbBackend dbBackend, SupportSet ss){
             this.dbBackend = dbBackend;
             this.dbBackendService = new DbBackendService(dbBackend);
+            this.ss = ss;
         }
 
         @Override
         protected void configure() {
             bind(dbBackend).to(DbBackend.class);
             bind(dbBackendService).to(DbBackendService.class);
+            bind(ss).to(SupportSet.class);
         }
     }
 
@@ -59,10 +63,10 @@ class JerseyConfig extends ResourceConfig {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
-    JerseyConfig(DbBackend dbBackend) {
+    JerseyConfig(DbBackend dbBackend, SupportSet ss) {
         register(RestServer.class);
         register(RestParamConverterProvider.class);
         register(new JacksonJaxbJsonProvider(mapper, JacksonJaxbJsonProvider.DEFAULT_ANNOTATIONS));
-        register(new Binder(dbBackend));
+        register(new Binder(dbBackend, ss));
     }
 }
