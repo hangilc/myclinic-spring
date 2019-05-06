@@ -88,79 +88,19 @@ class UpdateFrontend implements Runnable {
     }
 
     private void updateFrontend() throws Exception {
-        ClassOrInterfaceDeclaration backendDecl = getBackendDeclaration();
-        ClassOrInterfaceDeclaration serviceDecl = getServiceDeclaration();
-        Path frontendSourceFile = frontendPath("Frontend");
-        CompilationUnit frontendUnit = StaticJavaParser.parse(frontendSourceFile);
-        ClassOrInterfaceDeclaration frontendDecl = getClassOrInterfaceDeclaration(frontendUnit,
-                helper.getClassNameFromSourcePath(frontendSourceFile));
-        List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendDecl, frontendDecl);
-        List<MethodDeclaration> unimplementedServiceMethods = listUnimplementedMethods(serviceDecl, frontendDecl);
-        if (unimplementedBackendMethods.size() + unimplementedServiceMethods.size() > 0) {
-            if (!save) {
-                System.out.println("*** Frontend");
-            }
-            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
-                FrontendMethod fm = FrontendMethods.createFrontendMethod(backendMethod);
-                MethodDeclaration frontendMethod = fm.createFrontendMethod();
-                frontendDecl.addMember(frontendMethod);
-                if (!save) {
-                    System.out.println(frontendMethod);
-                }
-            }
-            for (MethodDeclaration backendMethod : unimplementedServiceMethods) {
-                MethodDeclaration frontendMethod = createServiceMethodHead(backendMethod);
-                frontendMethod.removeBody();
-                frontendDecl.addMember(frontendMethod);
-                if (!save) {
-                    System.out.println(frontendMethod);
-                }
-            }
-            if (save) {
-                saveToFile(frontendSourceFile.toString(), frontendUnit.toString());
-                System.out.printf("saved to %s\n", frontendSourceFile);
-            }
-        }
+        update("Frontend", FrontendMethod::createFrontendMethod,
+                (f, b) -> {
+                    f.removeBody();
+                });
     }
 
     private void updateFrontendBackend() throws Exception {
-        ClassOrInterfaceDeclaration backendDecl = getBackendDeclaration();
-        ClassOrInterfaceDeclaration serviceDecl = getServiceDeclaration();
-        Path frontendBackendSourceFile = frontendPath("FrontendBackend");
-        CompilationUnit frontendBackendUnit = StaticJavaParser.parse(frontendBackendSourceFile);
-        ClassOrInterfaceDeclaration frontendBackendDecl = getClassOrInterfaceDeclaration(frontendBackendUnit,
-                helper.getClassNameFromSourcePath(frontendBackendSourceFile));
-        List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendDecl,
-                frontendBackendDecl);
-        List<MethodDeclaration> unimplementedServiceMethods = listUnimplementedMethods(serviceDecl,
-                frontendBackendDecl);
-        if (unimplementedBackendMethods.size() + unimplementedServiceMethods.size() > 0) {
-            if (!save) {
-                System.out.println("*** FrontendBackend");
-            }
-            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
-                FrontendMethod fm = FrontendMethods.createFrontendMethod(backendMethod);
-                MethodDeclaration method = fm.createFrontendBackendMethod();
-                frontendBackendDecl.addMember(method);
-                if (!save) {
-                    System.out.println(method);
-                }
-            }
-            for (MethodDeclaration serviceMethod : unimplementedServiceMethods) {
-                MethodDeclaration frontendMethod = createServiceMethodHead(serviceMethod);
-                frontendMethod.setPublic(true);
-                frontendMethod.addAnnotation(new MarkerAnnotationExpr("Override"));
-                frontendMethod.setBody(createFrontendBackendBodyFromService(serviceMethod));
-                frontendBackendDecl.addMember(frontendMethod);
-                if (!save) {
-                    System.out.println(frontendMethod);
-                }
-            }
-            if (save) {
-                saveToFile(frontendBackendSourceFile.toString(), frontendBackendUnit.toString());
-                System.out.printf("saved to %s\n", frontendBackendSourceFile);
-            }
-        }
+        update("FrontendBackend", FrontendMethod::createFrontendBackendMethod,
+                (f, b) -> {
+                    f.setPublic(true);
+                    f.addAnnotation(new MarkerAnnotationExpr("Override"));
+                    f.setBody(createFrontendBackendBodyFromService(b));
+                });
     }
 
     private BlockStmt createFrontendBackendBodyFromService(MethodDeclaration serviceMethod) {
@@ -190,49 +130,23 @@ class UpdateFrontend implements Runnable {
     }
 
     private void updateFrontendAdapter() throws Exception {
-        ClassOrInterfaceDeclaration backendDecl = getBackendDeclaration();
-        ClassOrInterfaceDeclaration serviceDecl = getServiceDeclaration();
-        Path frontendPath = frontendPath("FrontendAdapter");
-        CompilationUnit frontendUnit = StaticJavaParser.parse(frontendPath);
-        ClassOrInterfaceDeclaration frontendDecl = getClassOrInterfaceDeclaration(frontendUnit,
-                helper.getClassNameFromSourcePath(frontendPath));
-        List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendDecl,
-                frontendDecl);
-        List<MethodDeclaration> unimplementedServiceMethods = listUnimplementedMethods(serviceDecl,
-                frontendDecl);
-        if (unimplementedBackendMethods.size() + unimplementedBackendMethods.size() > 0) {
-            if (!save) {
-                System.out.println("*** FrontendAdapter");
-            }
-            for (MethodDeclaration backendMethod : unimplementedBackendMethods) {
-                FrontendMethod fm = FrontendMethods.createFrontendMethod(backendMethod);
-                MethodDeclaration method = fm.createFrontendAdapterMethod();
-                frontendDecl.addMember(method);
-                if (!save) {
-                    System.out.println(method);
-                }
-            }
-            for (MethodDeclaration serviceMethod : unimplementedServiceMethods) {
-                MethodDeclaration frontendMethod = createServiceMethodHead(serviceMethod);
-                frontendMethod.setPublic(true);
-                frontendMethod.addAnnotation(new MarkerAnnotationExpr("Override"));
-                // throw new RuntimeException("not implemented");
-                frontendMethod.setBody(new BlockStmt(nodeList(
-                        new ThrowStmt(new ObjectCreationExpr(
-                                null,
-                                new ClassOrInterfaceType(null, "RuntimeException"),
-                                nodeList(new StringLiteralExpr("not implemented"))))
-                )));
-                frontendDecl.addMember(frontendMethod);
-                if (!save) {
-                    System.out.println(frontendMethod);
-                }
-            }
-            if (save) {
-                saveToFile(frontendPath.toString(), frontendUnit.toString());
-                System.out.printf("saved to %s\n", frontendPath);
-            }
-        }
+        update("FrontendAdapter", FrontendMethod::createFrontendAdapterMethod,
+                (f, b) -> {
+                    f.setPublic(true);
+                    f.addAnnotation(new MarkerAnnotationExpr("Override"));
+                    f.setBody(FrontendMethodHelper.createNotImplementedBlock());
+                });
+    }
+
+    private void updateFrontendProxy() throws Exception {
+        update("FrontendProxy", FrontendMethod::createFrontendProxyMethod,
+                (f, b) -> {
+                    f.setPublic(true);
+                    f.addAnnotation(new MarkerAnnotationExpr("Override"));
+                    f.setBody(new BlockStmt(nodeList(
+                            new ReturnStmt(FrontendMethodHelper.createDelegateCall("delegate", b))
+                    )));
+                });
     }
 
     private void update(String frontendClass,
@@ -273,17 +187,6 @@ class UpdateFrontend implements Runnable {
                 System.out.printf("saved to %s\n", frontendPath);
             }
         }
-    }
-
-    private void updateFrontendProxy() throws Exception {
-        update("FrontendProxy", FrontendMethod::createFrontendProxyMethod,
-                (f, b) -> {
-                    f.setPublic(true);
-                    f.addAnnotation(new MarkerAnnotationExpr("Override"));
-                    f.setBody(new BlockStmt(nodeList(
-                            new ReturnStmt(FrontendMethodHelper.createDelegateCall("delegate", b))
-                    )));
-                });
     }
 
     private List<MethodDeclaration> listUnimplementedMethods(ClassOrInterfaceDeclaration backend,

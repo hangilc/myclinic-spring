@@ -2,11 +2,12 @@ package jp.chang.myclinic.apitool.lib.frontend;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.ThrowStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,15 @@ public class FrontendMethodHelper {
                 method.getNameAsString(),
                 nodeList(getParameterValues(method)));
 
+    }
+
+    public static BlockStmt createNotImplementedBlock(){
+        return new BlockStmt(nodeList(
+                new ThrowStmt(new ObjectCreationExpr(
+                        null,
+                        new ClassOrInterfaceType(null, "RuntimeException"),
+                        nodeList(new StringLiteralExpr("not implemented"))))
+        ));
     }
 
 }

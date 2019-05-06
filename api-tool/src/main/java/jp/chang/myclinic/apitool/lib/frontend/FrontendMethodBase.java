@@ -95,12 +95,7 @@ abstract class FrontendMethodBase implements FrontendMethod {
         MethodDeclaration method = createMethodHead();
         method.setPublic(true);
         method.addAnnotation(new MarkerAnnotationExpr("Override"));
-        Statement throwStmt = new ThrowStmt(new ObjectCreationExpr(
-                null,
-                new ClassOrInterfaceType(null, "RuntimeException"),
-                nodeList(new StringLiteralExpr("not implemented"))
-        ));
-        method.setBody(new BlockStmt(nodeList(throwStmt)));
+        method.setBody(FrontendMethodHelper.createNotImplementedBlock());
         return method;
     }
 
