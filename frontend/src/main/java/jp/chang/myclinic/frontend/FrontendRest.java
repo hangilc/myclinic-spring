@@ -1324,4 +1324,73 @@ public class FrontendRest extends FrontendRestBase implements Frontend {
   public CompletableFuture<Void> prescDone(int visitId) {
     return get("presc-done", setter -> setter.set("visit-id", visitId), new GenericType<Void>() {});
   }
+
+  @Override
+  public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
+    return get(
+        "resolve-shinryou-master-by-key",
+        setter -> {
+          setter.set("key", key);
+          setter.set("at", at);
+        },
+        new GenericType<ShinryouMasterDTO>() {});
+  }
+
+  @Override
+  public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
+    return get(
+        "resolve-kizai-master-by-key",
+        setter -> {
+          setter.set("key", key);
+          setter.set("at", at);
+        },
+        new GenericType<KizaiMasterDTO>() {});
+  }
+
+  @Override
+  public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(
+      int visitId, BatchEnterByNamesRequestDTO req) {
+    return post(
+        "batch-enter-by-names",
+        setter -> setter.set("visit-id", visitId),
+        req,
+        new GenericType<BatchEnterResultDTO>() {});
+  }
+
+  @Override
+  public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
+    return get("list-disease-example", setter -> {}, new GenericType<List<DiseaseExampleDTO>>() {});
+  }
+
+  @Override
+  public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
+    return get(
+        "get-meisai", setter -> setter.set("visit-id", visitId), new GenericType<MeisaiDTO>() {});
+  }
+
+  @Override
+  public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
+    return get(
+        "resolve-stock-drug",
+        setter -> {
+          setter.set("iyakuhincode", iyakuhincode);
+          setter.set("at", at);
+        },
+        new GenericType<IyakuhinMasterDTO>() {});
+  }
+
+  @Override
+  public CompletableFuture<List<ResolvedStockDrugDTO>> batchResolveStockDrug(
+      List<Integer> iyakuhincodes, LocalDate at) {
+    return post(
+        "batch-resolve-stock-drug",
+        setter -> setter.set("at", at),
+        iyakuhincodes,
+        new GenericType<List<ResolvedStockDrugDTO>>() {});
+  }
+
+  @Override
+  public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
+    return get("get-clinic-info", setter -> {}, new GenericType<ClinicInfoDTO>() {});
+  }
 }
