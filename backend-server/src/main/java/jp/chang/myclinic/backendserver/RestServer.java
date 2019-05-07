@@ -1178,12 +1178,12 @@ public class RestServer {
     dbBackendService.updateCharge(visitId, charge);
   }
 
-  @Path("enter-drug")
-  @Produces(MediaType.APPLICATION_JSON)
-  @POST
-  public void enterDrug(DrugDTO drug) {
-    dbBackendService.enterDrug(drug);
-  }
+//  @Path("enter-drug")
+//  @Produces(MediaType.APPLICATION_JSON)
+//  @POST
+//  public void enterDrug(DrugDTO drug) {
+//    dbBackendService.enterDrug(drug);
+//  }
 
   @Path("update-drug")
   @Produces(MediaType.APPLICATION_JSON)

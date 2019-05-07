@@ -2,7 +2,6 @@ package jp.chang.myclinic.practice.guitest;
 
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.backendsqlite.Test;
 import jp.chang.myclinic.practice.guitest.drug.DrugTest;
 import jp.chang.myclinic.practice.guitest.drug.RecordDrugsPaneTest;
 import jp.chang.myclinic.practice.guitest.mainpane.MainPaneTest;
