@@ -56,7 +56,7 @@ public class PracticeService {
 
     public static CompletableFuture<Void> deleteVisit(int visitId) {
         return addExceptionHandler(
-                Context.frontend.deleteVisitSafely(visitId),
+                Context.frontend.deleteVisit(visitId),
                 "Failed to delete visit.",
                 "診察の削除に失敗しました。"
         );
@@ -143,7 +143,12 @@ public class PracticeService {
     public static CompletableFuture<Void> modifyDrugDays(List<DrugDTO> drugs, int days) {
         List<Integer> drugIds = drugs.stream().map(drug -> drug.drugId).collect(Collectors.toList());
         return addExceptionHandler(
-                Context.frontend.batchUpdateDrugDays(drugIds, days),
+                Context.frontend.batchUpdateDrugDays(drugIds, days)
+                    .thenAccept(modified -> {
+                        if( modified != drugIds.size() ){
+                            throw new RuntimeException("Number of modified drugs does not match requested drugIds.");
+                        }
+                    }),
                 "Failed to modify drug days.",
                 "処方日数の変更に失敗しました。"
         );

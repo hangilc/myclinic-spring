@@ -214,7 +214,7 @@ public class ConductEditForm extends WorkForm {
 
     private void doDelete() {
         if( GuiUtil.confirm("この処置を削除しますか？") ) {
-            Context.frontend.deleteConductCascading(getConductId())
+            Context.frontend.deleteConduct(getConductId())
                     .thenAccept(result -> Platform.runLater(() -> onDeletedHandler.run()))
                     .exceptionally(HandlerFX.exceptionally(this));
         }

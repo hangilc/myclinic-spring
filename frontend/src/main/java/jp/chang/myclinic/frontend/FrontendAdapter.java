@@ -900,4 +900,14 @@ public class FrontendAdapter implements Frontend {
     public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
         throw new RuntimeException("not implemented");
     }
+
+    @Override
+    public CompletableFuture<Void> deleteWqueue(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterShinryouByName(int visitId, String name) {
+        throw new RuntimeException("not implemented");
+    }
 }

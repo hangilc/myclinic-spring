@@ -1410,4 +1410,19 @@ public class RestServer {
   public ClinicInfoDTO getClinicInfo() {
     return supportService.getClinicInfo();
   }
+
+  @Path("delete-wqueue")
+  @Produces(MediaType.APPLICATION_JSON)
+  @POST
+  public void deleteWqueue(@QueryParam("visit-id") int visitId) {
+    dbBackend.txProc(backend -> backend.deleteWqueue(visitId));
+  }
+
+  @Path("enter-shinryou-by-name")
+  @Produces(MediaType.APPLICATION_JSON)
+  @GET
+  public int enterShinryouByName(
+      @QueryParam("visit-id") int visitId, @QueryParam("name") String name) {
+    return supportService.enterShinryouByName(visitId, name);
+  }
 }

@@ -320,7 +320,7 @@ public class Backend {
         return ts.wqueueTable.getById(visitId);
     }
 
-    void deleteWqueue(int visitId) {
+    public void deleteWqueue(int visitId) {
         WqueueDTO wqueue = ts.wqueueTable.getByIdForUpdate(visitId, ts.dialect.forUpdate());
         if (wqueue != null) {
             ts.wqueueTable.delete(wqueue.visitId);

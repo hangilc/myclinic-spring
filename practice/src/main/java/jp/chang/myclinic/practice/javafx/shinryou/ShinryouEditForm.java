@@ -114,7 +114,7 @@ public class ShinryouEditForm extends WorkForm {
 
     private void onDelete(){
         if( ConfirmDialog.confirm("この摘要を削除しますか？", ShinryouEditForm.this) ) {
-            Context.frontend.deleteShinryouCascading(shinryouId)
+            Context.frontend.deleteShinryou(shinryouId)
                     .thenAccept(v -> onDeletedHandler.run())
                     .exceptionally(HandlerFX.exceptionally(this));
         }

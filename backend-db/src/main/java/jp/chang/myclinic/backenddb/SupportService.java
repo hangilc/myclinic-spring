@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,17 @@ public class SupportService {
         } else {
             return dbBackend.query(backend -> backend.getKizaiMaster(kizaicode, at));
         }
+    }
+
+    public int enterShinryouByName(int visitId, String name){
+        VisitDTO visit = dbBackend.query(backend -> backend.getVisit(visitId));
+        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
+        ShinryouMasterDTO master = resolveShinryouMasterByKey(name, at);
+        ShinryouDTO shinryou = new ShinryouDTO();
+        shinryou.visitId = visitId;
+        shinryou.shinryoucode = master.shinryoucode;
+        dbBackend.txProc(backend -> backend.enterShinryou(shinryou));
+        return shinryou.shinryouId;
     }
 
     public BatchEnterResultDTO batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {

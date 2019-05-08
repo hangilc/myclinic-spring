@@ -82,7 +82,7 @@ public class RecordTitle extends TextFlow {
                     return;
                 }
                 Frontend frontend = Context.frontend;
-                frontend.deleteVisitSafely(visitId)
+                frontend.deleteVisit(visitId)
                         .thenAcceptAsync(v -> onDeletedHandler.run(),
                                 Platform::runLater)
                         .exceptionally(HandlerFX.exceptionally(this));

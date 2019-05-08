@@ -6,7 +6,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.backenddb.DB;
+import jp.chang.myclinic.backenddb.DBImpl;
 import jp.chang.myclinic.backenddb.DbBackend;
+import jp.chang.myclinic.backenddb.SerialDB;
 import jp.chang.myclinic.support.SupportSet;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
@@ -148,8 +151,9 @@ public class Main extends Application {
                         "sqlite-data", "myclinic-test-sqlite.db").toString();
             }
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
-            Context.frontend = new FrontendBackend(dbBackend);
+            DB db = new SerialDB(new DBImpl(ds));
+            DbBackend dbBackend = new DbBackend(db, SqliteTableSet::create);
+            Context.frontend = new FrontendBackend(dbBackend, ss);
         } else {
             Context.frontend = new FrontendRest(param);
         }

@@ -33,7 +33,7 @@ public class DeleteSelectedForm extends HandleSelectedForm {
         List<Integer> shinryouIds = selection.stream()
                 .map(s -> s.shinryou.shinryou.shinryouId)
                 .collect(toList());
-        Context.frontend.batchDeleteShinryouCascading(shinryouIds)
+        Context.frontend.batchDeleteShinryou(shinryouIds)
                 .thenAcceptAsync(v -> onDeletedHandler.accept(shinryouIds), Platform::runLater)
                 .exceptionally(HandlerFX.exceptionally(this));
     }

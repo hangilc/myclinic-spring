@@ -902,4 +902,14 @@ public class FrontendProxy implements Frontend {
     public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
         return delegate.getClinicInfo();
     }
+
+    @Override
+    public CompletableFuture<Void> deleteWqueue(int visitId) {
+        return delegate.deleteWqueue(visitId);
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterShinryouByName(int visitId, String name) {
+        return delegate.enterShinryouByName(visitId, name);
+    }
 }

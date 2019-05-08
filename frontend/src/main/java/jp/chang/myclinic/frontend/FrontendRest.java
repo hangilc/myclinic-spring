@@ -1394,4 +1394,24 @@ public class FrontendRest extends FrontendRestBase implements Frontend {
   public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
     return get("get-clinic-info", setter -> {}, new GenericType<ClinicInfoDTO>() {});
   }
+
+  @Override
+  public CompletableFuture<Void> deleteWqueue(int visitId) {
+    return post(
+        "delete-wqueue",
+        setter -> setter.set("visit-id", visitId),
+        null,
+        new GenericType<Void>() {});
+  }
+
+  @Override
+  public CompletableFuture<Integer> enterShinryouByName(int visitId, String name) {
+    return get(
+        "enter-shinryou-by-name",
+        setter -> {
+          setter.set("visit-id", visitId);
+          setter.set("name", name);
+        },
+        new GenericType<Integer>() {});
+  }
 }

@@ -35,7 +35,7 @@ abstract class GazouLabel extends StackPane {
         GazouLabelForm form = new GazouLabelForm(label) {
             @Override
             protected void onEnter(String value) {
-                Context.frontend.modifyGazouLabel(conductId, value)
+                Context.frontend.setGazouLabel(conductId, value)
                         .thenAccept(result -> Platform.runLater(() -> {
                             GazouLabel.this.label = value;
                             GazouLabel.this.getChildren().setAll(createDisp());

@@ -199,7 +199,7 @@ public class DrugEditForm extends DrugForm {
 
     private void doDelete() {
         if (GuiUtil.confirm("この処方を削除していいですか？")) {
-            Context.frontend.deleteDrugCascading(getDrugId())
+            Context.frontend.deleteDrug(getDrugId())
                     .thenAcceptAsync(ok -> onDeletedHandler.run(), Platform::runLater)
                     .exceptionally(HandlerFX.exceptionally(this));
         }

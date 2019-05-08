@@ -979,4 +979,14 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
         return value(supportService.getClinicInfo());
     }
+
+    @Override
+    public CompletableFuture<Void> deleteWqueue(int visitId) {
+        return txProc(backend -> backend.deleteWqueue(visitId));
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterShinryouByName(int visitId, String name) {
+        return value(supportService.enterShinryouByName(visitId, name));
+    }
 }

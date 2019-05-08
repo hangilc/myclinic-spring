@@ -48,7 +48,7 @@ public class ShinryouEditFormTest extends ComponentTestBase {
             }
 
             @Override
-            public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
+            public CompletableFuture<Void> deleteShinryou(int shinryouId) {
                 System.out.println("Delete shinryou cascading: " + shinryouId);
                 return value(null);
             }
