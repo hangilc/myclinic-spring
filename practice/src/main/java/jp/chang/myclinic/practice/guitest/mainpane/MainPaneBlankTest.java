@@ -68,8 +68,9 @@ public class MainPaneBlankTest extends GuiTestBase {
         Collections.reverse(prevTimes);
         prevTimes.forEach(at -> {
             VisitDTO visit = frontend.startVisit(patient.patientId, at).join();
-            frontend.endExam(visit.visitId, 0);
-            frontend.deleteWqueue(visit.visitId);
+            frontend.startExam(visit.visitId).join();
+            frontend.endExam(visit.visitId, 0).join();
+            frontend.deleteWqueue(visit.visitId).join();
         });
         VisitDTO visit = frontend.startVisit(patient.patientId, LocalDateTime.now()).join();
         createMainPane();

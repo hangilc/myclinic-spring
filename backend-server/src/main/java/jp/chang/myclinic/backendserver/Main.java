@@ -3,6 +3,7 @@ package jp.chang.myclinic.backendserver;
 import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.backenddb.DBImpl;
 import jp.chang.myclinic.backenddb.DbBackend;
+import jp.chang.myclinic.backenddb.SerialDB;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
 import jp.chang.myclinic.support.SupportSet;
@@ -34,7 +35,7 @@ public class Main implements Runnable {
             String dbFile = Paths.get(System.getProperty("user.home"),
                     "sqlite-data", "myclinic-test-sqlite.db").toString();
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-            DB db = new DBImpl(ds);
+            DB db = new SerialDB(new DBImpl(ds));
             DbBackend dbBackend = new DbBackend(db, SqliteTableSet::create);
 //        DataSource ds = MysqlDataSourceProvider.create();
 //        DB db = new DBImpl(ds);

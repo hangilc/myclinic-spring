@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.guitest.drug;
 
+import javafx.application.Platform;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -39,6 +40,19 @@ public class DrugEnterFormTest extends GuiTestBase {
         return form;
     }
 
+    private CompletableFuture<DrugEnterForm> createFormAsync(VisitDTO visit){
+        return CompletableFuture.supplyAsync(() -> {
+            DrugEnterForm form = new DrugEnterForm(visit);
+            form.setPrefHeight(Region.USE_COMPUTED_SIZE);
+            form.setMaxHeight(Region.USE_PREF_SIZE);
+            main.setPrefWidth(329);
+            main.setPrefHeight(460);
+            main.getChildren().setAll(form);
+            stage.sizeToScene();
+            return form;
+        }, Platform::runLater);
+    }
+
     @GuiTest
     public void disp() {
         MockData mock = new MockData();
@@ -46,11 +60,14 @@ public class DrugEnterFormTest extends GuiTestBase {
         PatientDTO patient = mock.pickPatient();
         patient.patientId = frontend.enterPatient(patient).join();
         VisitDTO visit = frontend.startVisit(patient.patientId, LocalDateTime.now()).join();
-        DrugEnterForm form = createForm(visit);
-        form.setOnDrugEnteredHandler((drug, attr) -> {
-            System.out.println("entered drug: " + drug);
-            System.out.println("entered drug attr: " + attr);
-        });
+        createFormAsync(visit)
+                .thenAccept(form -> {
+                    form.setOnDrugEnteredHandler((drug, attr) -> {
+                        System.out.println("entered drug: " + drug);
+                        System.out.println("entered drug attr: " + attr);
+                    });
+
+                }).join();
     }
 
     @GuiTest
