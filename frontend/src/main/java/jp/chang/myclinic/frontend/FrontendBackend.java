@@ -818,9 +818,8 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> enterDrug(DrugDTO drug) {
-        dbBackendService.enterDrug(drug);
-        return value(null);
+    public CompletableFuture<Integer> enterDrug(DrugDTO drug) {
+        return value(dbBackendService.enterDrug(drug));
     }
 
     @Override
@@ -830,9 +829,8 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-        dbBackendService.enterDrugWithAttr(drugWithAttr);
-        return value(null);
+    public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+        return value(dbBackendService.enterDrugWithAttr(drugWithAttr));
     }
 
     @Override
@@ -865,21 +863,18 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
-        dbBackendService.enterShinryouWithAttr(shinryouWithAttr);
-        return value(null);
+    public CompletableFuture<Integer> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
+        return value(dbBackendService.enterShinryouWithAttr(shinryouWithAttr));
     }
 
     @Override
-    public CompletableFuture<Void> enterShinryou(ShinryouDTO shinryou) {
-        dbBackendService.enterShinryou(shinryou);
-        return value(null);
+    public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou) {
+        return value(dbBackendService.enterShinryou(shinryou));
     }
 
     @Override
-    public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-        dbBackendService.batchEnterShinryou(shinryouList);
-        return value(null);
+    public CompletableFuture<List<Integer>> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+        return value(dbBackendService.batchEnterShinryou(shinryouList));
     }
 
     @Override

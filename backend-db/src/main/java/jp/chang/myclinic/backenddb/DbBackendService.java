@@ -211,11 +211,12 @@ public class DbBackendService {
 
     // Drug /////////////////////////////////////////////////////////////////////////////////
 
-    public void enterDrug(DrugDTO drug) {
+    public int enterDrug(DrugDTO drug) {
         DrugWithAttrDTO drugWithAttr = new DrugWithAttrDTO();
         drugWithAttr.drug = drug;
         drugWithAttr.attr = null;
         enterDrugWithAttr(drugWithAttr);
+        return drug.drugId;
     }
 
     public void updateDrug(DrugDTO drug) {
@@ -226,7 +227,7 @@ public class DbBackendService {
         updateDrugWithAttr(drugWithAttr);
     }
 
-    public void enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+    public int enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
         dbBackend.txProc(backend -> {
             DrugDTO drug = drugWithAttr.drug;
             backend.enterDrug(drug);
@@ -251,6 +252,7 @@ public class DbBackendService {
                 }
             }
         }
+        return drugWithAttr.drug.drugId;
     }
 
     public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
@@ -354,7 +356,7 @@ public class DbBackendService {
 
     // Shinryou /////////////////////////////////////////////////////////////////////////////
 
-    public void enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
+    public int enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
         ShinryouDTO shinryou = shinryouWithAttr.shinryou;
         ShinryouAttrDTO attr = shinryouWithAttr.attr == null || ShinryouAttrDTO.isEmpty(shinryouWithAttr.attr) ?
                 null : shinryouWithAttr.attr;
@@ -365,19 +367,24 @@ public class DbBackendService {
                 backend.enterShinryouAttr(attr);
             }
         });
+        return shinryou.shinryouId;
     }
 
-    public void enterShinryou(ShinryouDTO shinryou) {
+    public int enterShinryou(ShinryouDTO shinryou) {
         ShinryouWithAttrDTO shinryouWithAttr = new ShinryouWithAttrDTO();
         shinryouWithAttr.shinryou = shinryou;
         shinryouWithAttr.attr = null;
         enterShinryouWithAttr(shinryouWithAttr);
+        return shinryou.shinryouId;
     }
 
-    public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+    public List<Integer> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+        List<Integer> shinryouIds = new ArrayList<>();
         for (ShinryouDTO shinryou : shinryouList) {
             enterShinryou(shinryou);
+            shinryouIds.add(shinryou.shinryouId);
         }
+        return shinryouIds;
     }
 
     public void deleteShinryou(int shinryouId) {

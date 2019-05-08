@@ -308,11 +308,11 @@ public interface Frontend {
 
     CompletableFuture<Void> updateCharge(int visitId, int charge);
 
-    CompletableFuture<Void> enterDrug(DrugDTO drug);
+    CompletableFuture<Integer> enterDrug(DrugDTO drug);
 
     CompletableFuture<Void> updateDrug(DrugDTO drug);
 
-    CompletableFuture<Void> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr);
+    CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr);
 
     CompletableFuture<Void> updateDrugWithAttr(DrugWithAttrDTO drugWithAttr);
 
@@ -324,11 +324,11 @@ public interface Frontend {
 
     CompletableFuture<Void> deleteDrugTekiyou(int drugId);
 
-    CompletableFuture<Void> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr);
+    CompletableFuture<Integer> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr);
 
-    CompletableFuture<Void> enterShinryou(ShinryouDTO shinryou);
+    CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou);
 
-    CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList);
+    CompletableFuture<List<Integer>> batchEnterShinryou(List<ShinryouDTO> shinryouList);
 
     CompletableFuture<Void> deleteShinryou(int shinryouId);
 

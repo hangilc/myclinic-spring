@@ -1178,16 +1178,18 @@ public class RestServer {
     dbBackendService.updateCharge(visitId, charge);
   }
 
-//  @Path("enter-drug")
-//  @Produces(MediaType.APPLICATION_JSON)
-//  @POST
-//  public void enterDrug(DrugDTO drug) {
-//    dbBackendService.enterDrug(drug);
-//  }
+  @Path("enter-drug")
+  @Produces(MediaType.APPLICATION_JSON)
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  public int enterDrug(DrugDTO drug) {
+    return dbBackendService.enterDrug(drug);
+  }
 
   @Path("update-drug")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public void updateDrug(DrugDTO drug) {
     dbBackendService.updateDrug(drug);
   }
@@ -1195,13 +1197,15 @@ public class RestServer {
   @Path("enter-drug-with-attr")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
-  public void enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-    dbBackendService.enterDrugWithAttr(drugWithAttr);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public int enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+    return dbBackendService.enterDrugWithAttr(drugWithAttr);
   }
 
   @Path("update-drug-with-attr")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public void updateDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
     dbBackendService.updateDrugWithAttr(drugWithAttr);
   }
@@ -1216,6 +1220,7 @@ public class RestServer {
   @Path("batch-delete-drugs")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public void batchDeleteDrugs(List<Integer> drugIds) {
     dbBackendService.batchDeleteDrugs(drugIds);
   }
@@ -1238,22 +1243,25 @@ public class RestServer {
   @Path("enter-shinryou-with-attr")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
-  public void enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
-    dbBackendService.enterShinryouWithAttr(shinryouWithAttr);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public int enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
+    return dbBackendService.enterShinryouWithAttr(shinryouWithAttr);
   }
 
   @Path("enter-shinryou")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
-  public void enterShinryou(ShinryouDTO shinryou) {
-    dbBackendService.enterShinryou(shinryou);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public int enterShinryou(ShinryouDTO shinryou) {
+    return dbBackendService.enterShinryou(shinryou);
   }
 
   @Path("batch-enter-shinryou")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
-  public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-    dbBackendService.batchEnterShinryou(shinryouList);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public List<Integer> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+    return dbBackendService.batchEnterShinryou(shinryouList);
   }
 
   @Path("delete-shinryou")
@@ -1266,6 +1274,7 @@ public class RestServer {
   @Path("batch-delete-shinryou")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public void batchDeleteShinryou(List<Integer> shinryouIds) {
     dbBackendService.batchDeleteShinryou(shinryouIds);
   }
@@ -1280,6 +1289,7 @@ public class RestServer {
   @Path("set-shinryou-attr")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public void setShinryouAttr(@QueryParam("shinryou-id") int shinryouId, ShinryouAttrDTO attr) {
     dbBackendService.setShinryouAttr(shinryouId, attr);
   }
@@ -1287,6 +1297,7 @@ public class RestServer {
   @Path("enter-conduct-full")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public ConductFullDTO enterConductFull(ConductEnterRequestDTO req) {
     return dbBackendService.enterConductFull(req);
   }
@@ -1309,6 +1320,7 @@ public class RestServer {
   @Path("batch-enter")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public BatchEnterResultDTO batchEnter(BatchEnterRequestDTO req) {
     return dbBackendService.batchEnter(req);
   }
@@ -1316,6 +1328,7 @@ public class RestServer {
   @Path("modify-disease")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
     dbBackendService.modifyDisease(diseaseModifyDTO);
   }
@@ -1323,6 +1336,7 @@ public class RestServer {
   @Path("finish-cashier")
   @Produces(MediaType.APPLICATION_JSON)
   @POST
+  @Consumes(MediaType.APPLICATION_JSON)
   public void finishCashier(PaymentDTO payment) {
     dbBackendService.finishCashier(payment);
   }

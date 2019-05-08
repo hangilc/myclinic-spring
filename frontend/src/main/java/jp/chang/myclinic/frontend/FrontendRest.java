@@ -1189,8 +1189,8 @@ public class FrontendRest extends FrontendRestBase implements Frontend {
   }
 
   @Override
-  public CompletableFuture<Void> enterDrug(DrugDTO drug) {
-    return post("enter-drug", setter -> {}, drug, new GenericType<Void>() {});
+  public CompletableFuture<Integer> enterDrug(DrugDTO drug) {
+    return post("enter-drug", setter -> {}, drug, new GenericType<Integer>() {});
   }
 
   @Override
@@ -1199,8 +1199,8 @@ public class FrontendRest extends FrontendRestBase implements Frontend {
   }
 
   @Override
-  public CompletableFuture<Void> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
-    return post("enter-drug-with-attr", setter -> {}, drugWithAttr, new GenericType<Void>() {});
+  public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+    return post("enter-drug-with-attr", setter -> {}, drugWithAttr, new GenericType<Integer>() {});
   }
 
   @Override
@@ -1236,19 +1236,20 @@ public class FrontendRest extends FrontendRestBase implements Frontend {
   }
 
   @Override
-  public CompletableFuture<Void> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
+  public CompletableFuture<Integer> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
     return post(
-        "enter-shinryou-with-attr", setter -> {}, shinryouWithAttr, new GenericType<Void>() {});
+        "enter-shinryou-with-attr", setter -> {}, shinryouWithAttr, new GenericType<Integer>() {});
   }
 
   @Override
-  public CompletableFuture<Void> enterShinryou(ShinryouDTO shinryou) {
-    return post("enter-shinryou", setter -> {}, shinryou, new GenericType<Void>() {});
+  public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou) {
+    return post("enter-shinryou", setter -> {}, shinryou, new GenericType<Integer>() {});
   }
 
   @Override
-  public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
-    return post("batch-enter-shinryou", setter -> {}, shinryouList, new GenericType<Void>() {});
+  public CompletableFuture<List<Integer>> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+    return post(
+        "batch-enter-shinryou", setter -> {}, shinryouList, new GenericType<List<Integer>>() {});
   }
 
   @Override

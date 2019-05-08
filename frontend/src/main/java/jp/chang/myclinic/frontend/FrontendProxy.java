@@ -754,7 +754,7 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> enterDrug(DrugDTO drug) {
+    public CompletableFuture<Integer> enterDrug(DrugDTO drug) {
         return delegate.enterDrug(drug);
     }
 
@@ -764,7 +764,7 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
+    public CompletableFuture<Integer> enterDrugWithAttr(DrugWithAttrDTO drugWithAttr) {
         return delegate.enterDrugWithAttr(drugWithAttr);
     }
 
@@ -794,17 +794,17 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
+    public CompletableFuture<Integer> enterShinryouWithAttr(ShinryouWithAttrDTO shinryouWithAttr) {
         return delegate.enterShinryouWithAttr(shinryouWithAttr);
     }
 
     @Override
-    public CompletableFuture<Void> enterShinryou(ShinryouDTO shinryou) {
+    public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou) {
         return delegate.enterShinryou(shinryou);
     }
 
     @Override
-    public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+    public CompletableFuture<List<Integer>> batchEnterShinryou(List<ShinryouDTO> shinryouList) {
         return delegate.batchEnterShinryou(shinryouList);
     }
 
