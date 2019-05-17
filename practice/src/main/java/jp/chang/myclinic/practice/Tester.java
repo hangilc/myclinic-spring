@@ -49,9 +49,10 @@ class Tester {
     void runTest(MethodFilter filter){
         try {
             for (Object target : targets) {
+                System.out.println("target: " + target);
                 Class<?> targetClass = target.getClass();
                 for (Method method : targetClass.getMethods()) {
-                    if( method.getClass() == targetClass ) {
+                    if( method.getDeclaringClass() == targetClass ) {
                         System.out.printf("method: %s\n", method);
                         if (isCandidate(method)) {
                             String className = targetClass.getSimpleName();

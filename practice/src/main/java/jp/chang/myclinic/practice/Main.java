@@ -107,24 +107,30 @@ public class Main extends Application {
                         "css/Practice.css"
                 );
                 stage.setScene(new Scene(root));
-               stage.show();
+                stage.show();
             }
         }
     }
 
     @Override
     public void stop() {
-        if( Context.frontend != null ){
+        if (Context.frontend != null) {
             Context.frontend.shutdown();
         }
     }
 
-    private void runGuiTest(Stage stage, String filter){
+    private void runGuiTest(Stage stage, String filter) {
         confirmTestDatabase();
         StackPane main = setupStageForComponentTest(stage);
         Tester tester = new Tester();
         tester.addTargets(GuiTest.listTargets(stage, main));
-        tester.runTest(filter);
+        Thread thread = new Thread(() -> tester.runTest(filter));
+        thread.start();
+        try {
+            thread.join();
+        } catch(Exception e){
+            throw new RuntimeException(e);
+        }
         System.out.println("done");
     }
 
