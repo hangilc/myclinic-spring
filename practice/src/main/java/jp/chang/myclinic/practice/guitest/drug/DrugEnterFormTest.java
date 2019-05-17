@@ -6,16 +6,13 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.Frontend;
-import jp.chang.myclinic.frontend.FrontendProxy;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.guitest.GuiTest;
+import jp.chang.myclinic.practice.guitest.GuiTestMarker;
 import jp.chang.myclinic.practice.guitest.GuiTestBase;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchResultItem;
 import jp.chang.myclinic.util.DateTimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,7 +50,7 @@ public class DrugEnterFormTest extends GuiTestBase {
         }, Platform::runLater);
     }
 
-    @GuiTest
+    @GuiTestMarker
     public void disp() {
         MockData mock = new MockData();
         Frontend frontend = Context.frontend;
@@ -70,7 +67,7 @@ public class DrugEnterFormTest extends GuiTestBase {
                 }).join();
     }
 
-    @GuiTest
+    @GuiTestMarker
     public void resolveInStock(){
         MockData mock = new MockData();
         Frontend frontend = Context.frontend;

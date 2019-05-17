@@ -10,11 +10,9 @@ import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.CurrentPatientService;
-import jp.chang.myclinic.practice.guitest.GuiTest;
+import jp.chang.myclinic.practice.guitest.GuiTestMarker;
 import jp.chang.myclinic.practice.guitest.GuiTestBase;
 import jp.chang.myclinic.practice.javafx.RecordsPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -45,7 +43,7 @@ public class RecordsPaneConductTest extends GuiTestBase {
         return LocalDateTime.now().minus(days, ChronoUnit.DAYS);
     }
 
-    @GuiTest
+    @GuiTestMarker
     public void disp(){
         Frontend frontend = Context.frontend;
         MockData mock = new MockData();

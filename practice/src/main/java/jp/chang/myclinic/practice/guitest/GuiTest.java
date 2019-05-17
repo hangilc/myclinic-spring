@@ -1,11 +1,24 @@
 package jp.chang.myclinic.practice.guitest;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import jp.chang.myclinic.practice.guitest.mainpane.MainPaneTest;
+import jp.chang.myclinic.practice.javafx.MainPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface GuiTest {
+import java.util.List;
+
+public class GuiTest {
+
+    public static Object[] listTargets(Stage stage, Pane mainPane){
+        return new Object[]{
+            new MainPaneTest(stage, mainPane)
+        };
+    }
+
+    private GuiTest() {
+
+    }
+
 }

@@ -23,7 +23,7 @@ class CmdOpts {
     @Option(names = {"--gui-test"}, description = "Runs GUI test.")
     boolean guiTest;
 
-    @Option(names = {"--gui-test-one", "--g1"}, description = "Runs GUI test.", split = ":")
-    String[] guiTestOne;
+    @Option(names = {"--gui-test-selected"}, description = "Runs selected GUI tests.")
+    String guiTestSelected;
 
 }

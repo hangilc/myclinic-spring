@@ -1,7 +1,6 @@
 package jp.chang.myclinic.practice.guitest.records;
 
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -11,12 +10,10 @@ import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.mockdata.SamplePrescExample;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.CurrentPatientService;
-import jp.chang.myclinic.practice.guitest.GuiTest;
+import jp.chang.myclinic.practice.guitest.GuiTestMarker;
 import jp.chang.myclinic.practice.guitest.GuiTestBase;
 import jp.chang.myclinic.practice.javafx.RecordsPane;
 import jp.chang.myclinic.util.DateTimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,7 +45,7 @@ public class RecordsPaneDrugTest extends GuiTestBase {
         return LocalDateTime.now().minus(days, ChronoUnit.DAYS);
     }
 
-    @GuiTest
+    @GuiTestMarker
     public void disp(){
         Frontend frontend = Context.frontend;
         MockData mock = new MockData();
@@ -68,7 +65,7 @@ public class RecordsPaneDrugTest extends GuiTestBase {
 
     }
 
-    @GuiTest
+    @GuiTestMarker
     public void disp3(){
         Frontend frontend = Context.frontend;
         MockData mock = new MockData();

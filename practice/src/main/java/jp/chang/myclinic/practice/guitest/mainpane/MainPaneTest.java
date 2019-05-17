@@ -1,24 +1,16 @@
 package jp.chang.myclinic.practice.guitest.mainpane;
 
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.practice.guitest.GroupTestBase;
-import jp.chang.myclinic.practice.guitest.TestInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.List;
+public class MainPaneTest {
 
-public class MainPaneTest extends GroupTestBase {
+    public MainPaneTest(Stage stage, Pane mainPane) {
 
-    public MainPaneTest(Stage stage, StackPane main) {
-        super(stage, main);
     }
 
-    @Override
-    protected List<TestInterface> getTests() {
-        return List.of(
-                new MainPaneBlankTest(stage, main)
-        );
+    public void disp(){
+        System.out.println("DISP");
     }
+
 }

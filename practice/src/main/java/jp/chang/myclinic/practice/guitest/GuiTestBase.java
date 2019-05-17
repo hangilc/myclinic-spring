@@ -27,7 +27,7 @@ public class GuiTestBase implements TestInterface, GuiTestMixin {
     public void testAll(){
         try {
             for (Method method : getClass().getMethods()) {
-                if (method.isAnnotationPresent(GuiTest.class)) {
+                if (method.isAnnotationPresent(GuiTestMarker.class)) {
                     invokeTest(method);
                 }
             }
@@ -44,7 +44,7 @@ public class GuiTestBase implements TestInterface, GuiTestMixin {
             }
             try {
                 for (Method method : getClass().getMethods()) {
-                    if (method.isAnnotationPresent(GuiTest.class)) {
+                    if (method.isAnnotationPresent(GuiTestMarker.class)) {
                         if (method.getName().equals(methodName)) {
                             invokeTest(method);
                             return true;

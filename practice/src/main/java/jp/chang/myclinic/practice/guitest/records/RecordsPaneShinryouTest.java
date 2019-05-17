@@ -5,21 +5,14 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.CurrentPatientService;
-import jp.chang.myclinic.practice.guitest.GuiTest;
+import jp.chang.myclinic.practice.guitest.GuiTestMarker;
 import jp.chang.myclinic.practice.guitest.GuiTestBase;
-import jp.chang.myclinic.practice.javafx.Record;
-import jp.chang.myclinic.practice.javafx.RecordText;
 import jp.chang.myclinic.practice.javafx.RecordsPane;
-import jp.chang.myclinic.practice.javafx.text.TextDisp;
-import jp.chang.myclinic.practice.javafx.text.TextEditForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -50,7 +43,7 @@ public class RecordsPaneShinryouTest extends GuiTestBase {
         return LocalDateTime.now().minus(days, ChronoUnit.DAYS);
     }
 
-    @GuiTest
+    @GuiTestMarker
     public void disp(){
         Frontend frontend = Context.frontend;
         MockData mock = new MockData();

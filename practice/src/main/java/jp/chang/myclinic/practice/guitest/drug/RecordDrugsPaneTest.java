@@ -11,11 +11,9 @@ import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.CurrentPatientService;
-import jp.chang.myclinic.practice.guitest.GuiTest;
+import jp.chang.myclinic.practice.guitest.GuiTestMarker;
 import jp.chang.myclinic.practice.guitest.GuiTestBase;
 import jp.chang.myclinic.practice.javafx.RecordDrugsPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -42,7 +40,7 @@ public class RecordDrugsPaneTest extends GuiTestBase {
         return pane;
     }
 
-    @GuiTest
+    @GuiTestMarker
     public void disp(){
         Context.currentPatientService = new CurrentPatientService();
         Frontend frontend = Context.frontend;

@@ -10,6 +10,7 @@ import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.backenddb.DBImpl;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.SerialDB;
+import jp.chang.myclinic.practice.guitest.GuiTest;
 import jp.chang.myclinic.support.SupportSet;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
@@ -94,32 +95,9 @@ public class Main extends Application {
             Context.currentPatientService = new CurrentPatientService();
             Context.mainStageService = new MainStageServiceImpl(stage);
             if (opts.guiTest) {
-                confirmTestDatabase();
-                StackPane main = setupStageForComponentTest(stage);
-                new Thread(() -> {
-                    new GuiTestRunner(stage, main).testAll();
-                    System.out.println("done");
-                }).start();
-            } else if (opts.guiTestOne != null) {
-                if (opts.guiTestOne.length == 0 || opts.guiTestOne.length >= 3) {
-                    System.out.println(opts.guiTestOne.length);
-                    Arrays.asList(opts.guiTestOne).forEach(System.out::println);
-                    System.err.println("CLASSNAME[:METHODNAME] expected");
-                    System.exit(1);
-                }
-                String className = opts.guiTestOne[0];
-                String methodName = opts.guiTestOne.length == 2 ? opts.guiTestOne[1] : "";
-                confirmTestDatabase();
-                StackPane main = setupStageForComponentTest(stage);
-                new Thread(() -> {
-                    boolean ok = new GuiTestRunner(stage, main).testOne(className, methodName);
-                    if (ok) {
-                        System.out.println("done");
-                    } else {
-                        System.out.printf("Cannot run test: %s:%s\n", className, methodName);
-                        Platform.exit();
-                    }
-                }).start();
+                runGuiTest(stage, "*.*");
+            } else if (opts.guiTestSelected != null) {
+                runGuiTest(stage, opts.guiTestSelected);
             } else {
                 Context.currentPatientService.addOnChangeHandler(this::updateStageTitle);
                 updateStageTitle(null, 0);
@@ -139,6 +117,15 @@ public class Main extends Application {
         if( Context.frontend != null ){
             Context.frontend.shutdown();
         }
+    }
+
+    private void runGuiTest(Stage stage, String filter){
+        confirmTestDatabase();
+        StackPane main = setupStageForComponentTest(stage);
+        Tester tester = new Tester();
+        tester.addTargets(GuiTest.listTargets(stage, main));
+        tester.runTest(filter);
+        System.out.println("done");
     }
 
     private void setupFrontend(SupportSet ss) {
