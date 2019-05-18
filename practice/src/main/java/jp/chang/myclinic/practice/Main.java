@@ -11,6 +11,7 @@ import jp.chang.myclinic.backenddb.DBImpl;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.SerialDB;
 import jp.chang.myclinic.practice.guitest.GuiTest;
+import jp.chang.myclinic.practice.maintest.MainTest;
 import jp.chang.myclinic.support.SupportSet;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
@@ -108,6 +109,11 @@ public class Main extends Application {
                 );
                 stage.setScene(new Scene(root));
                 stage.show();
+                if( opts.mainTest ){
+                    runMainTest(root, "*.*");
+                } else if( opts.mainTestSelected != null ){
+                    runMainTest(root, opts.mainTestSelected);
+                }
             }
         }
     }
@@ -120,18 +126,17 @@ public class Main extends Application {
     }
 
     private void runGuiTest(Stage stage, String filter) {
-        confirmTestDatabase();
-        StackPane main = setupStageForComponentTest(stage);
+    }
+
+    private void runMainTest(MainPane mainPane, String selection){
         Tester tester = new Tester();
-        tester.addTargets(GuiTest.listTargets(stage, main));
-        Thread thread = new Thread(() -> tester.runTest(filter));
-        thread.start();
-        try {
-            thread.join();
-        } catch(Exception e){
-            throw new RuntimeException(e);
-        }
-        System.out.println("done");
+        tester.addTargets(new MainTest(mainPane));
+        tester.runTest(selection)
+                .thenAccept(ignore -> System.out.println("done"))
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
+                });
     }
 
     private void setupFrontend(SupportSet ss) {

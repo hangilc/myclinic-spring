@@ -20,10 +20,16 @@ class CmdOpts {
             split = ":")
     String[] componentTestOne;
 
-    @Option(names = {"--gui-test"}, description = "Runs GUI test.")
+    @Option(names = {"--gui-test"}, description = "Runs GUI tests.")
     boolean guiTest;
 
     @Option(names = {"--gui-test-selected"}, description = "Runs selected GUI tests.")
     String guiTestSelected;
+
+    @Option(names = {"--main-test"}, description = "Runs MainPane tests.")
+    boolean mainTest;
+
+    @Option(names = {"--main-test-selected"}, description = "Runs selected MainPane tests.")
+    String mainTestSelected;
 
 }

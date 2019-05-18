@@ -1,20 +1,47 @@
 package jp.chang.myclinic.practice;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
-class Tester {
+public class Tester {
+
+    public interface TestMethodSig {
+        CompletableFuture<Void> invoke(CompletableFuture<Void> pre);
+    }
+
+    public static class TestMethod {
+        private String name;
+        private TestMethodSig sig;
+
+        public TestMethod(String name, TestMethodSig sig) {
+            this.name = name;
+            this.sig = sig;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public TestMethodSig getSig() {
+            return sig;
+        }
+    }
+
+    public interface TestTarget {
+        List<TestMethod> listTestMethods();
+    }
 
     public interface MethodFilter {
         boolean acceptMethod(String className, String methodName);
     }
 
-    private List<Object> targets = new ArrayList<>();
+    private List<TestTarget> targets = new ArrayList<>();
 
-    void addTargets(Object... targets){
+    void addTargets(TestTarget... targets){
         this.targets.addAll(Arrays.asList(targets));
     }
 
@@ -41,44 +68,29 @@ class Tester {
         }
     }
 
-    void runTest(String filterRep){
+    CompletableFuture<Void> runTest(String filterRep){
         Filter filter = new Filter(filterRep);
-        runTest(filter);
+        return runTest(filter);
     }
 
-    void runTest(MethodFilter filter){
+    CompletableFuture<Void> runTest(MethodFilter filter){
+        CompletableFuture<Void> cf = new CompletableFuture<>();
+        CompletableFuture<Void> start = cf;
         try {
-            for (Object target : targets) {
-                System.out.println("target: " + target);
-                Class<?> targetClass = target.getClass();
-                for (Method method : targetClass.getMethods()) {
-                    if( method.getDeclaringClass() == targetClass ) {
-                        System.out.printf("method: %s\n", method);
-                        if (isCandidate(method)) {
-                            String className = targetClass.getSimpleName();
-                            String methodName = method.getName();
-                            if (filter.acceptMethod(className, methodName)) {
-                                System.out.printf("%s.%s\n", className, methodName);
-                                method.invoke(target);
-                            }
-                        }
+            for (TestTarget target : targets) {
+                String className = target.getClass().getSimpleName();
+                for (TestMethod method : target.listTestMethods()) {
+                    if( filter.acceptMethod(className, method.getName()) ){
+                        System.out.printf("%s.%s\n", className, method.getName());
+                        cf = method.getSig().invoke(cf);
                     }
                 }
             }
+            start.complete(null);
+            return cf;
         } catch(Exception e){
             throw new RuntimeException(e);
         }
     }
 
-    private boolean isCandidate(Method method){
-        return isPublic(method) && isNoArgMethod(method);
-    }
-
-    private boolean isPublic(Method method){
-        return (method.getModifiers() & Modifier.PUBLIC) != 0;
-    }
-
-    private boolean isNoArgMethod(Method method){
-        return method.getParameterCount() == 0;
-    }
 }

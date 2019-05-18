@@ -79,15 +79,24 @@ public class MainPane extends BorderPane {
         return recordsPane.listRecord();
     }
 
-    public void simulateClickCashierButton() {
+    public Optional<PatientManip> findPatientManip(){
         for (Node node : patientManipWrapper.getChildren()) {
             if (node instanceof PatientManip) {
-                PatientManip manip = (PatientManip) node;
-                manip.simulateClickCashierButton();
+                return Optional.of((PatientManip) node);
             }
         }
-        throw new RuntimeException("cannot find patient manip");
+        return Optional.empty();
     }
+
+//    public void simulateClickCashierButton() {
+//        for (Node node : patientManipWrapper.getChildren()) {
+//            if (node instanceof PatientManip) {
+//                PatientManip manip = (PatientManip) node;
+//                manip.simulateClickCashierButton();
+//            }
+//        }
+//        throw new RuntimeException("cannot find patient manip");
+//    }
 
     private Node createMenu() {
         MenuBar menuBar = new MenuBar();

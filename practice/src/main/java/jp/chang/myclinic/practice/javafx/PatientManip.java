@@ -23,7 +23,7 @@ public class PatientManip extends HBox {
         getChildren().addAll(cashierButton, endButton, searchTextLink, referLink);
     }
 
-    void simulateClickCashierButton(){
+    public void simulateClickCashierButton(){
         cashierButton.fire();
     }
 
