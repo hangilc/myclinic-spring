@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 
 public class CashierDialog extends Stage {
 
-    //private static Logger logger = LoggerFactory.getLogger(CashierDialog.class);
     private int visitId;
     private int chargeValue;
     private MeisaiDTO meisai;
@@ -156,7 +155,10 @@ public class CashierDialog extends Stage {
 
     private void doEnter(){
         Context.frontend.endExam(visitId, chargeValue)
-                .thenAcceptAsync(v -> close(), Platform::runLater)
+                .thenAcceptAsync(ignore -> {
+                    close();
+                    Context.currentPatientService.setCurrentPatient(null, 0);
+                }, Platform::runLater)
                 .exceptionally(HandlerFX.exceptionally(this));
     }
 

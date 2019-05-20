@@ -39,21 +39,14 @@ public class PracticeHelper {
                 frontend.suspendExam(currentVisitId))
                 .thenAcceptAsync(v -> {
                     curr.setCurrentPatient(null, 0);
-                    Context.integrationService.broadcastVisitPage(0, 0, Collections.emptyList());
                 }, Platform::runLater);
     }
 
     public CompletableFuture<Void> startPatient(PatientDTO patient) {
-        Frontend frontend = Context.frontend;
         return endPatient()
-                .thenCompose(v -> {
+                .thenAcceptAsync(ignore -> {
                     Context.currentPatientService.setCurrentPatient(patient, 0);
-                    return frontend.listVisitFull2(patient.patientId, 0);
-                })
-                .thenAcceptAsync(result -> Context.integrationService.broadcastVisitPage(
-                        result.page, result.totalPages, result.visits
-                        ),
-                        Platform::runLater);
+                }, Platform::runLater);
     }
 
     public static class BatchEnteredShinryou {

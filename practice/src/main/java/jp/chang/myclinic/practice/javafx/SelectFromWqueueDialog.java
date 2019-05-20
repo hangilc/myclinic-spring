@@ -21,14 +21,14 @@ public class SelectFromWqueueDialog extends Stage {
     private WqueueTable wqueueTable;
     private Button selectButton;
 
-    public SelectFromWqueueDialog(List<WqueueFullDTO> list){
+    public SelectFromWqueueDialog(List<WqueueFullDTO> list) {
         setTitle("受付患者選択");
         VBox root = new VBox(4);
         root.setStyle("-fx-padding: 10");
         wqueueTable = createWqueueTable(list);
         wqueueTable.setOnMouseClicked(event -> {
-            if( event.getButton().equals(MouseButton.PRIMARY) ){
-                if( event.getClickCount() == 2 ){
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                if (event.getClickCount() == 2) {
                     doSelect();
                 }
             }
@@ -40,19 +40,19 @@ public class SelectFromWqueueDialog extends Stage {
         setScene(new Scene(root));
     }
 
-    public List<WqueueFullDTO> getList(){
+    public List<WqueueFullDTO> getList() {
         return wqueueTable.getItems();
     }
 
-    public boolean simulateSelectVisit(int visitId){
+    public boolean simulateSelectVisit(int visitId) {
         WqueueFullDTO wq = null;
-        for(WqueueFullDTO item: wqueueTable.getItems()){
-            if( item.visit.visitId == visitId ){
+        for (WqueueFullDTO item : wqueueTable.getItems()) {
+            if (item.visit.visitId == visitId) {
                 wq = item;
                 break;
             }
         }
-        if( wq == null ){
+        if (wq == null) {
             return false;
         } else {
             wqueueTable.getSelectionModel().select(wq);
@@ -60,15 +60,15 @@ public class SelectFromWqueueDialog extends Stage {
         }
     }
 
-    public void simulateSelectButtonClick(){
+    public void simulateSelectButtonClick() {
         selectButton.fire();
     }
 
-    private WqueueTable createWqueueTable(List<WqueueFullDTO> list){
+    private WqueueTable createWqueueTable(List<WqueueFullDTO> list) {
         return new WqueueTable(list);
     }
 
-    private Node createButtons(){
+    private Node createButtons() {
         HBox hbox = new HBox(4);
         this.selectButton = new Button("選択");
         Button closeButton = new Button("閉じる");
@@ -78,9 +78,9 @@ public class SelectFromWqueueDialog extends Stage {
         return hbox;
     }
 
-    private CompletableFuture<Void> suspendPatient(){
+    private CompletableFuture<Void> suspendPatient() {
         int currentVisitId = Context.currentPatientService.getCurrentVisitId();
-        if( currentVisitId > 0 ){
+        if (currentVisitId > 0) {
             return Context.frontend.suspendExam(currentVisitId)
                     .thenAccept(v -> Context.currentPatientService.setCurrentPatient(null, 0));
         } else {
@@ -89,20 +89,16 @@ public class SelectFromWqueueDialog extends Stage {
 
     }
 
-    private void doSelect(){
+    private void doSelect() {
         WqueueFullDTO wq = wqueueTable.getSelectionModel().getSelectedItem();
-        if( wq != null ){
+        if (wq != null) {
             Frontend frontend = Context.frontend;
             suspendPatient()
                     .thenCompose(v -> frontend.startExam(wq.visit.visitId))
-                    .thenCompose(v -> frontend.listVisitFull2(wq.patient.patientId, 0))
-                    .thenAcceptAsync(result -> {
-                        Context.currentPatientService.setCurrentPatient(wq.patient, wq.visit.visitId);
-                        Context.integrationService.broadcastVisitPage(
-                                result.page, result.totalPages, result.visits
-                        );
-                        close();
-                    }, Platform::runLater)
+                    .thenAcceptAsync(ignore -> {
+                                close();
+                                Context.currentPatientService.setCurrentPatient(wq.patient, wq.visit.visitId);
+                            }, Platform::runLater)
                     .exceptionally(HandlerFX.exceptionally(this));
         }
     }

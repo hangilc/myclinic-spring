@@ -30,10 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -57,9 +54,15 @@ public class MainPane extends BorderPane {
             currentPatientInfo.setPatient(patient);
             if (patient != null) {
                 patientManipWrapper.getChildren().setAll(patientManip);
+                Context.frontend.listVisitFull2(patient.patientId, 0)
+                        .thenAcceptAsync(result -> Context.integrationService.broadcastVisitPage(
+                                result.page, result.totalPages, result.visits
+                        ), Platform::runLater)
+                        .exceptionally(HandlerFX.exceptionally(MainPane.this));
             } else {
                 patientManipWrapper.getChildren().clear();
-            }
+                Context.integrationService.broadcastVisitPage(0, 0, Collections.emptyList());
+           }
         });
         Context.integrationService.addVisitPageHandler((page, totalPages, visits) -> {
             recordsPane.getChildren().clear();
@@ -79,7 +82,7 @@ public class MainPane extends BorderPane {
         return recordsPane.listRecord();
     }
 
-    public Optional<PatientManip> findPatientManip(){
+    public Optional<PatientManip> findPatientManip() {
         for (Node node : patientManipWrapper.getChildren()) {
             if (node instanceof PatientManip) {
                 return Optional.of((PatientManip) node);
