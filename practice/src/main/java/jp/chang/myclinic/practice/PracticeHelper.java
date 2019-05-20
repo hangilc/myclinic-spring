@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 public class PracticeHelper {
 
@@ -111,4 +112,19 @@ public class PracticeHelper {
         req.conducts.add(conductReq);
     }
 
+    public CompletableFuture<List<PatientDTO>> searchPatient(String text){
+        if( Pattern.matches("\\d+", text) ){
+            int patientId = Integer.parseInt(text);
+            return Context.frontend.getPatient(patientId)
+                    .thenApply(patient -> {
+                        if( patient == null ){
+                            return Collections.emptyList();
+                        } else {
+                            return Collections.singletonList(patient);
+                        }
+                    });
+        } else {
+            return Context.frontend.searchPatient(text);
+        }
+    }
 }
