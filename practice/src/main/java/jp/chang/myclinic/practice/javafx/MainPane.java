@@ -31,14 +31,13 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class MainPane extends BorderPane {
 
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
-    private MenuItem selectVisitMenu;
-    private Supplier<Optional<PatientManip>> findPatientManipFun;
+    private MenuItem selectVisitMenuItem;
+    private MenuItem searchPatientMenuItem;
     private RecordsPane recordsPane = new RecordsPane();
     private CurrentPatientInfo currentPatientInfo = new CurrentPatientInfo();
     private StackPane patientManipWrapper = new StackPane();
@@ -71,7 +70,11 @@ public class MainPane extends BorderPane {
     }
 
     public void simulateSelectVisitMenuChoice() {
-        selectVisitMenu.fire();
+        selectVisitMenuItem.fire();
+    }
+
+    public void simulateSearchPatientMenuChoice() {
+        searchPatientMenuItem.fire();
     }
 
     public Optional<Record> findRecord(int visitId) {
@@ -91,16 +94,6 @@ public class MainPane extends BorderPane {
         return Optional.empty();
     }
 
-//    public void simulateClickCashierButton() {
-//        for (Node node : patientManipWrapper.getChildren()) {
-//            if (node instanceof PatientManip) {
-//                PatientManip manip = (PatientManip) node;
-//                manip.simulateClickCashierButton();
-//            }
-//        }
-//        throw new RuntimeException("cannot find patient manip");
-//    }
-
     private Node createMenu() {
         MenuBar menuBar = new MenuBar();
         {
@@ -112,19 +105,19 @@ public class MainPane extends BorderPane {
         }
         {
             Menu selectMenu = new Menu("患者選択");
-            this.selectVisitMenu = new MenuItem("受付患者選択");
-            MenuItem searchMenuItem = new MenuItem("患者検索");
+            this.selectVisitMenuItem = new MenuItem("受付患者選択");
+            searchPatientMenuItem = new MenuItem("患者検索");
             MenuItem recentVisitsItem = new MenuItem("最近の診察");
             MenuItem todaysVisitsItem = new MenuItem("本日の診察");
-            selectVisitMenu.setOnAction(event -> doSelectVisit());
-            selectVisitMenu.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-            searchMenuItem.setOnAction(event -> doSearchPatient());
-            searchMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+            selectVisitMenuItem.setOnAction(event -> doSelectVisit());
+            selectVisitMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+            searchPatientMenuItem.setOnAction(event -> doSearchPatient());
+            searchPatientMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
             recentVisitsItem.setOnAction(event -> doRecentVisits());
             todaysVisitsItem.setOnAction(event -> doTodaysVisits());
             selectMenu.getItems().addAll(
-                    selectVisitMenu,
-                    searchMenuItem,
+                    selectVisitMenuItem,
+                    searchPatientMenuItem,
                     recentVisitsItem,
                     todaysVisitsItem);
             menuBar.getMenus().add(selectMenu);

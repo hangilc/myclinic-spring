@@ -47,4 +47,14 @@ public interface MainTestMixin {
         });
     }
 
+    default void waitForTrue(Supplier<Boolean> pred){
+        waitFor(() -> {
+            if( pred.get() ){
+                return Optional.of(true);
+            } else {
+                return Optional.empty();
+            }
+        });
+    }
+
 }

@@ -1,14 +1,12 @@
 package jp.chang.myclinic.practice.maintest;
 
 import javafx.application.Platform;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.Tester;
-import jp.chang.myclinic.practice.javafx.CashierDialog;
-import jp.chang.myclinic.practice.javafx.MainPane;
-import jp.chang.myclinic.practice.javafx.PatientManip;
-import jp.chang.myclinic.practice.javafx.SelectFromWqueueDialog;
+import jp.chang.myclinic.practice.javafx.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +25,29 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
     @Override
     public List<Tester.TestMethod> listTestMethods() {
         return List.of(
-                new Tester.TestMethod("finishExam", this::finishExam)
+                new Tester.TestMethod("finishExam", this::finishExam),
+                new Tester.TestMethod("searchPatientById", this::searchPatientById)
         );
+    }
+
+    private CompletableFuture<Void> searchPatientById(CompletableFuture<Void> pre) {
+        return pre.thenAcceptAsync(ignore -> {
+            mainPane.simulateSearchPatientMenuChoice();
+        }, Platform::runLater)
+                .thenApplyAsync(ignore -> {
+                    return waitForWindow(SearchPatientDialog.class);
+                })
+                .thenAcceptAsync(dialog -> {
+                    dialog.simulateSetSearchText("1");
+                    dialog.simulateSearchButtonClick();
+                }, Platform::runLater)
+                .thenAcceptAsync(ignore -> waitForTrue(() -> {
+                    PatientDTO patient = Context.currentPatientService.getCurrentPatient();
+                    return patient != null && patient.patientId == 1;
+                }))
+                .thenAcceptAsync(ignore ->
+                                Context.currentPatientService.setCurrentPatient(null, 0),
+                        Platform::runLater);
     }
 
     private CompletableFuture<Void> finishExam(CompletableFuture<Void> pre) {

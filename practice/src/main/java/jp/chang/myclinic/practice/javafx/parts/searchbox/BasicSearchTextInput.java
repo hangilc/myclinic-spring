@@ -11,11 +11,11 @@ public class BasicSearchTextInput extends HBox implements SearchTextInput {
 
     private Consumer<String> onSearchCallback = t -> {};
     private TextField textField = new TextField();
+    private Button searchButton = new Button("検索");
 
     public BasicSearchTextInput(){
         super(4);
         textField.getStyleClass().add("search-text-input");
-        Button searchButton = new Button("検索");
         textField.setOnAction(evt -> doSearch());
         searchButton.setOnAction(evt -> doSearch());
         getChildren().addAll(
@@ -24,12 +24,21 @@ public class BasicSearchTextInput extends HBox implements SearchTextInput {
         );
     }
 
-    public void extend(Node... nodes){
+    void extend(Node... nodes){
         getChildren().addAll(nodes);
     }
 
     public void clear(){
         textField.clear();
+    }
+
+    void setSearchText(String text){
+        textField.setText("");
+        textField.insertText(0, text);
+    }
+
+    void simulateSearchButtonClick(){
+        searchButton.fire();
     }
 
     private void doSearch(){

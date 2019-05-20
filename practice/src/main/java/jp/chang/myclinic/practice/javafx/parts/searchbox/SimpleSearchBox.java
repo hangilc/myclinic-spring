@@ -35,6 +35,14 @@ public class SimpleSearchBox<T> extends VBox {
         );
     }
 
+    public void simulateSetSearchText(String text){
+        input.setSearchText(text);
+    }
+
+    public void simulateSearchButtonClick(){
+        input.simulateSearchButtonClick();
+    }
+
     public void setOnSelectCallback(Consumer<T> cb){
         result.setOnSelectCallback(cb);
     }
