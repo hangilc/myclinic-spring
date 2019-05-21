@@ -29,12 +29,78 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
                 new Tester.TestMethod("disp", this::disp),
                 new Tester.TestMethod("finishExam", this::finishExam),
                 new Tester.TestMethod("searchPatientById", this::searchPatientById),
-                new Tester.TestMethod("searchPatientInNewVisit", this::searchByPatientIdInNewVisitDialog)
+                new Tester.TestMethod("searchPatientInNewVisit", this::searchByPatientIdInNewVisitDialog),
+                new Tester.TestMethod("kouhatsuKasan", this::kouhatsuKasan)
         );
+    }
+
+    private static class ExamEnv {
+        int patientId;
+        VisitDTO visit;
+        Record record;
+    }
+
+    private CompletableFuture<Void> _startExam(CompletableFuture<Void> pre, ExamEnv env) {
+        Frontend frontend = Context.frontend;
+        if (env.patientId == 0) {
+            env.patientId = 1;
+        }
+        return pre.thenComposeAsync(ignore -> frontend.startVisit(env.patientId, LocalDateTime.now()))
+                .thenAcceptAsync(visit -> {
+                    env.visit = visit;
+                    Platform.runLater(() -> mainPane.simulateSelectVisitMenuChoice());
+                })
+                .thenApplyAsync(ignore -> waitForWindow(SelectFromWqueueDialog.class))
+                .thenAcceptAsync(dialog -> {
+                    dialog.simulateSelectVisit(env.visit.visitId);
+                    dialog.simulateSelectButtonClick();
+                }, Platform::runLater)
+                .thenAcceptAsync(ignore -> {
+                    env.record = waitFor(() -> mainPane.findRecord(env.visit.visitId));
+                });
+    }
+
+    private CompletableFuture<Void> _endExam(ExamEnv env) {
+        Frontend frontend = Context.frontend;
+        return CompletableFuture.completedFuture(null)
+                .thenApplyAsync(ignore -> waitFor(() -> mainPane.findPatientManip()))
+                .thenAcceptAsync(manip ->
+                        Platform.runLater(manip::simulateClickCashierButton))
+                .thenApplyAsync(ignore -> waitForWindow(CashierDialog.class))
+                .thenAcceptAsync(CashierDialog::simulateClickEnterButton, Platform::runLater)
+                .thenComposeAsync(ignore -> {
+                    waitForFail(() -> mainPane.findRecord(env.visit.visitId));
+                    return frontend.deleteWqueue(env.visit.visitId);
+                })
+                .thenAcceptAsync(ignore -> frontend.deletePharmaQueue(env.visit.visitId));
     }
 
     private CompletableFuture<Void> disp(CompletableFuture<Void> pre) {
         return pre;
+    }
+
+    private CompletableFuture<Void> kouhatsuKasan(CompletableFuture<Void> pre) {
+        ExamEnv eEnv = new ExamEnv();
+        return _startExam(pre, eEnv)
+                .thenAcceptAsync(ignore -> {
+                    eEnv.record.simulateAddRegularShinryouClick();
+                }, Platform::runLater)
+                .thenApplyAsync(ignore -> waitFor(eEnv.record::findAddRegularForm))
+                .thenAcceptAsync(form -> {
+                    form.simulateSelectItem("外来後発医薬品使用体制加算２");
+                    form.simulateClickEnterButton();
+                }, Platform::runLater)
+                .thenAcceptAsync(ignore -> {
+                    waitForTrue(() -> {
+                        for (RecordShinryou shinryou : eEnv.record.listShinryou()) {
+                            if (shinryou.getShinryoucode() == 120004070) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                })
+                .thenComposeAsync(ignore -> _endExam(eEnv));
     }
 
     private CompletableFuture<Void> searchByPatientIdInNewVisitDialog(CompletableFuture<Void> pre) {

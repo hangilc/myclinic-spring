@@ -149,6 +149,7 @@ public class AddRegularForm extends VBox {
     private void doEnter() {
         List<String> selected = checks.stream().filter(CheckBox::isSelected).map(CheckBox::getText)
                 .collect(Collectors.toList());
+        System.out.println("AddRegularShinryou visitId: " + visitId);
         PracticeHelper.getInstance().batchEnterShinryouByNames(visitId, selected, result ->
                         Platform.runLater(() ->
                                 onEnteredCallback.accept(result.shinryouList, result.attrMap, result.conducts))

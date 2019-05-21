@@ -9,7 +9,7 @@ import jp.chang.myclinic.practice.javafx.shinryou.ShinryouDisp;
 import jp.chang.myclinic.practice.javafx.shinryou.ShinryouEditForm;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
-class RecordShinryou extends StackPane {
+public class RecordShinryou extends StackPane {
 
     private ShinryouDTO shinryou;
     private Runnable onDeletedHandler = () -> {};

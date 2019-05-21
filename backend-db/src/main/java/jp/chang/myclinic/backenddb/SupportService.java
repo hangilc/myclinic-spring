@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -26,7 +27,8 @@ public class SupportService {
     public ShinryouMasterDTO resolveShinryouMasterByKey(String key, LocalDate at) {
         int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(key);
         if (shinryoucode == 0) {
-            return null;
+            List<String> candidates = Collections.singletonList(key);
+            return dbBackend.query(backend -> backend.resolveShinryouMasterByName(candidates, at));
         } else {
             return dbBackend.query(backend -> backend.getShinryouMaster(shinryoucode, at));
         }

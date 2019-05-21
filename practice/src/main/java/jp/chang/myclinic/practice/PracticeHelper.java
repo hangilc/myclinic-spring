@@ -23,6 +23,8 @@ public class PracticeHelper {
         return INSTANCE;
     }
 
+    private PracticeHelper(){}
+
     public LocalDate getVisitedAt(String visitedAt) {
         if (visitedAt.length() == 10) {
             return LocalDate.parse(visitedAt);
