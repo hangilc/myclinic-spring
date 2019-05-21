@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice;
 
+import javax.ws.rs.RuntimeType;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,8 +20,8 @@ public class PracticeConfig {
         Function<PracticeConfig, String> fieldReader;
 
         Item(String key,
-                    BiConsumer<PracticeConfig, String> fieldSetter,
-                    Function<PracticeConfig, String> fieldReader) {
+             BiConsumer<PracticeConfig, String> fieldSetter,
+             Function<PracticeConfig, String> fieldReader) {
             this.key = key;
             this.fieldSetter = fieldSetter;
             this.fieldReader = fieldReader;
@@ -69,20 +70,45 @@ public class PracticeConfig {
         this.kouhatsuKasan = kouhatsuKasan;
     }
 
-    private void saveToPropertyFile(String path) {
+    public void saveToPropertyFile(Path path) {
+        try {
+            if (Files.notExists(path)) {
+                Files.createFile(path);
+            }
+            try(Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+                saveToWriter(writer);
+            }
+        } catch(IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String saveToPropertiesString(){
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+        try {
+            saveToWriter(writer);
+            return out.toString(StandardCharsets.UTF_8);
+        } catch(IOException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private void saveToWriter(Writer writer) throws IOException {
         Properties props = new Properties();
-        for(Item item: items){
+        for (Item item : items) {
             props.setProperty(item.key, item.fieldReader.apply(this));
         }
         for (String key : unknownEntries.keySet()) {
             String value = unknownEntries.get(key);
             props.setProperty(key, value);
         }
+        props.store(writer, "");
     }
 
     private void handleEntry(String key, String value) {
-        for(Item item: items){
-            if( item.key.equals(key) ){
+        for (Item item : items) {
+            if (item.key.equals(key)) {
                 item.fieldSetter.accept(this, value);
                 return;
             }
@@ -90,12 +116,12 @@ public class PracticeConfig {
         unknownEntries.put(key, value);
     }
 
-    public void loadFromPropertiesFile(Path path){
+    public void loadFromPropertiesFile(Path path) {
         Properties props = readPropertyFile(path);
         loadFromProperties(props);
     }
 
-    public void loadFromPropertiesString(String data){
+    public void loadFromPropertiesString(String data) {
         InputStream in = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         Properties props = new Properties();
         try {
