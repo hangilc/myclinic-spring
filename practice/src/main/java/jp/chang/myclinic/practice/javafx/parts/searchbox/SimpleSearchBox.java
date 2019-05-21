@@ -2,10 +2,9 @@ package jp.chang.myclinic.practice.javafx.parts.searchbox;
 
 import javafx.application.Platform;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.utilfx.HandlerFX;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.javafx.parts.SelectableList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -13,8 +12,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class SimpleSearchBox<T> extends VBox {
-
-    private static Logger logger = LoggerFactory.getLogger(SimpleSearchBox.class);
 
     private BasicSearchTextInput input;
     private SelectableList<T> result;
@@ -35,12 +32,20 @@ public class SimpleSearchBox<T> extends VBox {
         );
     }
 
-    public void simulateSetSearchText(String text){
-        input.setSearchText(text);
+    public void simulateSearchTextInsert(String text){
+        input.simulateSearchTextInsert(text);
     }
 
     public void simulateSearchButtonClick(){
         input.simulateSearchButtonClick();
+    }
+
+    public void simulateSearchTextFocus() {
+        input.simulateSearchTextFocus();
+    }
+
+    public List<T> getSearchResults() {
+        return result.getItems();
     }
 
     public void setOnSelectCallback(Consumer<T> cb){
@@ -50,5 +55,4 @@ public class SimpleSearchBox<T> extends VBox {
     public void setOnDoubleClickSelectCallback(Consumer<T> cb){
         result.setOnDoubleClickSelectCallback(cb);
     }
-
 }

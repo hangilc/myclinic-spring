@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.parts.PatientDisp;
 import jp.chang.myclinic.practice.javafx.parts.PatientSearchBox;
@@ -16,11 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-class NewVisitDialog extends Stage {
+public class NewVisitDialog extends Stage {
 
-    private static Logger logger = LoggerFactory.getLogger(NewVisitDialog.class);
     private PatientDisp disp;
+    private PatientSearchBox searchBox;
 
     NewVisitDialog() {
         setTitle("患者受付  ");
@@ -35,6 +37,18 @@ class NewVisitDialog extends Stage {
                 createSearchBox()
         );
         setScene(new Scene(root));
+    }
+
+    public void simulateSearchTextInsert(String text){
+        searchBox.simulateSearchTextInsert(text);
+    }
+
+    public void simulateSearchTextFocus() {
+        searchBox.simulateSearchTextFocus();
+    }
+
+    public void simulateSearchButtonClick() {
+        searchBox.simulateSearchButtonClick();
     }
 
     private Node createDisp() {
@@ -53,7 +67,7 @@ class NewVisitDialog extends Stage {
     }
 
     private Node createSearchBox() {
-        PatientSearchBox searchBox = new PatientSearchBox();
+        this.searchBox = new PatientSearchBox();
         searchBox.setOnSelectCallback(disp::setPatient);
         return searchBox;
     }
@@ -69,4 +83,7 @@ class NewVisitDialog extends Stage {
         }
     }
 
+    public List<PatientDTO> getSearchResults() {
+        return searchBox.getSearchResults();
+    }
 }

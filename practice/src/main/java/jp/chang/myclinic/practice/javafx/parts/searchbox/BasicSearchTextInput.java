@@ -32,9 +32,13 @@ public class BasicSearchTextInput extends HBox implements SearchTextInput {
         textField.clear();
     }
 
-    void setSearchText(String text){
-        textField.setText("");
-        textField.insertText(0, text);
+    void simulateSearchTextInsert(String text){
+        System.out.println("selection: " + textField.getSelection());
+        textField.replaceSelection(text);
+    }
+
+    void simulateSearchTextFocus() {
+        textField.requestFocus();
     }
 
     void simulateSearchButtonClick(){
@@ -52,5 +56,4 @@ public class BasicSearchTextInput extends HBox implements SearchTextInput {
     public void setOnSearchCallback(Consumer<String> cb) {
         this.onSearchCallback = cb;
     }
-
 }

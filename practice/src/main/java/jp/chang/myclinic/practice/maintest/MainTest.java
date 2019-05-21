@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.maintest;
 
 import javafx.application.Platform;
+import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.frontend.Frontend;
@@ -25,9 +26,37 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
     @Override
     public List<Tester.TestMethod> listTestMethods() {
         return List.of(
+                new Tester.TestMethod("disp", this::disp),
                 new Tester.TestMethod("finishExam", this::finishExam),
-                new Tester.TestMethod("searchPatientById", this::searchPatientById)
+                new Tester.TestMethod("searchPatientById", this::searchPatientById),
+                new Tester.TestMethod("searchPatientInNewVisit", this::searchByPatientIdInNewVisitDialog)
         );
+    }
+
+    private CompletableFuture<Void> disp(CompletableFuture<Void> pre) {
+        return pre;
+    }
+
+    private CompletableFuture<Void> searchByPatientIdInNewVisitDialog(CompletableFuture<Void> pre) {
+        return pre
+                .thenAccept(ignore -> {
+                    Platform.runLater(() -> mainPane.simulateNewVisitMenuChoice());
+                })
+                .thenApplyAsync(ignore -> waitForWindow(NewVisitDialog.class))
+                .thenApplyAsync(dialog -> {
+                    dialog.simulateSearchTextFocus();
+                    dialog.simulateSearchTextInsert("1");
+                    dialog.simulateSearchButtonClick();
+                    return dialog;
+                }, Platform::runLater)
+                .thenApplyAsync(dialog -> {
+                    waitForTrue(() -> {
+                        List<PatientDTO> results = dialog.getSearchResults();
+                        return results.size() == 1 && results.get(0).patientId == 1;
+                    });
+                    return dialog;
+                })
+                .thenAcceptAsync(Stage::close, Platform::runLater);
     }
 
     private CompletableFuture<Void> searchPatientById(CompletableFuture<Void> pre) {

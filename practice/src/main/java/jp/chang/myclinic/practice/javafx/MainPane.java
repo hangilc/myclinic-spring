@@ -38,6 +38,7 @@ public class MainPane extends BorderPane {
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
     private MenuItem selectVisitMenuItem;
     private MenuItem searchPatientMenuItem;
+    private MenuItem newVisitMenuItem;
     private RecordsPane recordsPane = new RecordsPane();
     private CurrentPatientInfo currentPatientInfo = new CurrentPatientInfo();
     private StackPane patientManipWrapper = new StackPane();
@@ -75,6 +76,10 @@ public class MainPane extends BorderPane {
 
     public void simulateSearchPatientMenuChoice() {
         searchPatientMenuItem.fire();
+    }
+
+    public void simulateNewVisitMenuChoice(){
+        newVisitMenuItem.fire();
     }
 
     public Optional<Record> findRecord(int visitId) {
@@ -124,7 +129,7 @@ public class MainPane extends BorderPane {
         }
         {
             Menu menu = new Menu("その他");
-            MenuItem newVisitItem = new MenuItem("受付");
+            this.newVisitMenuItem = new MenuItem("受付");
             MenuItem newVisitOfCurrentPatientItem = new MenuItem("現在診察中患者の再受付");
             MenuItem referItem = new MenuItem("紹介状作成");
             MenuItem shohousenItem = new MenuItem("処方箋作成");
@@ -132,7 +137,7 @@ public class MainPane extends BorderPane {
             MenuItem searchTextMenuItem = new MenuItem("全文検索");
             MenuItem newPrescExampleMenuItem = new MenuItem("処方例新規入力");
             MenuItem editPrescExampleMenuItem = new MenuItem("処方例編集");
-            newVisitItem.setOnAction(evt -> doNewVisit());
+            newVisitMenuItem.setOnAction(evt -> doNewVisit());
             newVisitOfCurrentPatientItem.setOnAction(evt -> doNewVisitOfCurrentPatient());
             referItem.setOnAction(evt -> doRefer(false));
             shohousenItem.setOnAction(evt -> doShohousen());
@@ -141,7 +146,7 @@ public class MainPane extends BorderPane {
             newPrescExampleMenuItem.setOnAction(evt -> doNewPrescExample());
             editPrescExampleMenuItem.setOnAction(evt -> doEditPrescExample());
             menu.getItems().addAll(
-                    newVisitItem,
+                    newVisitMenuItem,
                     newVisitOfCurrentPatientItem,
                     referItem,
                     shohousenItem,
