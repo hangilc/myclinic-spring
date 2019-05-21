@@ -24,10 +24,11 @@ public class Context {
             "myclinic-env",
             "printer-settings"));
     public static ReferService referService = new ReferServiceData(Collections.emptyList());
+    public static PracticeConfig practiceConfig;
 
-    public static void setConfigService(ConfigService configService){
-        Context.configService = configService;
-    }
+//    public static void setConfigService(ConfigService configService){
+//        Context.configService = configService;
+//    }
 
     private static String shohousenPrinterSettingKey = "shohousen-printer-setting";
 

@@ -46,6 +46,14 @@ public class PracticeConfig {
     private String referPrinterSetting;
     private String kouhatsuKasan;
 
+    public PracticeConfig(){
+
+    }
+
+    public PracticeConfig(Path configFile){
+        loadFromPropertiesFile(configFile);
+    }
+
     public String getShohousenPrinterSetting() {
         return shohousenPrinterSetting;
     }

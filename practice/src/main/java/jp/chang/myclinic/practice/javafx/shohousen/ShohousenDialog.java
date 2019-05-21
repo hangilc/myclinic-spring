@@ -197,7 +197,7 @@ public class ShohousenDialog extends Stage {
                 return;
             }
             setDrugs(drawer);
-            String settingName = Context.getShohousenPrinterSetting();
+            String settingName = Context.practiceConfig.getShohousenPrinterSetting();
             DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(printerEnv){
                 @Override
                 protected void onDefaultSettingChange(String newSettingName) {

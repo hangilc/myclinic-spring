@@ -86,11 +86,16 @@ public class Main extends Application {
             ss.kizaicodeResolver = new KizaicodeFileResolver(new File("config/kizaicodes.yml"));
             ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml"));
             setupFrontend(ss);
-            Context.setConfigService(new ConfigPropertyFile(Paths.get(
+            Context.practiceConfig = new PracticeConfig(Paths.get(
                     System.getProperty("user.home"),
                     "myclinic-env",
                     "practice.properties"
-            )));
+            ));
+//            Context.setConfigService(new ConfigPropertyFile(Paths.get(
+//                    System.getProperty("user.home"),
+//                    "myclinic-env",
+//                    "practice.properties"
+//            )));
             Context.referService = new ReferServiceFile(Paths.get("config", "refer-list.yml"));
             Context.integrationService = new IntegrationServiceImpl();
             Context.currentPatientService = new CurrentPatientService();

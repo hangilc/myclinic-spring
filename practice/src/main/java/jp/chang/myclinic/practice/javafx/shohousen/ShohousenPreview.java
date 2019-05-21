@@ -55,11 +55,11 @@ public class ShohousenPreview {
                     DrawerPreviewDialog previewDialog = new DrawerPreviewDialog() {
                         @Override
                         protected void onDefaultSettingChange(String newSettingName) {
-                            Context.setShohousenPrinterSetting(newSettingName);
+                            Context.practiceConfig.setShohousenPrinterSetting(newSettingName);
                         }
                     };
                     previewDialog.setPrinterEnv(Context.printerEnv);
-                    previewDialog.setDefaultPrinterSetting(Context.getShohousenPrinterSetting());
+                    previewDialog.setDefaultPrinterSetting(Context.practiceConfig.getShohousenPrinterSetting());
                     previewDialog.setScaleFactor(0.8);
                     previewDialog.setContentSize(PaperSize.A5);
                     previewDialog.setOps(drawer.getOps());
