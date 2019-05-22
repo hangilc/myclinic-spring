@@ -11,6 +11,7 @@ import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.CurrentPatientService;
 import jp.chang.myclinic.practice.IntegrationServiceImpl;
+import jp.chang.myclinic.practice.PracticeConfig;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
@@ -167,7 +168,7 @@ public class TextEditFormTest extends ComponentTestBase {
                 return value(info);
             }
         };
-        Context.setConfigService(new ConfigTemp());
+        Context.practiceConfig = new PracticeConfig();
         Context.currentPatientService = new CurrentPatientService();
         TextEditForm form = prepareForm(text);
         gui(form::simulateClickShohousenButton);

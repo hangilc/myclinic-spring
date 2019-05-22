@@ -56,6 +56,7 @@ public class ShohousenPreview {
                         @Override
                         protected void onDefaultSettingChange(String newSettingName) {
                             Context.practiceConfig.setShohousenPrinterSetting(newSettingName);
+                            Context.practiceConfig.save();
                         }
                     };
                     previewDialog.setPrinterEnv(Context.printerEnv);

@@ -12,14 +12,17 @@ import static org.junit.Assert.assertEquals;
 public class TestPracticeConfig {
 
     @Test
-    public void testLoad(){
-        PracticeConfig c = new PracticeConfig();
-        c.loadFromPropertiesString("#\n" +
+    public void testLoad() throws IOException {
+        File temp = File.createTempFile("practice-config", ".properties");
+        temp.deleteOnExit();
+        String configString = "#\n" +
                 "#Thu Mar 29 17:13:17 JST 2018\n" +
                 "shohousen-printer-setting=shohousen\n" +
                 "default-printer-setting=shohousen\n" +
                 "refer-printer-setting=refer\n" +
-                "kouhatsu-kasan=外来後発医薬品使用体制加算２");
+                "kouhatsu-kasan=外来後発医薬品使用体制加算２";
+        Files.writeString(temp.toPath(), configString);
+        PracticeConfig c = new PracticeConfig(temp.toPath());
         assertEquals("shohousen", c.getShohousenPrinterSetting());
         assertEquals("refer", c.getReferPrinterSetting());
         assertEquals("外来後発医薬品使用体制加算２", c.getKouhatsuKasan());
@@ -27,20 +30,23 @@ public class TestPracticeConfig {
 
     @Test
     public void testSave() throws IOException {
-        PracticeConfig c = new PracticeConfig();
-        c.loadFromPropertiesString("#\n" +
+        File temp = File.createTempFile("practice-config", ".properties");
+        temp.deleteOnExit();
+        String configString = "#\n" +
                 "#Thu Mar 29 17:13:17 JST 2018\n" +
                 "shohousen-printer-setting=shohousen\n" +
                 "default-printer-setting=shohousen\n" +
                 "refer-printer-setting=refer\n" +
-                "kouhatsu-kasan=外来後発医薬品使用体制加算２");
-        String saved = c.saveToPropertiesString();
+                "kouhatsu-kasan=外来後発医薬品使用体制加算２";
+        Files.writeString(temp.toPath(), configString);
+        PracticeConfig c = new PracticeConfig(temp.toPath());
+        c.setReferPrinterSetting("refer2");
+        c.save();
         Properties props = new Properties();
-        ByteArrayInputStream in = new ByteArrayInputStream(saved.getBytes(StandardCharsets.UTF_8));
-        InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
+        Reader reader = Files.newBufferedReader(temp.toPath(), StandardCharsets.UTF_8);
         props.load(reader);
         assertEquals("shohousen", props.getProperty("shohousen-printer-setting"));
-        assertEquals("refer", props.getProperty("refer-printer-setting"));
+        assertEquals("refer2", props.getProperty("refer-printer-setting"));
         assertEquals("外来後発医薬品使用体制加算２", props.getProperty("kouhatsu-kasan"));
         assertEquals("shohousen", props.getProperty("default-printer-setting"));
     }

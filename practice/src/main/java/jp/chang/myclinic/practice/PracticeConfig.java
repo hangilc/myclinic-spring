@@ -41,6 +41,7 @@ public class PracticeConfig {
     );
 
     private Map<String, String> unknownEntries = new HashMap<>();
+    private Path savePath;
 
     private String shohousenPrinterSetting;
     private String referPrinterSetting;
@@ -51,6 +52,7 @@ public class PracticeConfig {
     }
 
     public PracticeConfig(Path configFile){
+        this.savePath = configFile;
         loadFromPropertiesFile(configFile);
     }
 
@@ -78,7 +80,13 @@ public class PracticeConfig {
         this.kouhatsuKasan = kouhatsuKasan;
     }
 
-    public void saveToPropertyFile(Path path) {
+    public void save(){
+        if( savePath != null ){
+            saveToPropertyFile(savePath);
+        }
+    }
+
+    private void saveToPropertyFile(Path path) {
         try {
             if (Files.notExists(path)) {
                 Files.createFile(path);
@@ -91,16 +99,16 @@ public class PracticeConfig {
         }
     }
 
-    public String saveToPropertiesString(){
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-        try {
-            saveToWriter(writer);
-            return out.toString(StandardCharsets.UTF_8);
-        } catch(IOException ex){
-            throw new RuntimeException(ex);
-        }
-    }
+//    public String saveToPropertiesString(){
+//        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//        OutputStreamWriter writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+//        try {
+//            saveToWriter(writer);
+//            return out.toString(StandardCharsets.UTF_8);
+//        } catch(IOException ex){
+//            throw new RuntimeException(ex);
+//        }
+//    }
 
     private void saveToWriter(Writer writer) throws IOException {
         Properties props = new Properties();
@@ -124,22 +132,32 @@ public class PracticeConfig {
         unknownEntries.put(key, value);
     }
 
-    public void loadFromPropertiesFile(Path path) {
+    public void load(){
+        if( savePath != null ){
+            loadFromPropertiesFile(savePath);
+        }
+    }
+
+    public void setSavePath(Path path){
+        this.savePath = path;
+    }
+
+    private void loadFromPropertiesFile(Path path) {
         Properties props = readPropertyFile(path);
         loadFromProperties(props);
     }
 
-    public void loadFromPropertiesString(String data) {
-        InputStream in = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
-        Properties props = new Properties();
-        try {
-            props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-            loadFromProperties(props);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+//    public void loadFromPropertiesString(String data) {
+//        InputStream in = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
+//        Properties props = new Properties();
+//        try {
+//            props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+//            loadFromProperties(props);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
     private void loadFromProperties(Properties props) {
         for (Object keyObj : props.keySet()) {
             if (keyObj instanceof String) {
