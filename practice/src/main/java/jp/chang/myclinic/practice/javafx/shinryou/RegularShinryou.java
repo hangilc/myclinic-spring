@@ -44,7 +44,7 @@ public class RegularShinryou {
     private static String[] rightItems;
 
     static {
-        String kouhatsuKasan = Context.getKouhatsuKasanSetting();
+        String kouhatsuKasan = Context.practiceConfig.getKouhatsuKasan();
         List<String> items = new ArrayList<>(Arrays.asList(rightUpperItems));
         if( kouhatsuKasan != null && !kouhatsuKasan.isEmpty() ){
             items.add(kouhatsuKasan);

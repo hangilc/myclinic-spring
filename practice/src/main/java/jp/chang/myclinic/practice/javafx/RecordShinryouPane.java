@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-class RecordShinryouPane extends VBox {
+public class RecordShinryouPane extends VBox {
 
     private VBox shinryouList;
     private ShinryouMenu menu;
@@ -36,6 +36,10 @@ class RecordShinryouPane extends VBox {
 
     void simulateEnterRegularShinryouClick() {
         menu.simulateEnterRegularChoice();
+    }
+
+    public ShinryouMenu getMenu(){
+        return menu;
     }
 
     private RecordShinryou createRecordShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){

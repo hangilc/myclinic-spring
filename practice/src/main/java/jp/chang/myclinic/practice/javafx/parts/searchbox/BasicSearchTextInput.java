@@ -33,7 +33,6 @@ public class BasicSearchTextInput extends HBox implements SearchTextInput {
     }
 
     void simulateSearchTextInsert(String text){
-        System.out.println("selection: " + textField.getSelection());
         textField.replaceSelection(text);
     }
 

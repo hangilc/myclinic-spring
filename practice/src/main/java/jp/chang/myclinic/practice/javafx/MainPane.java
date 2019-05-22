@@ -323,7 +323,7 @@ public class MainPane extends BorderPane {
 
     private void doRefer(boolean includePatientInfo) {
         PrinterEnv printerEnv = Context.printerEnv;
-        String printerSetting = Context.getReferPrinterSetting();
+        String printerSetting = Context.practiceConfig.getReferPrinterSetting();
         ReferDialog dialog = new ReferDialog();
         dialog.setPrinterEnv(printerEnv);
         dialog.setDefaultPrinterSetting(printerSetting);

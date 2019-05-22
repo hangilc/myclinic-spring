@@ -29,6 +29,7 @@ public class ShinryouMenu extends VBox {
     private LocalDate visitDate;
     private StackPane workarea = new StackPane();
     private Hyperlink mainLink;
+    private Hyperlink auxLink;
     private BiConsumer<List<ShinryouFullDTO>, Map<Integer, ShinryouAttrDTO>> onShinryouEnteredHandler = (s, a) -> {
     };
     private Consumer<List<ConductFullDTO>> onConductsEnteredHandler = cc -> {
@@ -62,6 +63,10 @@ public class ShinryouMenu extends VBox {
         mainLink.fire();
     }
 
+    public void simulateAuxLinkClick(){
+        auxLink.fire();
+    }
+
     private Node createMenu() {
         HBox hbox = new HBox(4);
         hbox.getChildren().addAll(
@@ -78,7 +83,7 @@ public class ShinryouMenu extends VBox {
     }
 
     private Node createAuxMenu() {
-        Hyperlink auxLink = new Hyperlink("[+]");
+        this.auxLink = new Hyperlink("[+]");
         auxLink.setOnMouseClicked(event -> onAuxMenu(auxLink, event));
         return auxLink;
     }

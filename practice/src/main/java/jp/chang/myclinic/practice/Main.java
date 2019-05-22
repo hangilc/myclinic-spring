@@ -10,7 +10,6 @@ import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.backenddb.DBImpl;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.SerialDB;
-import jp.chang.myclinic.practice.guitest.GuiTest;
 import jp.chang.myclinic.practice.maintest.MainTest;
 import jp.chang.myclinic.support.SupportSet;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
@@ -19,10 +18,8 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.frontend.FrontendBackend;
 import jp.chang.myclinic.frontend.FrontendRest;
 import jp.chang.myclinic.practice.componenttest.ComponentTest;
-import jp.chang.myclinic.practice.guitest.GuiTestRunner;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
-import jp.chang.myclinic.support.config.ConfigPropertyFile;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaFile;
 import jp.chang.myclinic.support.kizaicodes.KizaicodeFileResolver;
@@ -34,7 +31,6 @@ import picocli.CommandLine;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class Main extends Application {
 
@@ -115,9 +111,9 @@ public class Main extends Application {
                 stage.setScene(new Scene(root));
                 stage.show();
                 if( opts.mainTest ){
-                    runMainTest(root, "*.*");
-                } else if( opts.mainTestSelected != null ){
-                    runMainTest(root, opts.mainTestSelected);
+                    runMainTest(root, "*.*", false);
+                } else if( opts.mainTestSingle != null ){
+                    runMainTest(root, opts.mainTestSingle, true);
                 }
             }
         }
@@ -133,10 +129,10 @@ public class Main extends Application {
     private void runGuiTest(Stage stage, String filter) {
     }
 
-    private void runMainTest(MainPane mainPane, String selection){
+    private void runMainTest(MainPane mainPane, String selection, boolean isSingle){
         Tester tester = new Tester();
         tester.addTargets(new MainTest(mainPane));
-        tester.runTest(selection)
+        tester.runTest(selection, isSingle)
                 .thenAccept(ignore -> System.out.println("done"))
                 .exceptionally(ex -> {
                     ex.printStackTrace();

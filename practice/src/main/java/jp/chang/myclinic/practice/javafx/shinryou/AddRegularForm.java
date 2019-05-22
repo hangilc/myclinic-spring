@@ -68,12 +68,22 @@ public class AddRegularForm extends VBox {
         throw new RuntimeException("cannot find item: " + itemLabel);
     }
 
+    public boolean isItemChecked(String name){
+        for (CheckBox c : checks) {
+            String label = c.getText();
+            if (label.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void simulateClickEnterButton() {
         enterButton.fire();
     }
 
     private String getKouhatsuKasan() {
-        String kasan = Context.getKouhatsuKasanSetting();
+        String kasan = Context.practiceConfig.getKouhatsuKasan();
         if (kasan != null && kasan.isEmpty()) {
             kasan = null;
         }
@@ -149,7 +159,6 @@ public class AddRegularForm extends VBox {
     private void doEnter() {
         List<String> selected = checks.stream().filter(CheckBox::isSelected).map(CheckBox::getText)
                 .collect(Collectors.toList());
-        System.out.println("AddRegularShinryou visitId: " + visitId);
         PracticeHelper.getInstance().batchEnterShinryouByNames(visitId, selected, result ->
                         Platform.runLater(() ->
                                 onEnteredCallback.accept(result.shinryouList, result.attrMap, result.conducts))

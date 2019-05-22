@@ -30,34 +30,34 @@ public class Context {
 //        Context.configService = configService;
 //    }
 
-    private static String shohousenPrinterSettingKey = "shohousen-printer-setting";
-
-    public static String getShohousenPrinterSetting(){
-        return configService.getValue(shohousenPrinterSettingKey);
-    }
-
-    public static void setShohousenPrinterSetting(String settingName){
-        configService.setValue(shohousenPrinterSettingKey, settingName);
-    }
-
-    private static String referPrinterSettingKey = "refer-printer-setting";
-
-    public static String getReferPrinterSetting(){
-        return configService.getValue(referPrinterSettingKey);
-    }
-
-    public static void setReferPrinterSetting(String settingName){
-        configService.setValue(referPrinterSettingKey, settingName);
-    }
-
-    private static String kouhatsuKasanKey = "kouhatsu-kasan";
-
-    public static String getKouhatsuKasanSetting(){
-        return configService.getValue(kouhatsuKasanKey);
-    }
-
-    public static void setKouhatsuKasanSetting(String newSetting){
-        configService.setValue(kouhatsuKasanKey, newSetting);
-    }
+//    private static String shohousenPrinterSettingKey = "shohousen-printer-setting";
+//
+//    public static String getShohousenPrinterSetting(){
+//        return configService.getValue(shohousenPrinterSettingKey);
+//    }
+//
+//    public static void setShohousenPrinterSetting(String settingName){
+//        configService.setValue(shohousenPrinterSettingKey, settingName);
+//    }
+//
+//    private static String referPrinterSettingKey = "refer-printer-setting";
+//
+//    public static String getReferPrinterSetting(){
+//        return configService.getValue(referPrinterSettingKey);
+//    }
+//
+//    public static void setReferPrinterSetting(String settingName){
+//        configService.setValue(referPrinterSettinMgKey, settingName);
+//    }
+//
+//    private static String kouhatsuKasanKey = "kouhatsu-kasan";
+//
+//    public static String getKouhatsuKasanSetting(){
+//        return configService.getValue(kouhatsuKasanKey);
+//    }
+//
+//    public static void setKouhatsuKasanSetting(String newSetting){
+//        configService.setValue(kouhatsuKasanKey, newSetting);
+//    }
 
 }

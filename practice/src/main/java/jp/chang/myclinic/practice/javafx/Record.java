@@ -115,6 +115,10 @@ public class Record extends VBox {
         shinryouPane.simulateEnterRegularShinryouClick();
     }
 
+    public RecordShinryouPane getShinryouPane(){
+        return shinryouPane;
+    }
+
     public Optional<AddRegularForm> findAddRegularForm(){
         return shinryouPane.findAddRegularForm();
     }

@@ -197,7 +197,7 @@ public class ReferDialog extends Stage {
                                 @Override
                                 protected void onDefaultSettingChange(String newSettingName) {
                                     ReferDialog.this.defaultPrinterSetting = newSettingName;
-                                    Context.setReferPrinterSetting(newSettingName);
+                                    Context.practiceConfig.setReferPrinterSetting(newSettingName);
                                 }
                             };
                             previewDialog.setPrinterEnv(printerEnv);

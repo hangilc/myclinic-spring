@@ -4,7 +4,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.practice.guitest.drug.DrugTest;
 import jp.chang.myclinic.practice.guitest.drug.RecordDrugsPaneTest;
-import jp.chang.myclinic.practice.guitest.mainpane.MainPaneTestOld;
 import jp.chang.myclinic.practice.guitest.records.RecordsPaneTest;
 import jp.chang.myclinic.practice.guitest.shinryou.ShinryouTest;
 
@@ -23,7 +22,6 @@ public class GuiTestRunner extends GroupTestBase {
                 , new ShinryouTest(stage, main)
                 , new RecordDrugsPaneTest(stage, main)
                 , new RecordsPaneTest(stage, main)
-                , new MainPaneTestOld(stage, main)
         );
     }
 

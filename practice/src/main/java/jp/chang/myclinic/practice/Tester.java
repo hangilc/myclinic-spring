@@ -33,6 +33,8 @@ public class Tester {
 
     public interface TestTarget {
         List<TestMethod> listTestMethods();
+
+        List<TestMethod> listSingleTestMethods();
     }
 
     public interface MethodFilter {
@@ -41,7 +43,7 @@ public class Tester {
 
     private List<TestTarget> targets = new ArrayList<>();
 
-    void addTargets(TestTarget... targets){
+    void addTargets(TestTarget... targets) {
         this.targets.addAll(Arrays.asList(targets));
     }
 
@@ -49,9 +51,9 @@ public class Tester {
         private String classPart;
         private String methodPart;
 
-        Filter(String rep){
+        Filter(String rep) {
             String[] parts = rep.split("\\.");
-            if( parts.length != 2 ){
+            if (parts.length != 2) {
                 throw new RuntimeException("Invalid test filter: " + rep);
             }
             this.classPart = parts[0];
@@ -59,38 +61,54 @@ public class Tester {
         }
 
         @Override
-        public boolean acceptMethod(String className, String methodName){
+        public boolean acceptMethod(String className, String methodName) {
             return partMatches(classPart, className) && partMatches(methodPart, methodName);
         }
 
-        private boolean partMatches(String part, String given){
+        private boolean partMatches(String part, String given) {
             return part.equals("*") || part.equals(given);
         }
     }
 
-    CompletableFuture<Void> runTest(String filterRep){
+    CompletableFuture<Void> runTest(String filterRep, boolean isSingle) {
         Filter filter = new Filter(filterRep);
-        return runTest(filter);
+        return runTest(filter, isSingle);
     }
 
-    CompletableFuture<Void> runTest(MethodFilter filter){
+    CompletableFuture<Void> runTest(MethodFilter filter, boolean isSingle) {
         CompletableFuture<Void> cf = new CompletableFuture<>();
         CompletableFuture<Void> start = cf;
         try {
-            for (TestTarget target : targets) {
+            outer: for (TestTarget target : targets) {
                 String className = target.getClass().getSimpleName();
-                for (TestMethod method : target.listTestMethods()) {
-                    if( filter.acceptMethod(className, method.getName()) ){
-                        System.out.printf("%s.%s\n", className, method.getName());
-                        cf = method.getSig().invoke(cf);
+                if (isSingle) {
+                    for (TestMethod m : target.listSingleTestMethods()) {
+                        if (filter.acceptMethod(className, m.getName())) {
+                            cf = invokeMethod(m, className, cf);
+                            break outer;
+                        }
+                    }
+                }
+                for (TestMethod m : target.listTestMethods()) {
+                    if (filter.acceptMethod(className, m.getName())) {
+                        cf = invokeMethod(m, className, cf);
+                        if( isSingle ){
+                            break outer;
+                        }
                     }
                 }
             }
             start.complete(null);
             return cf;
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private CompletableFuture<Void> invokeMethod(TestMethod method, String className,
+                                                 CompletableFuture<Void> cf) {
+        System.out.printf("%s.%s\n", className, method.getName());
+        return method.getSig().invoke(cf);
     }
 
 }

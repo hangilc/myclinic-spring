@@ -11,6 +11,7 @@ import jp.chang.myclinic.practice.javafx.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.client.CompletionStageRxInvoker;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,11 +27,18 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
     @Override
     public List<Tester.TestMethod> listTestMethods() {
         return List.of(
-                new Tester.TestMethod("disp", this::disp),
-                new Tester.TestMethod("finishExam", this::finishExam),
-                new Tester.TestMethod("searchPatientById", this::searchPatientById),
-                new Tester.TestMethod("searchPatientInNewVisit", this::searchByPatientIdInNewVisitDialog),
-                new Tester.TestMethod("kouhatsuKasan", this::kouhatsuKasan)
+                new Tester.TestMethod("finishExam", this::finishExam)
+                , new Tester.TestMethod("searchPatientById", this::searchPatientById)
+                , new Tester.TestMethod("searchPatientInNewVisit", this::searchByPatientIdInNewVisitDialog)
+                , new Tester.TestMethod("kouhatsuKasan", this::kouhatsuKasan)
+                , new Tester.TestMethod("kouhatsuKasanAutoCheck", this::kouhatsuKasanAutoCheck)
+        );
+    }
+
+    @Override
+    public List<Tester.TestMethod> listSingleTestMethods() {
+        return List.of(
+                new Tester.TestMethod("disp", this::disp)
         );
     }
 
@@ -76,13 +84,60 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
     }
 
     private CompletableFuture<Void> disp(CompletableFuture<Void> pre) {
-        return pre;
+        return pre
+                .thenAcceptAsync(ignore -> {
+                    Context.practiceConfig.setKouhatsuKasan("外来後発医薬品使用体制加算２");
+                });
+    }
+
+    private CompletableFuture<Void> recordsHeightAfterReopen(CompletableFuture<Void> pre){
+        ExamEnv env = new ExamEnv();
+        return _startExam(pre, env)
+                .thenAcceptAsync(ignore -> {
+                    RecordShinryouPane shinryouPane = env.record.getShinryouPane();
+                }, Platform::runLater)
+                .thenApplyAsync(ignore -> waitFor(env.record::findAddRegularForm))
+                .thenAcceptAsync(form -> {
+                    form.simulateClickEnterButton();;
+                }, Platform::runLater);
+
+
+    }
+
+    private CompletableFuture<Void> kouhatsuKasanAutoCheck(CompletableFuture<Void> pre){
+        ExamEnv env = new ExamEnv();
+        class Local {
+            private String kouhatsuKasanSave;
+        }
+        Local local = new Local();
+        return _startExam(pre, env)
+                .thenAcceptAsync(ignore -> {
+                    local.kouhatsuKasanSave = Context.practiceConfig.getKouhatsuKasan();
+                    Context.practiceConfig.setKouhatsuKasan("外来後発医薬品使用体制加算２");
+                    env.record.simulateAddRegularShinryouClick();
+                }, Platform::runLater)
+                .thenApplyAsync(ignore -> waitFor(env.record::findAddRegularForm))
+                .thenApplyAsync(form -> {
+                    form.simulateSelectItem("処方料");
+                    return form;
+                }, Platform::runLater)
+                .thenComposeAsync(form -> {
+                    waitForTrue(() ->
+                            form.isItemChecked("外来後発医薬品使用体制加算２"));
+                    return _endExam(env);
+                });
     }
 
     private CompletableFuture<Void> kouhatsuKasan(CompletableFuture<Void> pre) {
         ExamEnv eEnv = new ExamEnv();
+        class Local {
+            String kouhatsuKasanSave;
+        }
+        Local local = new Local();
         return _startExam(pre, eEnv)
                 .thenAcceptAsync(ignore -> {
+                    local.kouhatsuKasanSave = Context.practiceConfig.getKouhatsuKasan();
+                    Context.practiceConfig.setKouhatsuKasan("外来後発医薬品使用体制加算２");
                     eEnv.record.simulateAddRegularShinryouClick();
                 }, Platform::runLater)
                 .thenApplyAsync(ignore -> waitFor(eEnv.record::findAddRegularForm))
@@ -100,6 +155,8 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
                         return false;
                     });
                 })
+                .thenAcceptAsync(ignore ->
+                        Context.practiceConfig.setKouhatsuKasan(local.kouhatsuKasanSave))
                 .thenComposeAsync(ignore -> _endExam(eEnv));
     }
 

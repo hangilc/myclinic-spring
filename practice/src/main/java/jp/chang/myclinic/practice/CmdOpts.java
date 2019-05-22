@@ -29,7 +29,7 @@ class CmdOpts {
     @Option(names = {"--main-test"}, description = "Runs MainPane tests.")
     boolean mainTest;
 
-    @Option(names = {"--main-test-selected"}, description = "Runs selected MainPane tests.")
-    String mainTestSelected;
+    @Option(names = {"--main-test-single"}, description = "Runs single MainPane test.")
+    String mainTestSingle;
 
 }

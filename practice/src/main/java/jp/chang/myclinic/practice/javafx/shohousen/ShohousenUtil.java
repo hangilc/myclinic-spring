@@ -27,7 +27,8 @@ public class ShohousenUtil {
     }
 
     static void changeDefaultPrinterSetting(String newSetting){
-        Context.setShohousenPrinterSetting(newSetting);
+        Context.practiceConfig.setShohousenPrinterSetting(newSetting);
+        Context.practiceConfig.save();
     }
 
 }
