@@ -8,6 +8,7 @@ import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.Tester;
 import jp.chang.myclinic.practice.javafx.*;
+import jp.chang.myclinic.practice.javafx.shinryou.ShinryouMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
                 , new Tester.TestMethod("searchPatientInNewVisit", this::searchByPatientIdInNewVisitDialog)
                 , new Tester.TestMethod("kouhatsuKasan", this::kouhatsuKasan)
                 , new Tester.TestMethod("kouhatsuKasanAutoCheck", this::kouhatsuKasanAutoCheck)
+                , new Tester.TestMethod("recordsHeightAfterReopen", this::recordsHeightAfterReopen)
         );
     }
 
@@ -95,13 +97,9 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
         return _startExam(pre, env)
                 .thenAcceptAsync(ignore -> {
                     RecordShinryouPane shinryouPane = env.record.getShinryouPane();
-                }, Platform::runLater)
-                .thenApplyAsync(ignore -> waitFor(env.record::findAddRegularForm))
-                .thenAcceptAsync(form -> {
-                    form.simulateClickEnterButton();;
+                    ShinryouMenu menu = shinryouPane.getMenu();
+                    menu.simulateAuxLinkClick();
                 }, Platform::runLater);
-
-
     }
 
     private CompletableFuture<Void> kouhatsuKasanAutoCheck(CompletableFuture<Void> pre){
