@@ -67,6 +67,18 @@
     -fx-padding: 2;
 }
 
+/*
+.records-pane {
+    -fx-border-color: #3c3;
+    -fx-border-width: 2;
+}
+
+.visit-record {
+    -fx-border-color: #ccc;
+    -fx-border-width: 2;
+}
+*/
+
 .drug-disp, .shinryou-disp, .hoken-disp {
     -fx-cursor: hand;
 }

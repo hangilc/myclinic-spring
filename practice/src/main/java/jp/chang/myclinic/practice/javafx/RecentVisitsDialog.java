@@ -23,6 +23,7 @@ public class RecentVisitsDialog extends Stage {
     private Callback callback;
 
     public RecentVisitsDialog(List<VisitPatientDTO> list){
+        setTitle("最近の診察");
         VBox root = new VBox(4);
         root.setStyle("-fx-padding: 10");
         {
@@ -41,6 +42,14 @@ public class RecentVisitsDialog extends Stage {
                 createButtons()
         );
         setScene(new Scene(root));
+    }
+
+    public void simulateItemSelect(int patientId){
+        for(PatientDTO patient: patientTable.getItems()){
+            if( patient.patientId == patientId ){
+                selectPatient(patient);
+            }
+        }
     }
 
     public void setCallback(Callback callback){
@@ -65,9 +74,13 @@ public class RecentVisitsDialog extends Stage {
 
     private void doSelect(){
         PatientDTO patient = patientTable.getSelectionModel().getSelectedItem();
+        selectPatient(patient);
+    }
+
+    private void selectPatient(PatientDTO patient){
         if( patient != null ){
+            close();
             if( callback != null ){
-                close();
                 callback.onSelect(patient);
             }
         }

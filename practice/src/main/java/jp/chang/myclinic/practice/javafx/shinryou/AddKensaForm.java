@@ -17,12 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class AddKensaForm extends WorkForm {
+public class AddKensaForm extends WorkForm {
 
     private int visitId;
     private List<CheckBox> checks = new ArrayList<>();
     private OnEnteredCallback onEnteredCallback = (s, m, c) -> { };
     private Runnable onCancelHandler = () -> {};
+    private Button enterButton;
+    private Button cancelButton;
+    private Hyperlink selectSetLink;
 
     AddKensaForm(int visitId){
         super("検査の入力");
@@ -32,6 +35,18 @@ class AddKensaForm extends WorkForm {
                 createSelectors(),
                 createCommands()
         );
+    }
+
+    public void simulateEnterClick(){
+        enterButton.fire();
+    }
+
+    public void simulateCancelClick(){
+        cancelButton.fire();
+    }
+
+    public void simulateSetKensaSelect(){
+        selectSetLink.fire();
     }
 
     public void setOnEnteredCallback(OnEnteredCallback onEnteredCallback) {
@@ -51,7 +66,7 @@ class AddKensaForm extends WorkForm {
 
     private Node createSelectors(){
         HBox hbox = new HBox(4);
-        Hyperlink selectSetLink = new Hyperlink("セット検査");
+        this.selectSetLink = new Hyperlink("セット検査");
         Hyperlink clearLink = new Hyperlink("クリア");
         selectSetLink.setOnAction(event -> {
             checks.forEach(chk -> {
@@ -83,8 +98,8 @@ class AddKensaForm extends WorkForm {
 
     private Node createCommands(){
         HBox hbox = new HBox(4);
-        Button enterButton = new Button("入力");
-        Button cancelButton = new Button("キャンセル ");
+        this.enterButton = new Button("入力");
+        this.cancelButton = new Button("キャンセル ");
         enterButton.setOnAction(event -> doEnter());
         cancelButton.setOnAction(event -> onCancelHandler.run());
         hbox.getChildren().addAll(enterButton, cancelButton);

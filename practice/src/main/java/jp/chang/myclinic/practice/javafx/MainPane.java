@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 public class MainPane extends BorderPane {
 
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
+    private Menu selectPatientMenu;
     private MenuItem selectVisitMenuItem;
     private MenuItem searchPatientMenuItem;
     private MenuItem newVisitMenuItem;
@@ -65,7 +66,6 @@ public class MainPane extends BorderPane {
            }
         });
         Context.integrationService.addVisitPageHandler((page, totalPages, visits) -> {
-            recordsPane.getChildren().clear();
             setVisits(visits);
         });
     }
@@ -80,6 +80,14 @@ public class MainPane extends BorderPane {
 
     public void simulateNewVisitMenuChoice(){
         newVisitMenuItem.fire();
+    }
+
+    public Menu getSelectPatientMenu(){
+        return selectPatientMenu;
+    }
+
+    public RecordsPane getRecordsPane(){
+        return recordsPane;
     }
 
     public Optional<Record> findRecord(int visitId) {
@@ -109,7 +117,7 @@ public class MainPane extends BorderPane {
             menuBar.getMenus().add(fileMenu);
         }
         {
-            Menu selectMenu = new Menu("患者選択");
+            this.selectPatientMenu = new Menu("患者選択");
             this.selectVisitMenuItem = new MenuItem("受付患者選択");
             searchPatientMenuItem = new MenuItem("患者検索");
             MenuItem recentVisitsItem = new MenuItem("最近の診察");
@@ -120,12 +128,12 @@ public class MainPane extends BorderPane {
             searchPatientMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
             recentVisitsItem.setOnAction(event -> doRecentVisits());
             todaysVisitsItem.setOnAction(event -> doTodaysVisits());
-            selectMenu.getItems().addAll(
+            selectPatientMenu.getItems().addAll(
                     selectVisitMenuItem,
                     searchPatientMenuItem,
                     recentVisitsItem,
                     todaysVisitsItem);
-            menuBar.getMenus().add(selectMenu);
+            menuBar.getMenus().add(selectPatientMenu);
         }
         {
             Menu menu = new Menu("その他");

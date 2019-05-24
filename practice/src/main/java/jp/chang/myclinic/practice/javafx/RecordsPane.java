@@ -17,6 +17,7 @@ public class RecordsPane extends VBox {
     private CurrentPatientService currentPatientService = Context.currentPatientService;
 
     public RecordsPane(){
+        getStyleClass().add("records-pane");
         setFillWidth(true);
         IntegrationService integ = Context.integrationService;
         integ.setOnNewText(this::onNewText);
@@ -44,6 +45,7 @@ public class RecordsPane extends VBox {
             record.styleAsTempVisit();
         }
         getChildren().add(record);
+        layout();
     }
 
     public Optional<Record> findRecord(int visitId){
@@ -58,7 +60,7 @@ public class RecordsPane extends VBox {
         return Optional.empty();
     }
 
-    List<Record> listRecord() {
+    public List<Record> listRecord() {
         return getChildren().stream().filter(n -> n instanceof Record)
                 .map(n -> (Record)n).collect(Collectors.toList());
     }

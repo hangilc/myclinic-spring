@@ -40,6 +40,7 @@ public class Record extends VBox {
         this.visitId = visit.visit.visitId;
         this.shouki = new SimpleObjectProperty<>(shouki);
         this.recordTitle = new RecordTitle(visit.visit, this.shouki);
+        this.getStyleClass().add("visit-record");
         recordTitle.setOnDeletedHandler(() -> onDeletedHandler.run());
         getChildren().addAll(
                 recordTitle,

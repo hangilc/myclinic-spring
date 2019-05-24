@@ -11,6 +11,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
+import jp.chang.myclinic.practice.PracticeHelper;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -36,6 +37,7 @@ public class ShinryouMenu extends VBox {
     };
     private Consumer<List<Integer>> onDeletedHandler = deletedShinryouIds -> {
     };
+    private PracticeHelper helper = PracticeHelper.getInstance();
 
     public ShinryouMenu(VisitDTO visit) {
         super(4);
@@ -64,7 +66,8 @@ public class ShinryouMenu extends VBox {
     }
 
     public void simulateAuxLinkClick(){
-        auxLink.fire();
+        MouseEvent event = helper.createMouseClickedEvent(auxLink);
+        auxLink.fireEvent(event);
     }
 
     private Node createMenu() {
@@ -140,6 +143,15 @@ public class ShinryouMenu extends VBox {
         }
     }
 
+    public Optional<AddKensaForm> findAddKensaForm(){
+        for(Node node: workarea.getChildren()){
+            if( node instanceof AddKensaForm ){
+                return Optional.of((AddKensaForm)node);
+            }
+        }
+        return Optional.empty();
+    }
+
     private void doKensa() {
         if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？")) {
             AddKensaForm form = new AddKensaForm(visitId);
@@ -148,6 +160,7 @@ public class ShinryouMenu extends VBox {
                 onConductsEnteredHandler.accept(conducts);
                 hideWorkarea();
             });
+            form.setOnCancelHandler(this::hideWorkarea);
             showWorkarea(form);
         }
     }

@@ -1,6 +1,11 @@
 package jp.chang.myclinic.practice.maintest;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Border;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
@@ -8,6 +13,7 @@ import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.Tester;
 import jp.chang.myclinic.practice.javafx.*;
+import jp.chang.myclinic.practice.javafx.shinryou.AddKensaForm;
 import jp.chang.myclinic.practice.javafx.shinryou.ShinryouMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +40,7 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
                 , new Tester.TestMethod("kouhatsuKasan", this::kouhatsuKasan)
                 , new Tester.TestMethod("kouhatsuKasanAutoCheck", this::kouhatsuKasanAutoCheck)
                 , new Tester.TestMethod("recordsHeightAfterReopen", this::recordsHeightAfterReopen)
+                , new Tester.TestMethod("cancelKensaInput", this::cancelKensaInput)
         );
     }
 
@@ -85,6 +92,30 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
                 .thenAcceptAsync(ignore -> frontend.deletePharmaQueue(env.visit.visitId));
     }
 
+    private CompletableFuture<Void> _endVisit(ExamEnv env) {
+        Frontend frontend = Context.frontend;
+        return CompletableFuture.supplyAsync(() -> waitFor(mainPane::findPatientManip))
+                .thenAcceptAsync(PatientManip::simulateEndPatientClick, Platform::runLater)
+                .thenAcceptAsync(ignore -> {
+                    waitForFail(() -> mainPane.findRecord(env.visit.visitId));
+                    frontend.deleteWqueue(env.visit.visitId);
+                })
+                .thenAcceptAsync(ignore -> frontend.deletePharmaQueue(env.visit.visitId));
+    }
+
+    private CompletableFuture<Void> invokeFromSelectPatientMenu(String itemText) {
+        return CompletableFuture.supplyAsync(() -> {
+            Menu menu = mainPane.getSelectPatientMenu();
+            for (MenuItem item : menu.getItems()) {
+                if (item.getText().equals(itemText)) {
+                    item.fire();
+                    break;
+                }
+            }
+            return null;
+        }, Platform::runLater);
+    }
+
     private CompletableFuture<Void> disp(CompletableFuture<Void> pre) {
         return pre
                 .thenAcceptAsync(ignore -> {
@@ -92,17 +123,102 @@ public class MainTest implements Tester.TestTarget, MainTestMixin {
                 });
     }
 
-    private CompletableFuture<Void> recordsHeightAfterReopen(CompletableFuture<Void> pre){
+    private CompletableFuture<Void> cancelKensaInput(CompletableFuture<Void> pre) {
         ExamEnv env = new ExamEnv();
+        class Local {
+            private ShinryouMenu menu;
+        }
+        Local local = new Local();
         return _startExam(pre, env)
                 .thenAcceptAsync(ignore -> {
                     RecordShinryouPane shinryouPane = env.record.getShinryouPane();
                     ShinryouMenu menu = shinryouPane.getMenu();
+                    local.menu = menu;
                     menu.simulateAuxLinkClick();
-                }, Platform::runLater);
+                }, Platform::runLater)
+                .thenApplyAsync(ignore -> waitForWindow(ContextMenu.class))
+                .thenAcceptAsync(menu -> {
+                    for (MenuItem item : menu.getItems()) {
+                        if (item.getText().equals("検査")) {
+                            item.fire();
+                            menu.hide();
+                            return;
+                        }
+                    }
+                    throw new RuntimeException("Cannot find context menu item: 検査");
+                }, Platform::runLater)
+                .thenApplyAsync(ignore -> waitFor(local.menu::findAddKensaForm))
+                .thenAcceptAsync(AddKensaForm::simulateCancelClick, Platform::runLater)
+                .thenAcceptAsync(ignore -> waitForFail(local.menu::findAddKensaForm))
+                .thenAcceptAsync(ignore -> _endExam(env));
+
     }
 
-    private CompletableFuture<Void> kouhatsuKasanAutoCheck(CompletableFuture<Void> pre){
+    private CompletableFuture<Void> recordsHeightAfterReopen(CompletableFuture<Void> pre) {
+        ExamEnv env = new ExamEnv();
+        class Local {
+            private ShinryouMenu menu;
+            private double firstHeight;
+        }
+        Local local = new Local();
+        return _startExam(pre, env)
+                .thenAcceptAsync(ignore -> {
+                    RecordShinryouPane shinryouPane = env.record.getShinryouPane();
+                    ShinryouMenu menu = shinryouPane.getMenu();
+                    local.menu = menu;
+                    menu.simulateAuxLinkClick();
+                }, Platform::runLater)
+                .thenApplyAsync(ignore -> waitForWindow(ContextMenu.class))
+                .thenAcceptAsync(menu -> {
+                    for (MenuItem item : menu.getItems()) {
+                        if (item.getText().equals("検査")) {
+                            item.fire();
+                            menu.hide();
+                            return;
+                        }
+                    }
+                    throw new RuntimeException("Cannot find context menu item: 検査");
+                }, Platform::runLater)
+                .thenApplyAsync(ignore -> waitFor(local.menu::findAddKensaForm))
+                .thenAcceptAsync(form -> {
+                    form.simulateSetKensaSelect();
+                    form.simulateEnterClick();
+                }, Platform::runLater)
+                .thenAcceptAsync(ignore -> waitForFail(local.menu::findAddKensaForm))
+                .thenAcceptAsync(ignore -> {
+                    double height = mainPane.getRecordsPane().getHeight();
+                    local.firstHeight = height;
+                    PatientManip manip = mainPane.findPatientManip().orElseThrow(() -> {
+                        throw new RuntimeException("Cannot find patient manip.");
+                    });
+                    manip.simulateEndPatientClick();
+                }, Platform::runLater)
+                .thenAcceptAsync(ignore -> waitForFail(() -> mainPane.findRecord(env.visit.visitId)))
+                .thenComposeAsync(ignore -> {
+                    RecordsPane recordsPane = mainPane.getRecordsPane();
+                    double height = recordsPane.getHeight();
+                    double expected = 0.0;
+                    Border border = recordsPane.getBorder();
+                    if (border != null) {
+                        expected += border.getOutsets().getTop() + border.getOutsets().getBottom() +
+                                border.getInsets().getTop() + border.getInsets().getBottom();
+                    }
+                    confirm(height == expected, () -> System.out.println("Empty records has height: " + height));
+                    return invokeFromSelectPatientMenu("最近の診察");
+                }, Platform::runLater)
+                .thenApplyAsync(ignore -> waitForWindow(RecentVisitsDialog.class))
+                .thenAcceptAsync(dialog -> {
+                    dialog.simulateItemSelect(env.patientId);
+                }, Platform::runLater)
+                .thenAcceptAsync(ignore -> waitFor(() -> mainPane.findRecord(env.visit.visitId)))
+                .thenAcceptAsync(ignore -> {
+                    double height = mainPane.getRecordsPane().getHeight();
+                    confirm(height == local.firstHeight);
+                }, Platform::runLater)
+                .thenAcceptAsync(ignore -> _endVisit(env));
+    }
+
+    private CompletableFuture<Void> kouhatsuKasanAutoCheck(CompletableFuture<Void> pre) {
         ExamEnv env = new ExamEnv();
         class Local {
             private String kouhatsuKasanSave;
