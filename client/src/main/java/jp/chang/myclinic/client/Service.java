@@ -763,6 +763,9 @@ public class Service {
         CompletableFuture<List<VisitIdVisitedAtDTO>> listVisitIdVisitedAtByPatientAndIyakuhincode(@Query("patient-id") int patientId,
                                                                                                   @Query("iyakuhincode") int iyakuhincode);
 
+        @GET("list-visit-id-for-patient")
+        CompletableFuture<List<Integer>> listVisitIdByPatient(@Query("patient-id") int patientId);
+
         @GET("find-pharma-drug")
         CompletableFuture<PharmaDrugDTO> findPharmaDrug(@Query("iyakuhincode") int iyakuhincode);
 

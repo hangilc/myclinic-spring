@@ -13,12 +13,14 @@ class CmdArgs {
     String serverUrl;
     int year;
     int month;
+    boolean includeNoHoken = false;
     List<Integer> patientIds;
 
     private static void usage(){
         System.err.println("Usage: java -jar rcpt.jar data [options] server-url year month");
         System.err.println("options:");
         System.err.println("  -p123,2211,...    patientIds");
+        System.err.println("  -n                include visits with no hoken");
         System.err.println("  -h                output help");
     }
 
@@ -38,6 +40,10 @@ class CmdArgs {
             switch(c){
                 case 'p': {
                     cmdArgs.patientIds = parsePatientIds(arg.substring(2));
+                    break;
+                }
+                case 'n': {
+                    cmdArgs.includeNoHoken = true;
                     break;
                 }
                 case 'h': {

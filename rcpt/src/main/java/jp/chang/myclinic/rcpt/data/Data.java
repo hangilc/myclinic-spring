@@ -29,12 +29,14 @@ class Data {
     private int year;
     private int month;
     private List<Integer> patientIds;
+    private boolean includeWithoutHoken;
     private Xml xml;
 
-    Data(int year, int month, List<Integer> patientIds) {
+    Data(int year, int month, List<Integer> patientIds, boolean includeWithoutHoken) {
         this.year = year;
         this.month = month;
         this.patientIds = patientIds;
+        this.includeWithoutHoken = includeWithoutHoken;
         this.xml = new Xml();
     }
 
@@ -50,7 +52,7 @@ class Data {
             for (int patientId : patientIds) {
                 PatientDTO patient = getPatient(patientId);
                 List<DiseaseFullDTO> diseases = getDiseases(patientId, year, month);
-                List<VisitFull2DTO> visits = getVisits(patientId, year, month);
+                List<VisitFull2DTO> visits = getVisits(patientId, year, month, includeWithoutHoken);
                 // TODO: change to group by shahokokuho/koukikourei
                 Map<HokenIds, List<VisitFull2DTO>> bundles = visits.stream()
                         .collect(Collectors.groupingBy(visit -> new HokenIds(visit.visit)));
@@ -114,10 +116,26 @@ class Data {
         }
     }
 
-    private List<VisitFull2DTO> getVisits(int patientId, int year, int month) {
+    private List<VisitFull2DTO> getVisits(int patientId, int year, int month,
+                                          boolean includeWithoutHoken) {
         try {
-            return Service.api.listVisitByPatientHavingHokenCall(patientId,
-                    year, month).execute().body();
+            if( includeWithoutHoken ){
+                VisitFull2PageDTO page = Service.api.listVisitFull2(patientId, 0).join();
+                if( page.totalPages > 1 ){
+                    System.err.printf("Too many visits for patient: %d\n", patientId);
+                    System.exit(1);
+                }
+                return page.visits.stream()
+                        .filter(f -> {
+                            VisitDTO visit = f.visit;
+                            LocalDate at = LocalDate.parse(visit.visitedAt.substring(0, 10));
+                            return at.getYear() == year && at.getMonthValue() == month;
+                        })
+                        .collect(Collectors.toList());
+            } else {
+                return Service.api.listVisitByPatientHavingHokenCall(patientId,
+                        year, month).execute().body();
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

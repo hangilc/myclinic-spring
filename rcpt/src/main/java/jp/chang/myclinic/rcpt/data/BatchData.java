@@ -17,7 +17,7 @@ public class BatchData {
         int year = cmdArgs.year;
         int month = cmdArgs.month;
         Service.setServerUrl(serverUrl);
-        Data data = new Data(year, month, cmdArgs.patientIds);
+        Data data = new Data(year, month, cmdArgs.patientIds, cmdArgs.includeNoHoken);
         data.run();
         Service.stop();
     }
