@@ -7,7 +7,8 @@ import picocli.CommandLine.Command;
         subcommands = {Tables.class, SqliteSchema.class, UpdateFrontend.class, SearchMaster.class,
                 ListPrescExample.class, ListShinryouMaster.class, Validator.class,
                 ResolveShinryoucodeByName.class, ResolveKizaicodeByName.class,
-                RestServer.class, RestClient.class, PracticeLogMethods.class}
+                RestServer.class, RestClient.class, PracticeLogMethods.class,
+                CSharpDTO.class}
 )
 public class Main implements Runnable {
 

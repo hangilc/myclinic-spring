@@ -1,0 +1,10 @@
+[DataContract]
+public class $data.className
+{
+#foreach( $member in $data.members )
+    [DataMember(Name = "$member.paramName")]
+    public $member.type $member.name { get; set; }
+
+#end
+}
+
