@@ -31,8 +31,8 @@ public class Main implements Runnable {
     public void run() {
         DataSource dsSrc = getDataSource(dbSrc);
         DataSource dsDst = getDataSource(dbDst);
-        DbBackend dbBackendSrc = new DbBackend(dsSrc, getTableSetCreator(dbSrc), null);
-        DbBackend dbBackendDst = new DbBackend(dsDst, getTableSetCreator(dbDst), null);
+        DbBackend dbBackendSrc = new DbBackend(new DBImpl(dsSrc), getTableSetCreator(dbSrc));
+        DbBackend dbBackendDst = new DbBackend(new DBImpl(dsDst), getTableSetCreator(dbDst));
         TableSet tsSrc = dbBackendSrc.getTableSet();
         TableSet tsDst = dbBackendDst.getTableSet();
 
