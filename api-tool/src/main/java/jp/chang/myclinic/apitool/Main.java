@@ -8,7 +8,7 @@ import picocli.CommandLine.Command;
                 ListPrescExample.class, ListShinryouMaster.class, Validator.class,
                 ResolveShinryoucodeByName.class, ResolveKizaicodeByName.class,
                 RestServer.class, RestClient.class, PracticeLogMethods.class,
-                CSharpDTO.class}
+                CSharpDTO.class, CSharpClient.class}
 )
 public class Main implements Runnable {
 

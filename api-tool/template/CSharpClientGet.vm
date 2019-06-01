@@ -1,0 +1,7 @@
+    public static async $retType $methodName($params)
+    {
+        return await Get<PatientDTO>("get-patient", q => {
+            q.Set("patient-id", patientId);
+        });
+    }
+

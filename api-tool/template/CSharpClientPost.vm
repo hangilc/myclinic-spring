@@ -1,0 +1,5 @@
+    public static async $retType $methodName($params)
+    {
+        return await Post<int, PatientDTO>("enter-patient", q => { }, patient);
+    }
+
