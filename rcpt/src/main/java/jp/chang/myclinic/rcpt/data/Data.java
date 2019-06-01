@@ -17,8 +17,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 // TODO: 翌月の病名を含めない
 class Data {
@@ -48,6 +51,14 @@ class Data {
             for (int patientId : patientIds) {
                 PatientDTO patient = getPatient(patientId);
                 List<DiseaseFullDTO> diseases = getDiseases(patientId, year, month);
+                diseases = diseases.stream()
+                        .map(d -> {
+                            String endDate = d.disease.endDate;
+                            if( !endDate.equals("0000-00-00") && isDateLater(endDate, year, month) ){
+                                d.disease.endDate = "0000-00-00";
+                            }
+                            return d;
+                        }).collect(toList());
                 List<VisitFull2DTO> visits = getVisits(patientId, year, month);
                 // TODO: change to group by shahokokuho/koukikourei
                 Map<HokenIds, List<VisitFull2DTO>> bundles = visits.stream()
@@ -62,6 +73,12 @@ class Data {
                 }
             }
         });
+    }
+
+    private boolean isDateLater(String date, int year, int month){
+        LocalDate d = LocalDate.parse(date);
+        LocalDate nextDay = LocalDate.of(year, month, 1).plus(1, ChronoUnit.MONTHS);
+        return d.isEqual(nextDay) || d.isAfter(nextDay);
     }
 
     private void outProlog() {
@@ -129,7 +146,7 @@ class Data {
         }
         HokenDTO hoken = visits.get(0).hoken;
         String futan = getFutan(patient, hoken);
-        String shouki = getShouki(visits.stream().map(v -> v.visit.visitId).collect(Collectors.toList()));
+        String shouki = getShouki(visits.stream().map(v -> v.visit.visitId).collect(toList()));
         if( !shouki.isEmpty() ){
             System.err.printf("症状詳記（%d）%s%s：%s\n", patient.patientId,
                     patient.lastName, patient.firstName, shouki);
@@ -353,11 +370,11 @@ class Data {
         xml.element("受診", () -> {
             xml.element("受診日", visit.visit.visitedAt);
             List<ShinryouFullDTO> shinryouList = new ArrayList<>(visit.shinryouList);
-            List<Integer> shinryouIds = shinryouList.stream().map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
+            List<Integer> shinryouIds = shinryouList.stream().map(s -> s.shinryou.shinryouId).collect(toList());
             Map<Integer, ShinryouAttrDTO> shinryouAttrMap = collectShinryouAttr(shinryouIds);
             shinryouList.sort(Comparator.comparingInt(a -> a.shinryou.shinryouId)); // for backwork compatibility (not necessary for funtion)
             shinryouList.forEach(s -> outShinryou(s, shinryouAttrMap.get(s.shinryou.shinryouId)));
-            List<Integer> drugIds = visit.drugs.stream().map(d -> d.drug.drugId).collect(Collectors.toList());
+            List<Integer> drugIds = visit.drugs.stream().map(d -> d.drug.drugId).collect(toList());
             Map<Integer, DrugAttrDTO> drugAttrMap = collectDrugAttr(drugIds);
             outDrugs(visit.drugs, drugAttrMap);
             visit.conducts.forEach(this::outConduct);

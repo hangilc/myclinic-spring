@@ -337,7 +337,8 @@ public class RcptDrawer {
         compiler.setFont("Gothic2.5");
         Box box = new Box(64, 26.3, 87, 28.5);
         Box[] cols = box.splitToColumns(10, 17.5);
-        compiler.textIn("平成", cols[0], HAlign.Left, VAlign.Bottom);
+        //compiler.textIn("平成", cols[0], HAlign.Left, VAlign.Bottom);
+        compiler.textIn("令和", cols[0], HAlign.Left, VAlign.Bottom);
         compiler.textIn("年", cols[1], HAlign.Left, VAlign.Bottom);
         compiler.textIn("月分", cols[2], HAlign.Left, VAlign.Bottom);
         shinryouNenBox = shiftCorners(cols[0], 5, 0, -1.5, 0);
