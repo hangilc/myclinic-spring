@@ -1,5 +1,9 @@
     public static async $retType $methodName($params)
     {
-        return await Post<int, PatientDTO>("enter-patient", q => { }, patient);
+        return await Post<$retType, PatientDTO>("$path", q => {
+        #foreach($queryParam in $queryParams)
+            q.Set("$queryParam.key", $queryParam.value);
+        #end
+        }, patient);
     }
 
