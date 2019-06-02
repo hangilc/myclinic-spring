@@ -1,6 +1,6 @@
     public static async $methodRetType $methodName($params)
     {
-        return await Post<$retType, $bodyParamType>("$path", q => {
+        await VoidPost<$bodyParamType>("$path", q => {
         #foreach($queryParam in $queryParams)
             q.Set("$queryParam.key", $queryParam.value);
         #end

@@ -1,4 +1,4 @@
-    public static async $retType $methodName($params)
+    public static async $methodRetType $methodName($params)
     {
         return await Get<$retType>("$path", q => {
         #foreach($queryParam in $queryParams)
