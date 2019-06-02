@@ -11,6 +11,8 @@ import jp.chang.myclinic.support.SupportSetProvider;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
 import picocli.CommandLine;
 import picocli.CommandLine.*;
@@ -47,7 +49,18 @@ public class Main implements Runnable {
             ServletContainer container = new ServletContainer(new JerseyConfig(dbBackend, ss));
             ServletHolder jersey = new ServletHolder(container);
             jersey.setInitOrder(0);
-            context.addServlet(jersey, "/*");
+            {
+                ServletHolder holder = new ServletHolder();
+                WebSocketServlet websocketServlet = new WebSocketServlet(){
+                    @Override
+                    public void configure(WebSocketServletFactory factory) {
+                        factory.register(PracticeLogWebsocket.class);
+                    }
+                };
+                holder.setServlet(websocketServlet);
+                context.addServlet(holder, "/practice-log");
+            }
+            context.addServlet(jersey, "/json");
             server.start();
             System.out.printf("Server listening to port %d\n", port);
             server.join();

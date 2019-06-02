@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-@Path("/json")
+@Path("/")
 public class RestServer {
 
   private DbBackend dbBackend;
