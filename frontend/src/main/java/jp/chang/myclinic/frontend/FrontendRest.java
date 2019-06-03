@@ -1414,4 +1414,12 @@ public class FrontendRest extends FrontendRestBase implements Frontend {
         },
         new GenericType<Integer>() {});
   }
+
+  @Override
+  public CompletableFuture<List<PracticeLogDTO>> listAllPracticeLog(LocalDate date) {
+    return get(
+        "list-all-practice-log",
+        setter -> setter.set("date", date),
+        new GenericType<List<PracticeLogDTO>>() {});
+  }
 }

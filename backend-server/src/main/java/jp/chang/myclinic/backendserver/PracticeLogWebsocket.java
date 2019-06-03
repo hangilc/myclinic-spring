@@ -48,14 +48,21 @@ public class PracticeLogWebsocket extends WebSocketAdapter{
 
     @Override
     public void onWebSocketText(String message) {
-        System.out.println("onWebSocketText: " + message);
         super.onWebSocketText(message);
         if( "hello".equals(message) ){
-            System.out.println("hello text");
             if( session != null && session.isOpen() ){
-                String reply = "HELLO";
-                System.out.println(session.getRemote());
-                session.getRemote().sendStringByFuture(reply);
+                StringBuilder longText1Builder = new StringBuilder();
+                for(int i=0;i<500;i++){
+                    longText1Builder.append("HELLO");
+                }
+                String longText1 = longText1Builder.toString();
+                StringBuilder longText2Builder = new StringBuilder();
+                for(int i=0;i<500;i++){
+                    longText2Builder.append("world");
+                }
+                String longText2 = longText2Builder.toString();
+                session.getRemote().sendStringByFuture(longText1);
+                session.getRemote().sendStringByFuture(longText2);
             }
         }
     }

@@ -1425,4 +1425,11 @@ public class RestServer {
       @QueryParam("visit-id") int visitId, @QueryParam("name") String name) {
     return supportService.enterShinryouByName(visitId, name);
   }
+
+  @Path("list-all-practice-log")
+  @Produces(MediaType.APPLICATION_JSON)
+  @GET
+  public List<PracticeLogDTO> listAllPracticeLog(@QueryParam("date") LocalDate date) {
+    return dbBackend.query(backend -> backend.listAllPracticeLog(date));
+  }
 }

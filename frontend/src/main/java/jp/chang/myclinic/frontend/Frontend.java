@@ -371,4 +371,6 @@ public interface Frontend {
     CompletableFuture<Void> deleteWqueue(int visitId);
 
     CompletableFuture<Integer> enterShinryouByName(int visitId, String name);
+
+    CompletableFuture<List<PracticeLogDTO>> listAllPracticeLog(LocalDate date);
 }

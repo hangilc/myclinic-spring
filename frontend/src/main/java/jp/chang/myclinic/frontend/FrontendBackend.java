@@ -989,4 +989,9 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<Integer> enterShinryouByName(int visitId, String name) {
         return value(supportService.enterShinryouByName(visitId, name));
     }
+
+    @Override
+    public CompletableFuture<List<PracticeLogDTO>> listAllPracticeLog(LocalDate date) {
+        return query(backend -> backend.listAllPracticeLog(date));
+    }
 }

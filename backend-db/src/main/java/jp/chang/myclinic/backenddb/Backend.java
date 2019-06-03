@@ -1532,4 +1532,10 @@ public class Backend {
         return getQuery().query(sql, ts.practiceLogTable, afterThisId);
     }
 
+    public List<PracticeLogDTO> listAllPracticeLog(LocalDate date){
+        String sql = xlate("select * from PracticeLog where date(createdAt) = ? order by serialId",
+                ts.practiceLogTable);
+        return getQuery().query(sql, ts.practiceLogTable, date.toString());
+    }
+
 }

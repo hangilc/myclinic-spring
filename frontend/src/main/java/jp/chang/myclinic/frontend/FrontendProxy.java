@@ -912,4 +912,9 @@ public class FrontendProxy implements Frontend {
     public CompletableFuture<Integer> enterShinryouByName(int visitId, String name) {
         return delegate.enterShinryouByName(visitId, name);
     }
+
+    @Override
+    public CompletableFuture<List<PracticeLogDTO>> listAllPracticeLog(LocalDate date) {
+        return delegate.listAllPracticeLog(date);
+    }
 }

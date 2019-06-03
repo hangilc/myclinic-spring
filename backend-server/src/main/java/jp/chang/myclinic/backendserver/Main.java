@@ -60,7 +60,7 @@ public class Main implements Runnable {
                 holder.setServlet(websocketServlet);
                 context.addServlet(holder, "/practice-log");
             }
-            context.addServlet(jersey, "/json");
+            context.addServlet(jersey, "/json/*");
             server.start();
             System.out.printf("Server listening to port %d\n", port);
             server.join();
