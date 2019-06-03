@@ -42,6 +42,10 @@ public class Main implements Runnable {
 //        DataSource ds = MysqlDataSourceProvider.create();
 //        DB db = new DBImpl(ds);
 //        DbBackend dbBackend = new DbBackend(db, MysqlTableSet::create);
+            {
+                Context.listAllPracticeLog = date ->
+                        dbBackend.query(backend -> backend.listAllPracticeLog(date));
+            }
             Server server = new Server(port);
             ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
             context.setContextPath("/");

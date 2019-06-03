@@ -1,10 +1,14 @@
 package jp.chang.myclinic.backendserver;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class PracticeLogWebsocket extends WebSocketAdapter{
@@ -51,18 +55,13 @@ public class PracticeLogWebsocket extends WebSocketAdapter{
         super.onWebSocketText(message);
         if( "hello".equals(message) ){
             if( session != null && session.isOpen() ){
-                StringBuilder longText1Builder = new StringBuilder();
-                for(int i=0;i<500;i++){
-                    longText1Builder.append("HELLO");
+                List<PracticeLogDTO> logs = Context.listAllPracticeLog.apply(LocalDate.now());
+                try {
+                    String json = Context.mapper.writeValueAsString(logs);
+                    session.getRemote().sendString(json);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                String longText1 = longText1Builder.toString();
-                StringBuilder longText2Builder = new StringBuilder();
-                for(int i=0;i<500;i++){
-                    longText2Builder.append("world");
-                }
-                String longText2 = longText2Builder.toString();
-                session.getRemote().sendStringByFuture(longText1);
-                session.getRemote().sendStringByFuture(longText2);
             }
         }
     }
