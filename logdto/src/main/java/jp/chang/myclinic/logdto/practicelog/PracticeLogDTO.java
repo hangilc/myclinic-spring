@@ -1,16 +1,15 @@
 package jp.chang.myclinic.logdto.practicelog;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.dto.annotation.AutoInc;
 import jp.chang.myclinic.dto.annotation.Primary;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class PracticeLogDTO {
 
     @Primary
@@ -40,10 +39,12 @@ public class PracticeLogDTO {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
+    @JsonIgnore
     public boolean isChargeCreated() {
         return "charge-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ChargeCreated> getChargeCreated() {
         if (isChargeCreated())
             try {
@@ -59,10 +60,12 @@ public class PracticeLogDTO {
         return getChargeCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isChargeDeleted() {
         return "charge-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ChargeDeleted> getChargeDeleted() {
         if (isChargeDeleted())
             try {
@@ -78,10 +81,12 @@ public class PracticeLogDTO {
         return getChargeDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isChargeUpdated() {
         return "charge-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ChargeUpdated> getChargeUpdated() {
         if (isChargeUpdated())
             try {
@@ -97,10 +102,12 @@ public class PracticeLogDTO {
         return getChargeUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductCreated() {
         return "conduct-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductCreated> getConductCreated() {
         if (isConductCreated())
             try {
@@ -116,10 +123,12 @@ public class PracticeLogDTO {
         return getConductCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductDeleted() {
         return "conduct-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductDeleted> getConductDeleted() {
         if (isConductDeleted())
             try {
@@ -135,10 +144,12 @@ public class PracticeLogDTO {
         return getConductDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductDrugCreated() {
         return "conduct-drug-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductDrugCreated> getConductDrugCreated() {
         if (isConductDrugCreated())
             try {
@@ -154,10 +165,12 @@ public class PracticeLogDTO {
         return getConductDrugCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductDrugDeleted() {
         return "conduct-drug-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductDrugDeleted> getConductDrugDeleted() {
         if (isConductDrugDeleted())
             try {
@@ -173,10 +186,12 @@ public class PracticeLogDTO {
         return getConductDrugDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductDrugUpdated() {
         return "conduct-drug-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductDrugUpdated> getConductDrugUpdated() {
         if (isConductDrugUpdated())
             try {
@@ -192,10 +207,12 @@ public class PracticeLogDTO {
         return getConductDrugUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductKizaiCreated() {
         return "conduct-kizai-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductKizaiCreated> getConductKizaiCreated() {
         if (isConductKizaiCreated())
             try {
@@ -211,10 +228,12 @@ public class PracticeLogDTO {
         return getConductKizaiCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductKizaiDeleted() {
         return "conduct-kizai-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductKizaiDeleted> getConductKizaiDeleted() {
         if (isConductKizaiDeleted())
             try {
@@ -230,10 +249,12 @@ public class PracticeLogDTO {
         return getConductKizaiDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductKizaiUpdated() {
         return "conduct-kizai-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductKizaiUpdated> getConductKizaiUpdated() {
         if (isConductKizaiUpdated())
             try {
@@ -249,10 +270,12 @@ public class PracticeLogDTO {
         return getConductKizaiUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductShinryouCreated() {
         return "conduct-shinryou-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductShinryouCreated> getConductShinryouCreated() {
         if (isConductShinryouCreated())
             try {
@@ -268,10 +291,12 @@ public class PracticeLogDTO {
         return getConductShinryouCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductShinryouDeleted() {
         return "conduct-shinryou-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductShinryouDeleted> getConductShinryouDeleted() {
         if (isConductShinryouDeleted())
             try {
@@ -287,10 +312,12 @@ public class PracticeLogDTO {
         return getConductShinryouDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductShinryouUpdated() {
         return "conduct-shinryou-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductShinryouUpdated> getConductShinryouUpdated() {
         if (isConductShinryouUpdated())
             try {
@@ -306,10 +333,12 @@ public class PracticeLogDTO {
         return getConductShinryouUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isConductUpdated() {
         return "conduct-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ConductUpdated> getConductUpdated() {
         if (isConductUpdated())
             try {
@@ -325,10 +354,12 @@ public class PracticeLogDTO {
         return getConductUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isDiseaseAdjCreated() {
         return "disease-adj-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<DiseaseAdjCreated> getDiseaseAdjCreated() {
         if (isDiseaseAdjCreated())
             try {
@@ -344,10 +375,12 @@ public class PracticeLogDTO {
         return getDiseaseAdjCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isDiseaseAdjDeleted() {
         return "disease-adj-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<DiseaseAdjDeleted> getDiseaseAdjDeleted() {
         if (isDiseaseAdjDeleted())
             try {
@@ -363,10 +396,12 @@ public class PracticeLogDTO {
         return getDiseaseAdjDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isDiseaseAdjUpdated() {
         return "disease-adj-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<DiseaseAdjUpdated> getDiseaseAdjUpdated() {
         if (isDiseaseAdjUpdated())
             try {
@@ -382,10 +417,12 @@ public class PracticeLogDTO {
         return getDiseaseAdjUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isDiseaseCreated() {
         return "disease-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<DiseaseCreated> getDiseaseCreated() {
         if (isDiseaseCreated())
             try {
@@ -401,10 +438,12 @@ public class PracticeLogDTO {
         return getDiseaseCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isDiseaseDeleted() {
         return "disease-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<DiseaseDeleted> getDiseaseDeleted() {
         if (isDiseaseDeleted())
             try {
@@ -420,10 +459,12 @@ public class PracticeLogDTO {
         return getDiseaseDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isDiseaseUpdated() {
         return "disease-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<DiseaseUpdated> getDiseaseUpdated() {
         if (isDiseaseUpdated())
             try {
@@ -439,10 +480,12 @@ public class PracticeLogDTO {
         return getDiseaseUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isDrugCreated() {
         return "drug-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<DrugCreated> getDrugCreated() {
         if (isDrugCreated())
             try {
@@ -458,10 +501,12 @@ public class PracticeLogDTO {
         return getDrugCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isDrugDeleted() {
         return "drug-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<DrugDeleted> getDrugDeleted() {
         if (isDrugDeleted())
             try {
@@ -477,10 +522,12 @@ public class PracticeLogDTO {
         return getDrugDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isDrugUpdated() {
         return "drug-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<DrugUpdated> getDrugUpdated() {
         if (isDrugUpdated())
             try {
@@ -496,10 +543,12 @@ public class PracticeLogDTO {
         return getDrugUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isGazouLabelCreated() {
         return "gazou-label-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<GazouLabelCreated> getGazouLabelCreated() {
         if (isGazouLabelCreated())
             try {
@@ -515,10 +564,12 @@ public class PracticeLogDTO {
         return getGazouLabelCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isGazouLabelDeleted() {
         return "gazou-label-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<GazouLabelDeleted> getGazouLabelDeleted() {
         if (isGazouLabelDeleted())
             try {
@@ -534,10 +585,12 @@ public class PracticeLogDTO {
         return getGazouLabelDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isGazouLabelUpdated() {
         return "gazou-label-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<GazouLabelUpdated> getGazouLabelUpdated() {
         if (isGazouLabelUpdated())
             try {
@@ -553,10 +606,12 @@ public class PracticeLogDTO {
         return getGazouLabelUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isKouhiCreated() {
         return "kouhi-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<KouhiCreated> getKouhiCreated() {
         if (isKouhiCreated())
             try {
@@ -572,10 +627,12 @@ public class PracticeLogDTO {
         return getKouhiCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isKouhiDeleted() {
         return "kouhi-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<KouhiDeleted> getKouhiDeleted() {
         if (isKouhiDeleted())
             try {
@@ -591,10 +648,12 @@ public class PracticeLogDTO {
         return getKouhiDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isKouhiUpdated() {
         return "kouhi-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<KouhiUpdated> getKouhiUpdated() {
         if (isKouhiUpdated())
             try {
@@ -610,10 +669,12 @@ public class PracticeLogDTO {
         return getKouhiUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isKoukikoureiCreated() {
         return "koukikourei-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<KoukikoureiCreated> getKoukikoureiCreated() {
         if (isKoukikoureiCreated())
             try {
@@ -629,10 +690,12 @@ public class PracticeLogDTO {
         return getKoukikoureiCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isKoukikoureiDeleted() {
         return "koukikourei-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<KoukikoureiDeleted> getKoukikoureiDeleted() {
         if (isKoukikoureiDeleted())
             try {
@@ -648,10 +711,12 @@ public class PracticeLogDTO {
         return getKoukikoureiDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isKoukikoureiUpdated() {
         return "koukikourei-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<KoukikoureiUpdated> getKoukikoureiUpdated() {
         if (isKoukikoureiUpdated())
             try {
@@ -667,10 +732,12 @@ public class PracticeLogDTO {
         return getKoukikoureiUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPatientCreated() {
         return "patient-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PatientCreated> getPatientCreated() {
         if (isPatientCreated())
             try {
@@ -686,10 +753,12 @@ public class PracticeLogDTO {
         return getPatientCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPatientDeleted() {
         return "patient-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PatientDeleted> getPatientDeleted() {
         if (isPatientDeleted())
             try {
@@ -705,10 +774,12 @@ public class PracticeLogDTO {
         return getPatientDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPatientUpdated() {
         return "patient-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PatientUpdated> getPatientUpdated() {
         if (isPatientUpdated())
             try {
@@ -724,10 +795,12 @@ public class PracticeLogDTO {
         return getPatientUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPaymentCreated() {
         return "payment-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PaymentCreated> getPaymentCreated() {
         if (isPaymentCreated())
             try {
@@ -743,10 +816,12 @@ public class PracticeLogDTO {
         return getPaymentCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPaymentDeleted() {
         return "payment-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PaymentDeleted> getPaymentDeleted() {
         if (isPaymentDeleted())
             try {
@@ -762,10 +837,12 @@ public class PracticeLogDTO {
         return getPaymentDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPaymentUpdated() {
         return "payment-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PaymentUpdated> getPaymentUpdated() {
         if (isPaymentUpdated())
             try {
@@ -781,10 +858,12 @@ public class PracticeLogDTO {
         return getPaymentUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPharmaDrugCreated() {
         return "pharma-drug-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PharmaDrugCreated> getPharmaDrugCreated() {
         if (isPharmaDrugCreated())
             try {
@@ -800,10 +879,12 @@ public class PracticeLogDTO {
         return getPharmaDrugCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPharmaDrugDeleted() {
         return "pharma-drug-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PharmaDrugDeleted> getPharmaDrugDeleted() {
         if (isPharmaDrugDeleted())
             try {
@@ -819,10 +900,12 @@ public class PracticeLogDTO {
         return getPharmaDrugDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPharmaDrugUpdated() {
         return "pharma-drug-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PharmaDrugUpdated> getPharmaDrugUpdated() {
         if (isPharmaDrugUpdated())
             try {
@@ -838,10 +921,12 @@ public class PracticeLogDTO {
         return getPharmaDrugUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPharmaQueueCreated() {
         return "pharma-queue-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PharmaQueueCreated> getPharmaQueueCreated() {
         if (isPharmaQueueCreated())
             try {
@@ -857,10 +942,12 @@ public class PracticeLogDTO {
         return getPharmaQueueCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPharmaQueueDeleted() {
         return "pharma-queue-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PharmaQueueDeleted> getPharmaQueueDeleted() {
         if (isPharmaQueueDeleted())
             try {
@@ -876,10 +963,12 @@ public class PracticeLogDTO {
         return getPharmaQueueDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isPharmaQueueUpdated() {
         return "pharma-queue-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<PharmaQueueUpdated> getPharmaQueueUpdated() {
         if (isPharmaQueueUpdated())
             try {
@@ -895,10 +984,12 @@ public class PracticeLogDTO {
         return getPharmaQueueUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isRoujinCreated() {
         return "roujin-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<RoujinCreated> getRoujinCreated() {
         if (isRoujinCreated())
             try {
@@ -914,10 +1005,12 @@ public class PracticeLogDTO {
         return getRoujinCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isRoujinDeleted() {
         return "roujin-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<RoujinDeleted> getRoujinDeleted() {
         if (isRoujinDeleted())
             try {
@@ -933,10 +1026,12 @@ public class PracticeLogDTO {
         return getRoujinDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isRoujinUpdated() {
         return "roujin-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<RoujinUpdated> getRoujinUpdated() {
         if (isRoujinUpdated())
             try {
@@ -952,10 +1047,12 @@ public class PracticeLogDTO {
         return getRoujinUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isShahokokuhoCreated() {
         return "shahokokuho-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ShahokokuhoCreated> getShahokokuhoCreated() {
         if (isShahokokuhoCreated())
             try {
@@ -971,10 +1068,12 @@ public class PracticeLogDTO {
         return getShahokokuhoCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isShahokokuhoDeleted() {
         return "shahokokuho-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ShahokokuhoDeleted> getShahokokuhoDeleted() {
         if (isShahokokuhoDeleted())
             try {
@@ -990,10 +1089,12 @@ public class PracticeLogDTO {
         return getShahokokuhoDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isShahokokuhoUpdated() {
         return "shahokokuho-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ShahokokuhoUpdated> getShahokokuhoUpdated() {
         if (isShahokokuhoUpdated())
             try {
@@ -1009,10 +1110,12 @@ public class PracticeLogDTO {
         return getShahokokuhoUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isShinryouCreated() {
         return "shinryou-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ShinryouCreated> getShinryouCreated() {
         if (isShinryouCreated())
             try {
@@ -1028,10 +1131,12 @@ public class PracticeLogDTO {
         return getShinryouCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isShinryouDeleted() {
         return "shinryou-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ShinryouDeleted> getShinryouDeleted() {
         if (isShinryouDeleted())
             try {
@@ -1047,10 +1152,12 @@ public class PracticeLogDTO {
         return getShinryouDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isShinryouUpdated() {
         return "shinryou-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<ShinryouUpdated> getShinryouUpdated() {
         if (isShinryouUpdated())
             try {
@@ -1066,10 +1173,12 @@ public class PracticeLogDTO {
         return getShinryouUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isTextCreated() {
         return "text-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<TextCreated> getTextCreated() {
         if (isTextCreated())
             try {
@@ -1085,10 +1194,12 @@ public class PracticeLogDTO {
         return getTextCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isTextDeleted() {
         return "text-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<TextDeleted> getTextDeleted() {
         if (isTextDeleted())
             try {
@@ -1104,10 +1215,12 @@ public class PracticeLogDTO {
         return getTextDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isTextUpdated() {
         return "text-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<TextUpdated> getTextUpdated() {
         if (isTextUpdated())
             try {
@@ -1123,10 +1236,12 @@ public class PracticeLogDTO {
         return getTextUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isVisitCreated() {
         return "visit-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<VisitCreated> getVisitCreated() {
         if (isVisitCreated())
             try {
@@ -1142,10 +1257,12 @@ public class PracticeLogDTO {
         return getVisitCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isVisitDeleted() {
         return "visit-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<VisitDeleted> getVisitDeleted() {
         if (isVisitDeleted())
             try {
@@ -1161,10 +1278,12 @@ public class PracticeLogDTO {
         return getVisitDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isVisitUpdated() {
         return "visit-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<VisitUpdated> getVisitUpdated() {
         if (isVisitUpdated())
             try {
@@ -1180,10 +1299,12 @@ public class PracticeLogDTO {
         return getVisitUpdated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isWqueueCreated() {
         return "wqueue-created".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<WqueueCreated> getWqueueCreated() {
         if (isWqueueCreated())
             try {
@@ -1199,10 +1320,12 @@ public class PracticeLogDTO {
         return getWqueueCreated().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isWqueueDeleted() {
         return "wqueue-deleted".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<WqueueDeleted> getWqueueDeleted() {
         if (isWqueueDeleted())
             try {
@@ -1218,10 +1341,12 @@ public class PracticeLogDTO {
         return getWqueueDeleted().orElseThrow(() -> new RuntimeException("Invalid practice-log kind."));
     }
 
+    @JsonIgnore
     public boolean isWqueueUpdated() {
         return "wqueue-updated".equals(kind);
     }
 
+    @JsonIgnore
     public Optional<WqueueUpdated> getWqueueUpdated() {
         if (isWqueueUpdated())
             try {
