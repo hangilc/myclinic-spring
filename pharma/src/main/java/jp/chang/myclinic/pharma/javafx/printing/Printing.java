@@ -67,8 +67,8 @@ public class Printing {
         previewDialog.show();
     }
 
-    public static void previewTechou(List<DrugFullDTO> drugs, PatientDTO patient) {
-        TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(), drugs, Globals.getClinicInfo());
+    public static void previewTechou(List<DrugFullDTO> drugs, PatientDTO patient, LocalDate at) {
+        TechouDataCreator creator = new TechouDataCreator(patient, at, drugs, Globals.getClinicInfo());
         TechouDrawerData drawerData = creator.createData();
         List<Op> ops = new TechouDrawer(drawerData).getOps();
         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(), 99, 120, 1.0) {

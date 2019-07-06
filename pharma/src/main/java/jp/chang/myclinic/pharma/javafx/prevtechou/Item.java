@@ -14,14 +14,17 @@ import jp.chang.myclinic.util.DrugUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.List;
 
 class Item extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(Item.class);
+    private LocalDate at;
 
     Item(VisitDrugDTO visitDrug, PatientDTO patient) {
         super(0);
+        this.at = LocalDate.parse(visitDrug.visit.visitedAt.substring(0, 10));
         getChildren().add(createTitle(visitDrug.visit));
         addDrugs(visitDrug.drugs);
         getChildren().add(createCommands(visitDrug.drugs, patient));
@@ -52,7 +55,7 @@ class Item extends VBox {
     }
 
     private void doPrint(List<DrugFullDTO> drugs, PatientDTO patient){
-        Printing.previewTechou(drugs, patient);
+        Printing.previewTechou(drugs, patient, at);
     }
 
 }
