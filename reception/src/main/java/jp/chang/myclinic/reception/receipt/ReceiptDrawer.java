@@ -17,10 +17,10 @@ import java.util.List;
 public class ReceiptDrawer {
 
     private DrawerCompiler compiler = new DrawerCompiler();
-    private ReceiptDrawerData data;
+    private String NAME_SMALLER_FONT = "name-smaller-font";
+    private String NAME_MULTILINE_FONT = "name-multiline-font";
 
     public ReceiptDrawer(ReceiptDrawerData data){
-        this.data = data;
         setupFonts();
         compiler.createPen("regular", 0, 0, 0, 0.1);
         compiler.setPen("regular");
@@ -64,6 +64,8 @@ public class ReceiptDrawer {
         compiler.createFont("gothic-5", "MS Gothic", 5);
         compiler.createFont("gothic-4", "MS Gothic", 4);
         compiler.createFont("gothic-2.6", "MS Gothic", 2.6);
+        compiler.createFont(NAME_SMALLER_FONT, "MS Mincho", 4.2);
+        compiler.createFont(NAME_MULTILINE_FONT, "MS Mincho", 3);
     }
 
     private void mainTitle(Box box){
@@ -76,7 +78,14 @@ public class ReceiptDrawer {
         compiler.frameBottom(box);
         compiler.textIn("様", box, HAlign.Right, VAlign.Bottom);
         Box nameBox = box.shrinkWidth(8, HorizAnchor.Left);
-        compiler.textIn(name, nameBox, HAlign.Center, VAlign.Bottom);
+        {
+            //compiler.textIn(name, nameBox, HAlign.Center, VAlign.Bottom);
+            DrawerCompiler.TextInBoundedOptions opts = new DrawerCompiler.TextInBoundedOptions();
+            opts.smallerFonts = List.of(NAME_SMALLER_FONT);
+            opts.multilineFont = NAME_MULTILINE_FONT;
+            opts.multilineHAlign = HAlign.Left;
+            compiler.textInBounded(name, nameBox, HAlign.Center, VAlign.Bottom, opts);
+        }
         Box chargeBox = box.flipRight().shiftToRight(8).setWidth(52, HorizAnchor.Left);
         compiler.textIn("領収金額", chargeBox, HAlign.Left, VAlign.Bottom);
         compiler.textIn("円", chargeBox, HAlign.Right, VAlign.Bottom);
