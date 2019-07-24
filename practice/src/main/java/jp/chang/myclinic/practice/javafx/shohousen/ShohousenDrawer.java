@@ -44,6 +44,9 @@ public class ShohousenDrawer {
     private Box validDayBox;
     private Box drugsPaneBox;
     private Box memoPaneBox;
+    private String NAME_FONT;
+    private String NAME_SMALLER_FONT;
+    private String NAME_MULTILINE_FONT;
 
     public ShohousenDrawer(){
         setupFonts();
@@ -165,13 +168,13 @@ public class ShohousenDrawer {
         Box box = patientNameBox;
         box = box.shrinkWidth(2, HorizAnchor.Right);
         String font = "mincho-4.5";
-//        boolean smaller = false;
-//        if( smaller ){
-//            font = "mincho-3.5";
-//        }
         c.setTextColor(0, 0, 0);
         c.setFont(font);
-        c.textIn(name, box, HAlign.Left, VAlign.Center);
+        //c.textIn(name, box, HAlign.Left, VAlign.Center);
+        DrawerCompiler.TextInBoundedOptions opts = new DrawerCompiler.TextInBoundedOptions();
+        opts.smallerFonts = List.of(NAME_SMALLER_FONT);
+        opts.multilineFont = NAME_MULTILINE_FONT;
+        c.textInBounded(name, box, HAlign.Left, VAlign.Center, opts);
     }
 
     public void setBirthday(int year, int month, int day){
@@ -278,6 +281,9 @@ public class ShohousenDrawer {
         compiler.createFont("gothic-4", "MS Gothic", 4);
         compiler.createFont("gothic-3", "MS Gothic", 3);
         compiler.createFont("gothic-2.5", "MS Gothic", 2.5);
+        this.NAME_FONT = "mincho-4.5";
+        this.NAME_SMALLER_FONT = "mincho-3";
+        this.NAME_MULTILINE_FONT = "mincho-2";
     }
 
     private void drawTitle(){
