@@ -35,6 +35,8 @@ public class DrugBagDrawer {
     private static String MEDIUM_FONT = "medium-font";
     private static String REGULAR_FONT = "regular-font";
     private static String SMALL_FONT = "small-font";
+    private static String SMALLER_MEDIUM_FONT = "smaller-medium-font";
+    private static String MULTILINE_MEDIUM_FONT = "multiline-medium-font";
     private static double LARGE_FONT_SIZE = 9.88;
     private static double MEDIUM_FONT_SIZE = 6.35;
     private static double REGULAR_FONT_SIZE = 4.94;
@@ -87,6 +89,8 @@ public class DrugBagDrawer {
         compiler.createFont(MEDIUM_FONT, GOTHIC, MEDIUM_FONT_SIZE);
         compiler.createFont(REGULAR_FONT, GOTHIC, REGULAR_FONT_SIZE);
         compiler.createFont(SMALL_FONT, GOTHIC, SMALL_FONT_SIZE);
+        compiler.createFont(SMALLER_MEDIUM_FONT, GOTHIC, MEDIUM_FONT_SIZE * 0.70);
+        compiler.createFont(MULTILINE_MEDIUM_FONT, GOTHIC, MEDIUM_FONT_SIZE * 0.5);
     }
 
     private void setupTitle(){
@@ -97,7 +101,12 @@ public class DrugBagDrawer {
     private void setupPatientName(){
         String text = data.patientName + " 様";
         compiler.setFont(MEDIUM_FONT);
-        compiler.textIn(text, patientNameBox, HAlign.Center, VAlign.Top);
+        //compiler.textIn(text, patientNameBox, HAlign.Center, VAlign.Top);
+        DrawerCompiler.TextInBoundedOptions opts = new DrawerCompiler.TextInBoundedOptions();
+        opts.smallerFonts = List.of(SMALLER_MEDIUM_FONT);
+        opts.multilineFont = MULTILINE_MEDIUM_FONT;
+        opts.multilineHAlign = HAlign.Left;
+        compiler.textInBounded(text, patientNameBox, HAlign.Center, VAlign.Center, opts);
     }
 
     private void setupPatientNameYomi(){

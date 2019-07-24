@@ -366,6 +366,56 @@ public class DrawerCompiler {
         }
     }
 
+    public static class TextInBoundedOptions {
+        public List<String> smallerFonts;
+        public String multilineFont;
+        public HAlign multilineHAlign;
+    }
+
+    public boolean textInBounded(String text, Box box, HAlign halign, VAlign valign,
+                                 TextInBoundedOptions opts){
+        Measure mes = measureText(text);
+        if( mes.cx <= box.getWidth() ){
+            textIn(text, box, halign, valign);
+            return true;
+        }
+        if( opts != null ) {
+            if (opts.smallerFonts != null) {
+                String fontSave = getCurrentFont();
+                try {
+                    for (String fontName : opts.smallerFonts) {
+                        setFont(fontName);
+                        mes = measureText(text);
+                        if (mes.cx <= box.getWidth()) {
+                            textIn(text, box, halign, valign);
+                            return true;
+                        }
+                    }
+                } finally {
+                    setFont(fontSave);
+                }
+            }
+            if( opts.multilineFont != null ){
+                String fontSave = getCurrentFont();
+                try {
+                    setFont(opts.multilineFont);
+                    List<String> lines = breakLine(text, box.getWidth());
+                    double leading = 0;
+                    double height = calcTotalHeight(lines.size(), getCurrentFontSize(), leading);
+                    if( height <= box.getHeight() ){
+                        HAlign multilineHAlign = opts.multilineHAlign != null ?
+                                opts.multilineHAlign : halign;
+                        multilineText(lines, box, multilineHAlign, valign, leading);
+                        return true;
+                    }
+                } finally {
+                    setFont(fontSave);
+                }
+            }
+        }
+        return false;
+    }
+
     private double getStartX(Box box, HAlign halign, Supplier<Double> widthSupplier) {
         switch (halign) {
             case Left:
