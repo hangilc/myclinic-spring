@@ -1062,7 +1062,8 @@ public class RcptDrawer {
         }
         String text = String.format("(%d) %s", index, name);
         //extraShoubyoumeiList.add(new TekiyouLine(text));
-        String date = String.format("診療開始日　平成%d年%d月%d日", nen, month, day);
+        String gengou = nen < 10 ? "令和" : "平成";
+        String date = String.format("診療開始日　%s%d年%d月%d日", gengou, nen, month, day);
         //extraShoubyoumeiList.add(new TekiyouLine(date).setAlignRight());
         extraShoubyoumeiList.add(new TekiyouByoumei(text, date));
     }
