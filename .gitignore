@@ -18,6 +18,8 @@ docs-src/output
 *.class
 .vagrant/
 .log
+server-docker/data
+
 
 
 
