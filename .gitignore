@@ -13,6 +13,7 @@ target/
 /kouhatsukasan/work
 /my-pyenv
 /work
+/tmp
 __pycache__
 docs-src/output
 *.class
