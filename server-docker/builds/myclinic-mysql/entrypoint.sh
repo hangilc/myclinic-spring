@@ -227,7 +227,7 @@ docker_process_init_sql() {
 
 	if [ -n "$MYCLINIC_MYSQL_INIT_SQL_CHARSET" ]; then
 		set -- --default-character-set="$MYCLINIC_MYSQL_INIT_SQL_CHARSET" "$@"
-	elif [ -n "_INTERNAL_INIT_SQL_CHARSET" ]; then
+	elif [ -n "$_INTERNAL_INIT_SQL_CHARSET" ]; then
 		set -- --default-character-set="$_INTERNAL_INIT_SQL_CHARSET" "$@"
 	fi
 

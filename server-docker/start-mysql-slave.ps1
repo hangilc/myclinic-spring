@@ -11,7 +11,7 @@ Param(
 )
 
 function SelectServerId(){
-    $result = (mysql -h $DbMasterHost -u root -p"$DbMasterRootPass" -e "show slave hosts" --xml)
+    $result = (mysql -h $DbMasterHost -P $DbMasterPort -u root -p"$DbMasterRootPass" -e "show slave hosts" --xml)
 #     $result = @'
 # <?xml version="1.0"?>
 # <resultset statement="show slave hosts
@@ -101,5 +101,6 @@ docker run -e MYSQL_ROOT_PASSWORD="$DbSlaveRootPass" `
     -p "${DbSlavePort}:3306" `
     -v "/home/docker/myclinic-server-data/sql:/data/sql" `
     -v "/home/docker/myclinic-server-data/cnf:/data/cnf" `
-    myclinic-mysql 
+    --name "mysql-slave-$DbSlaveServerId" `
+    myclinic-mysql
 
