@@ -15,7 +15,7 @@ ssh -i "$Cert" "docker@$HostAddr" "rm -rf ~/myclinic-server-jar"
 ssh -i "$Cert" "docker@$HostAddr" "mkdir ~/myclinic-server-jar"
 scp -i "$Cert" "./data/server.jar" "docker@${HostAddr}:~/myclinic-server-jar/server.jar"
 
-docker run -it `
+docker run -d `
     -v "/home/docker/myclinic-server-config:/data/config" `
     -v "/home/docker/myclinic-server-jar:/data/jar" `
     --workdir="/usr/src/myapp" `
@@ -23,7 +23,7 @@ docker run -it `
     -e MYCLINIC_DB_USER="$DbUser" `
     -e MYCLINIC_DB_PASS="$DbPass" `
     -p "${Port}:18080" `
-    myclinic-server "/bin/bash"
+    myclinic-server
 
 # $prog = "docker run"
 # $prog += " -v ${ConfigDir}:/usr/src/myapp/config"
