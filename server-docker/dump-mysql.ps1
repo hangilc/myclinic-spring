@@ -2,7 +2,7 @@ Param(
     [string]$DbHost = "localhost",
     [string]$DbUser = "$env:MYCLINIC_DB_ADMIN_USER",
     [string]$DbPass = "$env:MYCLINIC_DB_ADMIN_PASS",
-    [string]$OutFile = "./data/production-sql/dump.sql",
+    [string]$OutFile = "./data/dump.sql",
     [switch]$AddMasterData = $False,
     [string]$DefaultCharacterSet = ""
 )
@@ -17,6 +17,14 @@ if( $DefaultCharacterSet -ne "" ){
     $OptDefaultCharacterSet = "--default-character-set=$DefaultCharacterSet"
 }
 
-mysqldump -h "$DbHost" -u "$env:MYCLINIC_DB_ADMIN_USER" -p"$env:MYCLINIC_DB_ADMIN_PASS" `
+if( $DbUser -eq "" ){
+    throw "DbUser not specified."
+}
+if( $DbPass -eq "" ){
+    throw "DbPass not specified."
+}
+
+
+mysqldump -h "$DbHost" -u "$DbUser" -p"$DbPass" `
     --result-file="$OutFile" `
     --single-transaction "$OptMasterData" "$OptDefaultCharacterSet" myclinic 

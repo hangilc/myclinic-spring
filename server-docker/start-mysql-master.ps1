@@ -32,5 +32,5 @@ docker run -e MYSQL_ROOT_PASSWORD="$DbRootPass" `
     -v "/home/docker/myclinic-server-data/cnf:/data/cnf" `
     -v "/home/docker/myclinic-server-data/sql:/data/sql" `
     --name "$Name" `
-    myclinic-mysql 
+    myclinic-mysql
 
