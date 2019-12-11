@@ -17,9 +17,9 @@ MasterData=""
 Charset=""
 OutFile=""
 
-for OPT in "$@"
+while [ $# -gt 0 ]
 do
-    case $OPT in
+    case "$1" in
         --help) usage
             exit 1
             ;;
