@@ -6,10 +6,14 @@ usage: start-mysql-master.sh [options]
     --root-pass ROOT-PASSWORD
     -P | --port PORT
     -s | --sql INITIAL-SQL-DATA-FILE
+    -u | --user USER
+    -p | --pass PASSWORD
 EOS
 }
 
 DbRootPass="$MYCLINIC_DB_ROOT_PASS"
+DbUser="$MYCLINIC_DB_USER"
+DbPass="$MYCLINIC_DB_PASS"
 Port=3306
 SqlFile="empty.sql"
 
@@ -23,7 +27,12 @@ do
             shift
             ;;
         -s | --sql) SqlFile="$2"
-            echo $SqlFile
+            shift
+            ;;
+        -u | --user) DbUser="$2"
+            shift
+            ;;
+        -p | --pass) DbPass="$2"
             shift
             ;;
     esac
@@ -43,10 +52,13 @@ then
 fi
 
 SqlPath=$(realpath "$SqlFile")
+echo "$SqlPath"
 
 docker run -d \
     -e MYSQL_ROOT_PASSWORD="$DbRootPass" \
     -e MYSQL_DATABASE=myclinic \
+    -e MYSQL_USER="$DbUser" \
+    -e MYSQL_PASSWORD="$DbPass" \
     -p "$Port":3306 \
     -v "${PWD}/master/cnf":/data/cnf \
     -v "$SqlPath":/data/sql/dump.sql \

@@ -7,6 +7,7 @@ usage: dump-mysql [options] HOST
     -p | --pass Password
     -m | --master-data (adds master data)
     -c | --charset CHARACTER-SET
+    -o | --output OUTPUT-FILE
 EOS
 }
 
@@ -14,6 +15,7 @@ DbUser="root"
 DbPass="$MYCLINIC_DB_ROOT_PASS"
 MasterData=""
 Charset=""
+OutFile=""
 
 for OPT in "$@"
 do
@@ -30,6 +32,9 @@ do
         -m | --master-data) MasterData="--master-data"
             ;;
         -c | --charset) Charset="$2"
+            shift
+            ;;
+        -o | --out) OutFile="$2"
             shift
             ;;
         *) break ;;
@@ -65,8 +70,13 @@ then
     CharsetOpt="--default-character-set $Charset"
 fi
 
+if [ -n "$OutFile" ]
+then
+    OutFileOpt="--result-file=$OutFile"
+fi
+
 mysqldump -h "$DbHost" -u "$DbUser" -p"$DbPass" \
     --single-transaction \
-    $MasterData $CharsetOpt \
+    $MasterData $CharsetOpt $OutFileOpt \
     myclinic
 
