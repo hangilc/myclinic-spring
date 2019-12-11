@@ -20,7 +20,7 @@ docs-src/output
 .vagrant/
 .log
 server-docker/data
-
+*.swp
 
 
 
