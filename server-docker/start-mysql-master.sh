@@ -1,7 +1,7 @@
 #!/bin/bash
 
-usage(){
-    echo << EOS
+usage () {
+    cat << 'EOS'
 usage: start-mysql-master.sh [options]
     --root-pass ROOT-PASSWORD
     -P | --port PORT
@@ -9,6 +9,7 @@ usage: start-mysql-master.sh [options]
     -u | --user USER
     -p | --pass PASSWORD
     -c | --charset INIT-SQL-DATA-CHARSET
+    --help
 EOS
 }
 
@@ -45,6 +46,10 @@ do
         -c | --charset) 
             Charset="$2"
             shift 
+            ;;
+        --help)
+            usage
+            exit 1
             ;;
     esac
     shift
