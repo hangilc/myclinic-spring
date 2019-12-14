@@ -6,6 +6,7 @@ usage: run-server.sh [options]
     -h | --host DATABASE-HOST
     -u | --user DATABASE-USER
     -p | --pass DATABASE-Pass
+    --help
 EOS
 }
 
@@ -16,14 +17,17 @@ Port=18080
 while [ $# -gt 0 ]
 do
     case "$1" in
-        -h | --host) DbHost="$1"
+        -h | --host) DbHost="$2"
             shift
             ;;
-        -u | --user) DbUser="$1"
+        -u | --user) DbUser="$2"
             shift
             ;;
-        -p | --pass) DbPass="$1"
+        -p | --pass) DbPass="$2"
             shift
+            ;;
+        --help) usage
+            exit 1
             ;;
     esac
     shift
@@ -46,6 +50,9 @@ if [ -z "$DbPass" ]; then
     usage
     exit 1
 fi
+
+echo "DbHost $DbHost"
+echo "DbUser $DbUser"
 
 docker run -d \
     -v ${PWD}/data/config:/data/config \

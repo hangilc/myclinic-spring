@@ -51,6 +51,9 @@ do
             usage
             exit 1
             ;;
+        -*) echo "Unknown option $1"
+            usage
+            exit 1
     esac
     shift
 done
@@ -77,8 +80,11 @@ docker run -d \
     -e MYSQL_USER="$DbUser" \
     -e MYSQL_PASSWORD="$DbPass" \
     -e MYCLINIC_MYSQL_INIT_SQL_CHARSET="$Charset" \
-    -p "$Port":3306 \
+    --network host \
     -v "${PWD}/master/cnf":/data/cnf \
     -v "$SqlPath":/data/sql/dump.sql \
+    -v ~/mysql-data:/var/lib/mysql \
     myclinic-mysql
 
+#    -p "$Port":3306 \
+ 
