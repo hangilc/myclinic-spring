@@ -79,12 +79,8 @@ docker run -d \
     -e MYSQL_DATABASE=myclinic \
     -e MYSQL_USER="$DbUser" \
     -e MYSQL_PASSWORD="$DbPass" \
-    -e MYCLINIC_MYSQL_INIT_SQL_CHARSET="$Charset" \
-    --network host \
-    -v "${PWD}/master/cnf":/data/cnf \
-    -v "$SqlPath":/data/sql/dump.sql \
-    -v ~/mysql-data:/var/lib/mysql \
-    myclinic-mysql
+    -p "${Port}:3306" \
+    -v "${PWD}/master.cnf":/etc/my.cnf.d/60-myclinic-master.cnf \
+    centos/mysql-57-centos7
 
-#    -p "$Port":3306 \
  
