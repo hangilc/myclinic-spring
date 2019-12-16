@@ -5,10 +5,8 @@ usage () {
 usage: start-mysql-master.sh [options]
     --root-pass ROOT-PASSWORD
     -P | --port PORT
-    -s | --sql INITIAL-SQL-DATA-FILE
     -u | --user USER
     -p | --pass PASSWORD
-    -c | --charset INIT-SQL-DATA-CHARSET
     --help
 EOS
 }
@@ -17,8 +15,6 @@ DbRootPass="$MYCLINIC_DB_ROOT_PASS"
 DbUser="$MYCLINIC_DB_USER"
 DbPass="$MYCLINIC_DB_PASS"
 Port=3306
-SqlFile="empty.sql"
-Charset=""
 
 while [ $# -gt 0 ]
 do
@@ -35,16 +31,8 @@ do
             SqlFile="$2"
             shift 
             ;;
-        -u | --user) 
-            DbUser="$2"
-            shift 
-            ;;
         -p | --pass) 
             DbPass="$2"
-            shift 
-            ;;
-        -c | --charset) 
-            Charset="$2"
             shift 
             ;;
         --help)
@@ -65,15 +53,6 @@ then
     exit 1
 fi
 
-if [ ! -f "$SqlFile" ]
-then
-    echo "Cannof find sql file $SqlFile."
-    exit 1
-fi
-
-SqlPath=$(realpath "$SqlFile")
-echo "$SqlPath"
-
 docker run -d \
     -e MYSQL_ROOT_PASSWORD="$DbRootPass" \
     -e MYSQL_DATABASE=myclinic \
@@ -83,4 +62,3 @@ docker run -d \
     -v "${PWD}/master.cnf":/etc/my.cnf.d/60-myclinic-master.cnf \
     centos/mysql-57-centos7
 
- 
