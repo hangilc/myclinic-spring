@@ -80,12 +80,28 @@ docker run -d \
     centos/mysql-57-centos7
 
 if [ -n "$DataSource" ]; then
-    while ! mysql -h 127.0.0.1 -P "$Port" -u "$DbUser" -p"$DbPass" -e "select 2" myclinic 2>/dev/null 1>/dev/null
+    if ! ([ -f "$DataSource" ] || [ -d "$DataSource" ]); then
+        echo "No such file or directory: $DataSource"
+        exit 1
+    fi
+    while ! mysql -h 127.0.0.1 -P "$Port" -u "$DbUser" -p"$DbPass" \
+        -e "select 2" myclinic 2>/dev/null 1>/dev/null
     do
         echo "waiting for server up..."
         sleep 4
     done
 
-    echo "Loading $DataSource"
-    MYSQL_PWD="$DbRootPass" mysql -h 127.0.0.1 -P "$Port" -u root myclinic <"$DataSource" 
+    if [ -f "$DataSource" ]; then
+        echo "Loading $DataSource"
+        MYSQL_PWD="$DbRootPass" mysql -h 127.0.0.1 -P "$Port" -u root \
+            myclinic <"$DataSource" 
+    fi
+    if [ -d "$DataSource" ]; then
+        for f in "$DataSource"/*.sql
+        do
+            echo "Loading $f"
+            MYSQL_PWD="$DbRootPass" mysql -h 127.0.0.1 -P "$Port" -u root \
+                myclinic <"$f" 
+        done
+    fi
 fi
