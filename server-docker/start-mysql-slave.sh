@@ -103,8 +103,6 @@ if [ -z "$SlaveId" ]; then
         exit 1
     fi
 fi
-echo "$SlaveId"
-exit 1
 
 if [ -z "$MasterHost" ]; then
     echo "Master host not specified."
@@ -122,6 +120,9 @@ if [ -z "$SlaveId" ]; then
     usage
     exit 1
 fi
+
+sed -e s/\${DbSlaveServerId}/"$SlaveId"/g <slave-template.cnf >./data/slave.cnf
+exit 1
 
 echo "downloading master data to $TmpFile"
 MYSQL_PWD="$MasterPass" mysqldump -h "$MasterHost" -P "$MasterPort" \

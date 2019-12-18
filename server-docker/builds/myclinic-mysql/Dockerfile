@@ -1,7 +1,4 @@
-FROM mysql:5.7
-COPY start.sh /root/start.sh
-COPY myclinic-entrypoint.sh /myclinic-entrypoint.sh
-RUN chmod 775 /myclinic-entrypoint.sh \
-    && chmod 775 /root/start.sh
+FROM centos/mysql-57-centos7
+COPY start-myclinic-master.sh /
 ENTRYPOINT []
-CMD ["/bin/bash", "/root/start.sh"]
+CMD ["/bin/bash", "/start-myclinic-master.sh"]
