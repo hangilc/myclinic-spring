@@ -69,15 +69,18 @@ then
     exit 1
 fi
 
-docker run -d \
+docker create \
     --name "$Name" \
     -e MYSQL_ROOT_PASSWORD="$DbRootPass" \
     -e MYSQL_DATABASE=myclinic \
     -e MYSQL_USER="$DbUser" \
     -e MYSQL_PASSWORD="$DbPass" \
     -p "${Port}:3306" \
-    -v "${PWD}/master.cnf":/etc/my.cnf.d/60-myclinic-master.cnf \
     centos/mysql-57-centos7
+
+docker cp ./master.cnf ${Name}:/etc/my.cnf.d/60-master.cnf
+
+docker start $Name
 
 if [ -n "$DataSource" ]; then
     if ! ([ -f "$DataSource" ] || [ -d "$DataSource" ]); then
