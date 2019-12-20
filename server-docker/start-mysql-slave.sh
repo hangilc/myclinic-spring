@@ -25,7 +25,7 @@ MasterUser=root
 MasterPass="$MYCLINIC_DB_ROOT_PASS"
 Name="mysql-slave"
 TmpFile="./data/download.sql"
-SlavePort=3306
+SlavePort=13306
 SlaveRootPass="$MYCLINIC_DB_ROOT_PASS"
 SlaveUser="$MYCLINIC_DB_USER"
 SlavePass="$MYCLINIC_DB_PASS"
@@ -96,6 +96,8 @@ if [ -z "$MasterId" ]; then
     echo "Cannot get master server id"
     exit 1
 fi
+echo "MasterID $MasterId"
+
 if [ -z "$SlaveId" ]; then
     select_slave_id
     if [ -z "$SlaveId" ]; then
@@ -103,6 +105,7 @@ if [ -z "$SlaveId" ]; then
         exit 1
     fi
 fi
+echo "SlaveId $SlaveId"
 
 if [ -z "$MasterHost" ]; then
     echo "Master host not specified."
@@ -122,46 +125,40 @@ if [ -z "$SlaveId" ]; then
 fi
 
 sed -e s/\${DbSlaveServerId}/"$SlaveId"/g <slave-template.cnf >./data/slave.cnf
-exit 1
 
 echo "downloading master data to $TmpFile"
 MYSQL_PWD="$MasterPass" mysqldump -h "$MasterHost" -P "$MasterPort" \
     -u "$MasterUser" --single-transaction --master-data myclinic \
     >"$TmpFile"
 
-docker run -d \
+docker create \
     --name "$Name" \
-    -e MYSQL_ROOT_PASSWORD="$DbRootPass" \
+    -e MYSQL_ROOT_PASSWORD="$SlaveRootPass" \
     -e MYSQL_DATABASE=myclinic \
-    -e MYSQL_USER="$DbUser" \
-    -e MYSQL_PASSWORD="$DbPass" \
-    -p "${Port}:3306" \
-    -v "${PWD}/master.cnf":/etc/my.cnf.d/60-myclinic-master.cnf \
+    -e MYSQL_USER="$SlaveUser" \
+    -e MYSQL_PASSWORD="$SlavePass" \
+    -p "${SlavePort}:3306" \
     centos/mysql-57-centos7
+    
+docker cp data/slave.cnf "$Name":/etc/my.cnf.d/70-slave.cnf
+
+docker start "$Name"
 
 if [ -n "$DataSource" ]; then
     if ! ([ -f "$DataSource" ] || [ -d "$DataSource" ]); then
         echo "No such file or directory: $DataSource"
         exit 1
     fi
-    while ! mysql -h 127.0.0.1 -P "$Port" -u "$DbUser" -p"$DbPass" \
+    while ! mysql -h 127.0.0.1 -P "$SlavePort" -u "$DbUser" -p"$DbPass" \
         -e "select 2" myclinic 2>/dev/null 1>/dev/null
     do
         echo "waiting for server up..."
         sleep 4
     done
 
-    if [ -f "$DataSource" ]; then
-        echo "Loading $DataSource"
-        MYSQL_PWD="$DbRootPass" mysql -h 127.0.0.1 -P "$Port" -u root \
-            myclinic <"$DataSource" 
-    fi
-    if [ -d "$DataSource" ]; then
-        for f in "$DataSource"/*.sql
-        do
-            echo "Loading $f"
-            MYSQL_PWD="$DbRootPass" mysql -h 127.0.0.1 -P "$Port" -u root \
-                myclinic <"$f" 
-        done
-    fi
-fi
+echo "Loading $TmpFile"
+MYSQL_PWD="$DbRootPass" mysql -h 127.0.0.1 -P "$SlavePort" -u root \
+    myclinic <"$TmpFile" 
+
+rm "$TmpFile"
+
