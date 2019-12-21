@@ -1,2 +1,2 @@
 change master to master_host='${DbMasterHost}', master_port=${DbMasterPort}, 
-	master_user='root', master_password='${DbMasterRootPass}';
+	master_user='${DbMasterUser}', master_password='${DbMasterPass}';

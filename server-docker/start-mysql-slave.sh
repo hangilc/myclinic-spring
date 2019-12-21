@@ -11,7 +11,7 @@ usage: start-mysql-slave.sh [options]
   --master-pass MASTER-PASSWORD (default: $MYCLINIC_DB_ROOT_PASS)
   --name CONTAINER-NAME (dfault: mysql-slave)
   --slave-root-pass SLAVE-ROOT-PASSWORD (default: $MYCLINIC_DB_ROOT_PASS)
-  --slave-port SLAVE-PORT (default: 3306)
+  --slave-port SLAVE-PORT (default: 13306)
   --slave-user SLAVE-USER (default: $MYCLINIC_DB_USER)
   --slave-pass SLAVE-PASS (default: $MYCLINIC_DB_PASS)
   --slave-id SLAVE-SERVER-ID (default: automatically selected)
@@ -24,7 +24,9 @@ MasterPort=3306
 MasterUser=root
 MasterPass="$MYCLINIC_DB_ROOT_PASS"
 Name="mysql-slave"
-TmpFile="./data/download.sql"
+DownloadTmpFile="./data/slave-download.sql"
+SqlTmpFile="./data/slave.sql"
+ConfTmpFile="./data/slave.cnf"
 SlavePort=13306
 SlaveRootPass="$MYCLINIC_DB_ROOT_PASS"
 SlaveUser="$MYCLINIC_DB_USER"
@@ -80,13 +82,16 @@ function get_master_id () {
 
 function select_slave_id () {
     local result=$(MYSQL_PWD="$MasterPass" mysql -h "$MasterHost" \
-        -u "$MasterUser" -e "show slave hosts" )
+        -u "$MasterUser" -e "show slave hosts" --silent --skip-column-names \
+        | grep -Po '^\d+')
+    if [ -n "$result" ];then
+        echo "$result"
+    fi
     if [ -z "$result" ]; then
         SlaveId=$(($MasterId + 1))
     else
-        echo "Cannot select slave server id. Set with --slave-server-id option."
-
-        exit 1
+        maxId=$(echo $result | sed 's/ /\n/g' | sort -nr | head -1)
+        SlaveId=$(($maxId + 1))
     fi
 }
 
@@ -112,6 +117,10 @@ if [ -z "$MasterHost" ]; then
     usage
     exit 1
 fi
+if [ "$MasterHost" == "localhost" ] || [ "$MasterHost" == "127.0.0.1" ]; then
+    echo "Master host address cannot be local, or 127.0.0.1"
+    exit 1
+fi
 if ! [ -d "./data" ]; then
     mkdir "./data"
 fi
@@ -124,12 +133,19 @@ if [ -z "$SlaveId" ]; then
     exit 1
 fi
 
-sed -e s/\${DbSlaveServerId}/"$SlaveId"/g <slave-template.cnf >./data/slave.cnf
+sed -e s/\${DbSlaveServerId}/"$SlaveId"/g \
+    <slave-template.cnf >"$ConfTmpFile"
 
-echo "downloading master data to $TmpFile"
+sed -e s/\${DbMasterHost}/"$MasterHost"/g \
+    -e s/\${DbMasterPort}/"$MasterPort"/g \
+    -e s/\${DbMasterUser}/"$MasterUser"/g \
+    -e s/\${DbMasterPass}/"$MasterPass"/g \
+    <slave-template.sql >"$SqlTmpFile"
+
+echo "downloading master data to $DownloadTmpFile"
 MYSQL_PWD="$MasterPass" mysqldump -h "$MasterHost" -P "$MasterPort" \
     -u "$MasterUser" --single-transaction --master-data myclinic \
-    >"$TmpFile"
+    >"$DownloadTmpFile"
 
 docker create \
     --name "$Name" \
@@ -137,28 +153,31 @@ docker create \
     -e MYSQL_DATABASE=myclinic \
     -e MYSQL_USER="$SlaveUser" \
     -e MYSQL_PASSWORD="$SlavePass" \
-    -p "${SlavePort}:3306" \
+    -p "${SlavePort}":3306 \
     centos/mysql-57-centos7
     
 docker cp data/slave.cnf "$Name":/etc/my.cnf.d/70-slave.cnf
 
 docker start "$Name"
 
-if [ -n "$DataSource" ]; then
-    if ! ([ -f "$DataSource" ] || [ -d "$DataSource" ]); then
-        echo "No such file or directory: $DataSource"
-        exit 1
-    fi
-    while ! mysql -h 127.0.0.1 -P "$SlavePort" -u "$DbUser" -p"$DbPass" \
-        -e "select 2" myclinic 2>/dev/null 1>/dev/null
-    do
-        echo "waiting for server up..."
-        sleep 4
-    done
+while ! mysql -h 127.0.0.1 -P "$SlavePort" -u "$SlaveUser" -p"$SlavePass" \
+    -e "select 2" myclinic 2>/dev/null 1>/dev/null
+do
+    echo "waiting for server up..."
+    sleep 4
+done
 
-echo "Loading $TmpFile"
-MYSQL_PWD="$DbRootPass" mysql -h 127.0.0.1 -P "$SlavePort" -u root \
-    myclinic <"$TmpFile" 
+echo "Loading $SqlTmpFile"
+MYSQL_PWD="$SlaveRootPass" mysql -h 127.0.0.1 -P "$SlavePort" -u root \
+    myclinic <"$SqlTmpFile"
+echo "Loading $DownloadTmpFile"
+MYSQL_PWD="$SlaveRootPass" mysql -h 127.0.0.1 -P "$SlavePort" -u root \
+    myclinic <"$DownloadTmpFile" 
+echo "Starting slave"
+MYSQL_PWD="$SlaveRootPass" mysql -h 127.0.0.1 -P "$SlavePort" -u root \
+    -e "start slave"
 
-rm "$TmpFile"
+rm "$DownloadTmpFile"
+rm "$SqlTmpFile"
+rm "$ConfTmpFile"
 
