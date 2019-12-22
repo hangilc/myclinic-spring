@@ -1,0 +1,40 @@
+version: '3'
+services:
+  db:
+    build: ./builds/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: myclinic
+      MYSQL_USER: staff
+      MYSQL_PASSWORD: staffpass
+      TZ: "Asia/Tokyo"
+    ports: 
+      - "3306:3306"
+    networks:
+      - "myclinic-service-network"
+    volumes:
+      - "./mysql-conf:/etc/mysql/mysql.conf.d/source"
+      - "./data/sql:/docker-entrypoint-initdb.d"
+      - "dbdata:/var/lib/mysql"
+  server:
+    image: openjdk:11-jre
+    environment:
+      MYCLINIC_DB_HOST: db
+      MYCLINIC_DB_USER: staff
+      MYCLINIC_DB_PASS: staffpass
+    ports:
+      - "18080:18080"
+    networks:
+      - "myclinic-service-network"
+    volumes:
+      - "./data:/usr/src/myapp"
+    working_dir: /usr/src/myapp
+    command: java -jar server.jar
+    depends_on:
+      - db
+volumes:
+  dbdata:
+
+networks:
+  myclinic-service-network:
+    driver: bridge

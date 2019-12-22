@@ -1,0 +1,8 @@
+[mysqld]
+character-set-server=utf8
+default-storage-engine=INNODB
+sql-mode="STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+log-bin=mysql-bin
+relay-log=default-relay-bin
+server-id=${DbSlaveServerId}
+
