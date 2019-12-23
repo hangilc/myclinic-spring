@@ -2,11 +2,13 @@ package main
 
 import (
 	"flag"
-	//"fmt"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -59,6 +61,22 @@ func dump_dummy(host string, port int, fname string) error {
 	return ioutil.WriteFile(fname, []byte("DUMMY DATA"), 0644)
 }
 
+func listDumpedFiles() ([]string, error) {
+	return filepath.Glob("./data/*.sql")
+}
+
+func getPrevDumpFile() (string, error) { // returns "", nil if not found
+	dumps, err := listDumpedFiles()
+	if err != nil {
+		return "", err
+	}
+	if len(dumps) == 0 {
+		return "", nil
+	}
+	sort.Strings(dumps)
+	return dumps[len(dumps)-1], nil
+}
+
 func main() {
 	if help {
 		flag.Usage()
@@ -73,16 +91,18 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
-	repeat := time.Duration(int64(repeatPeriod * float64(time.Minute)))
-	for {
-		stamp := getTimestamp()
-		fname := "data/dump-" + stamp + ".sql"
-		log.Printf("start downloading %s\n", fname)
-		err = dump(dbHost, port, fname)
-		if err != nil {
-			log.Printf("%v\n", err)
-		}
-		log.Println("done")
-		time.Sleep(repeat)
-	}
+	lastDump, err := getPrevDumpFile()
+	fmt.Println(lastDump)
+	//	repeat := time.Duration(int64(repeatPeriod * float64(time.Minute)))
+	//	for {
+	//		stamp := getTimestamp()
+	//		fname := "data/dump-" + stamp + ".sql"
+	//		log.Printf("start downloading %s\n", fname)
+	//		err = dump(dbHost, port, fname)
+	//		if err != nil {
+	//			log.Printf("%v\n", err)
+	//		}
+	//		log.Println("done")
+	//		time.Sleep(repeat)
+	//	}
 }
