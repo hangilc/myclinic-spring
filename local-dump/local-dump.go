@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"crypto/sha1"
+	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -44,7 +48,7 @@ func dump(host string, port int, fname string) error {
 	os.Setenv("MYSQL_PWD", os.Getenv("MYCLINIC_DB_ROOT_PASS"))
 	tmpfile := fname + ".tmp"
 	cmd := exec.Command("mysqldump", "-h", host, "-P", strconv.Itoa(port), "-u", user,
-		"--single-transaction", "--default-character-set=utf8",
+		"--single-transaction", "--default-character-set=utf8", "--skip-dump-date",
 		"--result-file="+tmpfile, "myclinic")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -62,19 +66,66 @@ func dump_dummy(host string, port int, fname string) error {
 }
 
 func listDumpedFiles() ([]string, error) {
-	return filepath.Glob("./data/*.sql")
+	dumps, err := filepath.Glob("./data/*.sql")
+	if err != nil {
+		return nil, err
+	}
+	sort.Sort(sort.Reverse(sort.StringSlice(dumps)))
+	return dumps, nil
 }
 
-func getPrevDumpFile() (string, error) { // returns "", nil if not found
+var notEnoughDumpsErrors error = errors.New("Not enough dump files.")
+
+func getTopTwoDumps() (top string, nextTop string, err error) {
+	top = ""
+	nextTop = ""
 	dumps, err := listDumpedFiles()
 	if err != nil {
-		return "", err
+		return
 	}
-	if len(dumps) == 0 {
-		return "", nil
+	if len(dumps) >= 2 {
+		return dumps[0], dumps[1], nil
+	} else {
+		err = notEnoughDumpsErrors
+		return
 	}
-	sort.Strings(dumps)
-	return dumps[len(dumps)-1], nil
+}
+
+func sha1Hash(fname string) ([]byte, error) {
+	f, err := os.Open(fname)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	h := sha1.New()
+	_, err = io.Copy(h, f)
+	if err != nil {
+		return nil, err
+	}
+	return h.Sum(nil), nil
+}
+
+func removeDuplicate() error {
+	cur, prev, err := getTopTwoDumps()
+	if err != nil {
+		return err
+	}
+	curhash, err := sha1Hash(cur)
+	if err != nil {
+		return err
+	}
+	prevhash, err := sha1Hash(prev)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("comparing %s and %s\n", cur, prev)
+	fmt.Printf("%x %s\n", curhash, cur)
+	fmt.Printf("%x %s\n", prevhash, prev)
+	if bytes.Equal(curhash, prevhash) {
+		fmt.Printf("Removing duplicate dump: %s\n", prev)
+		return os.Remove(prev)
+	}
+	return nil
 }
 
 func main() {
@@ -91,18 +142,20 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
-	lastDump, err := getPrevDumpFile()
-	fmt.Println(lastDump)
-	//	repeat := time.Duration(int64(repeatPeriod * float64(time.Minute)))
-	//	for {
-	//		stamp := getTimestamp()
-	//		fname := "data/dump-" + stamp + ".sql"
-	//		log.Printf("start downloading %s\n", fname)
-	//		err = dump(dbHost, port, fname)
-	//		if err != nil {
-	//			log.Printf("%v\n", err)
-	//		}
-	//		log.Println("done")
-	//		time.Sleep(repeat)
-	//	}
+	repeat := time.Duration(int64(repeatPeriod * float64(time.Minute)))
+	for {
+		stamp := getTimestamp()
+		fname := "data/dump-" + stamp + ".sql"
+		log.Printf("start downloading %s\n", fname)
+		err = dump(dbHost, port, fname)
+		if err != nil {
+			log.Printf("%v\n", err)
+		}
+		err = removeDuplicate()
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+		log.Println("done")
+		time.Sleep(repeat)
+	}
 }
