@@ -20,12 +20,14 @@ import (
 var dbHost string
 var port int
 var repeatPeriod float64
+var maxDumps int
 var help bool
 
 func init() {
 	flag.StringVar(&dbHost, "h", "", "address of database host")
 	flag.IntVar(&port, "p", 3306, "port of database host (default: 3306)")
 	flag.Float64Var(&repeatPeriod, "r", 10.0, "repeat period in minutes (default: 10)")
+	flag.IntVar(&maxDumps, "max", 20, "maximum number of dump files")
 	flag.BoolVar(&help, "help", false, "prints help")
 	flag.Parse()
 }
@@ -128,6 +130,23 @@ func removeDuplicate() error {
 	return nil
 }
 
+func removeOldDumps() error {
+	dumps, err := listDumpedFiles()
+	if err != nil {
+		return err
+	}
+	if len(dumps) > maxDumps {
+		for _, f := range dumps[maxDumps:] {
+			fmt.Printf("removing old dump: %s\n", f)
+			err = os.Remove(f)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
+			}
+		}
+	}
+	return nil
+}
+
 func main() {
 	if help {
 		flag.Usage()
@@ -152,6 +171,10 @@ func main() {
 			log.Printf("%v\n", err)
 		}
 		err = removeDuplicate()
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+		err = removeOldDumps()
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
