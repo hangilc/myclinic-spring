@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
@@ -19,12 +20,17 @@ import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.util.StringUtil;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DrugMenu extends VBox {
@@ -76,7 +82,8 @@ public class DrugMenu extends VBox {
                 createCopySelectedMenuItem(visitId),
                 createModifyDaysMenuItem(visitId),
                 createDeleteSelectedMenuItem(visitId),
-                createDrugTextMenuItem(visitId)
+                createDrugTextMenuItem(visitId),
+                createConvertToPrescMenuItem(visitId)
         );
         return menu;
     }
@@ -267,6 +274,106 @@ public class DrugMenu extends VBox {
                     .exceptionally(HandlerFX::exceptionally);
         });
         return menuItem;
+    }
+
+    private MenuItem createConvertToPrescMenuItem(int visitId){
+        MenuItem menuItem = new MenuItem("処方箋に変換コピー");
+        menuItem.setOnAction(evt -> {
+            Service.api.listDrugFull(visitId)
+                    .thenAccept(drugs -> {
+                        List<String> lines = new ArrayList<>();
+                        List<String> errors = new ArrayList<>();
+                        int index = 1;
+                        for(DrugFullDTO drug: drugs){
+                            lines.addAll(convertToPresc(index++, drug, errors));
+                        }
+                        String output = String.join("\n", lines);
+                        System.out.println(output);
+                        System.out.println(errors);
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        });
+        return menuItem;
+    }
+
+    private List<String> convertToPresc(int index, DrugFullDTO drugFull, List<String> errs){
+        DrugCategory category = DrugCategory.fromCode(drugFull.drug.category);
+        if( category == null ){
+            errs.add("Unknown category: " + drugFull.drug.category);
+            return Collections.emptyList();
+        }
+        switch(category){
+            case Naifuku: {
+                return convertNaifukuToPresc(index, drugFull);
+            }
+            default: {
+                errs.add("Cannot handle category: " + drugFull.drug.category);
+                return Collections.emptyList();
+            }
+        }
+    }
+
+    private static DecimalFormat decimalFormat = new DecimalFormat("####.##");
+
+    private static int digitToKanji(int codePoint) {
+        switch (codePoint) {
+            case '0':
+                return '０';
+            case '1':
+                return '１';
+            case '2':
+                return '２';
+            case '3':
+                return '３';
+            case '4':
+                return '４';
+            case '5':
+                return '５';
+            case '6':
+                return '６';
+            case '7':
+                return '７';
+            case '8':
+                return '８';
+            case '9':
+                return '９';
+            case '.':
+                return '．';
+            case '-':
+                return 'ー';
+            case '(':
+                return '（';
+            case ')':
+                return '）';
+            default:
+                return codePoint;
+        }
+    }
+
+    private static String transDigitToKanji(String src){
+        return StringUtil.transliterate(src, DrugMenu::digitToKanji);
+    }
+
+    private static Pattern genericManufacturer = Pattern.compile("「[^」]+」");
+
+    private String convertDrugNameToPresc(String name){
+        Matcher m = genericManufacturer.matcher(name);
+        if( m.find() ){
+            name = m.replaceFirst("");
+        }
+        return name;
+    }
+
+    private List<String> convertNaifukuToPresc(int index, DrugFullDTO drugFull) {
+        String line = String.format("%d）%s %s%s",
+                index,
+                convertDrugNameToPresc(drugFull.master.name),
+                decimalFormat.format(drugFull.drug.amount),
+                drugFull.master.unit);
+        line = transDigitToKanji(line);
+        String line2 = String.format("　　%s %d日分", drugFull.drug.usage, drugFull.drug.days);
+        line2 = transDigitToKanji(line2);
+        return List.of(line, line2);
     }
 
     private boolean isWorkareaEmpty() {
