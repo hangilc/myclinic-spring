@@ -306,6 +306,12 @@ public class DrugMenu extends VBox {
             case Naifuku: {
                 return convertNaifukuToPresc(index, drugFull);
             }
+            case Tonpuku: {
+                return convertTonpukuToPresc(index, drugFull);
+            }
+            case Gaiyou: {
+                return convertGaiyouToPresc(index, drugFull);
+            }
             default: {
                 errs.add("Cannot handle category: " + drugFull.drug.category);
                 return Collections.emptyList();
@@ -372,6 +378,30 @@ public class DrugMenu extends VBox {
                 drugFull.master.unit);
         line = transDigitToKanji(line);
         String line2 = String.format("　　%s %d日分", drugFull.drug.usage, drugFull.drug.days);
+        line2 = transDigitToKanji(line2);
+        return List.of(line, line2);
+    }
+
+    private List<String> convertTonpukuToPresc(int index, DrugFullDTO drugFull){
+        String line = String.format("%d）%s １回%s%s",
+                index,
+                convertDrugNameToPresc(drugFull.master.name),
+                decimalFormat.format(drugFull.drug.amount),
+                drugFull.master.unit);
+        line = transDigitToKanji(line);
+        String line2 = String.format("　　%s %d回分", drugFull.drug.usage, drugFull.drug.days);
+        line2 = transDigitToKanji(line2);
+        return List.of(line, line2);
+    }
+
+    private List<String> convertGaiyouToPresc(int index, DrugFullDTO drugFull){
+        String line = String.format("%d）%s %s%s",
+                index,
+                convertDrugNameToPresc(drugFull.master.name),
+                decimalFormat.format(drugFull.drug.amount),
+                drugFull.master.unit);
+        line = transDigitToKanji(line);
+        String line2 = String.format("　　%s", drugFull.drug.usage);
         line2 = transDigitToKanji(line2);
         return List.of(line, line2);
     }
