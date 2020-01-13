@@ -157,34 +157,7 @@ public class DrugMenu extends VBox {
                         Platform.runLater(() -> showWorkarea(form));
                     })
                     .exceptionally(HandlerFX::exceptionally);
-//            PracticeService.listDrugFull(visitId)
-//                    .thenAccept(drugs -> {
-//                        CopySelectedForm form = new CopySelectedForm(drugs) {
-//                            @Override
-//                            protected void onEnter(List<DrugFullDTO> selected, boolean keepOpen) {
-//                                new DrugsCopier(targetVisitId, selected,
-//                                        (enteredDrug, attr) ->
-//                                                fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
-//                                        () -> {
-//                                            if (keepOpen) {
-//                                                int remain = cleanUpForKeepOpen();
-//                                                if( remain == 0 ){
-//                                                    hideWorkarea();
-//                                                }
-//                                            } else {
-//                                                hideWorkarea();
-//                                            }
-//                                        }
-//                                );
-//                            }
-//
-//                            @Override
-//                            protected void onClose() {
-//                                hideWorkarea();
-//                            }
-//                        };
-//                        Platform.runLater(() -> showWorkarea(form));
-//                    });
+
         });
         return item;
     }
