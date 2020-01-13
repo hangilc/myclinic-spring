@@ -281,129 +281,19 @@ public class DrugMenu extends VBox {
         menuItem.setOnAction(evt -> {
             Service.api.listDrugFull(visitId)
                     .thenAccept(drugs -> {
-                        List<String> lines = new ArrayList<>();
-                        List<String> errors = new ArrayList<>();
-                        int index = 1;
+                        PrescComposer comp = new PrescComposer();
                         for(DrugFullDTO drug: drugs){
-                            lines.addAll(convertToPresc(index++, drug, errors));
+                            comp.add(drug);
                         }
-                        String output = String.join("\n", lines);
-                        System.out.println(output);
-                        System.out.println(errors);
+                        String output = comp.getText();
+                        Platform.runLater(() -> GuiUtil.copyToClipboard(output));
+                        if( comp.getErrors().size() > 0 ){
+                            Platform.runLater(() -> GuiUtil.alertInfo(String.join("\n", comp.getErrors())));
+                        }
                     })
                     .exceptionally(HandlerFX::exceptionally);
         });
         return menuItem;
-    }
-
-    private List<String> convertToPresc(int index, DrugFullDTO drugFull, List<String> errs){
-        DrugCategory category = DrugCategory.fromCode(drugFull.drug.category);
-        if( category == null ){
-            errs.add("Unknown category: " + drugFull.drug.category);
-            return Collections.emptyList();
-        }
-        switch(category){
-            case Naifuku: {
-                return convertNaifukuToPresc(index, drugFull);
-            }
-            case Tonpuku: {
-                return convertTonpukuToPresc(index, drugFull);
-            }
-            case Gaiyou: {
-                return convertGaiyouToPresc(index, drugFull);
-            }
-            default: {
-                errs.add("Cannot handle category: " + drugFull.drug.category);
-                return Collections.emptyList();
-            }
-        }
-    }
-
-    private static DecimalFormat decimalFormat = new DecimalFormat("####.##");
-
-    private static int digitToKanji(int codePoint) {
-        switch (codePoint) {
-            case '0':
-                return '０';
-            case '1':
-                return '１';
-            case '2':
-                return '２';
-            case '3':
-                return '３';
-            case '4':
-                return '４';
-            case '5':
-                return '５';
-            case '6':
-                return '６';
-            case '7':
-                return '７';
-            case '8':
-                return '８';
-            case '9':
-                return '９';
-            case '.':
-                return '．';
-            case '-':
-                return 'ー';
-            case '(':
-                return '（';
-            case ')':
-                return '）';
-            default:
-                return codePoint;
-        }
-    }
-
-    private static String transDigitToKanji(String src){
-        return StringUtil.transliterate(src, DrugMenu::digitToKanji);
-    }
-
-    private static Pattern genericManufacturer = Pattern.compile("「[^」]+」");
-
-    private String convertDrugNameToPresc(String name){
-        Matcher m = genericManufacturer.matcher(name);
-        if( m.find() ){
-            name = m.replaceFirst("");
-        }
-        return name;
-    }
-
-    private List<String> convertNaifukuToPresc(int index, DrugFullDTO drugFull) {
-        String line = String.format("%d）%s %s%s",
-                index,
-                convertDrugNameToPresc(drugFull.master.name),
-                decimalFormat.format(drugFull.drug.amount),
-                drugFull.master.unit);
-        line = transDigitToKanji(line);
-        String line2 = String.format("　　%s %d日分", drugFull.drug.usage, drugFull.drug.days);
-        line2 = transDigitToKanji(line2);
-        return List.of(line, line2);
-    }
-
-    private List<String> convertTonpukuToPresc(int index, DrugFullDTO drugFull){
-        String line = String.format("%d）%s １回%s%s",
-                index,
-                convertDrugNameToPresc(drugFull.master.name),
-                decimalFormat.format(drugFull.drug.amount),
-                drugFull.master.unit);
-        line = transDigitToKanji(line);
-        String line2 = String.format("　　%s %d回分", drugFull.drug.usage, drugFull.drug.days);
-        line2 = transDigitToKanji(line2);
-        return List.of(line, line2);
-    }
-
-    private List<String> convertGaiyouToPresc(int index, DrugFullDTO drugFull){
-        String line = String.format("%d）%s %s%s",
-                index,
-                convertDrugNameToPresc(drugFull.master.name),
-                decimalFormat.format(drugFull.drug.amount),
-                drugFull.master.unit);
-        line = transDigitToKanji(line);
-        String line2 = String.format("　　%s", drugFull.drug.usage);
-        line2 = transDigitToKanji(line2);
-        return List.of(line, line2);
     }
 
     private boolean isWorkareaEmpty() {
