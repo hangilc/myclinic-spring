@@ -88,6 +88,7 @@ class PrescComposer {
         prepare();
         for (DrugFullDTO drugFull : drugs) {
             processDrug(drugFull);
+            index += 1;
         }
         return String.join("\n", lines);
     }
