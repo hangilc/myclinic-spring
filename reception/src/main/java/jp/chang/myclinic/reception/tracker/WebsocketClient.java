@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-class WebsocketClient extends WebSocketListener {
+public class WebsocketClient extends WebSocketListener {
 
     private static Logger logger = LoggerFactory.getLogger(WebsocketClient.class);
 
@@ -18,7 +18,7 @@ class WebsocketClient extends WebSocketListener {
     private OkHttpClient client;
     private WebSocket websocket;
 
-    WebsocketClient(String url) {
+    public WebsocketClient(String url) {
         this.timerExecutor = Executors.newSingleThreadScheduledExecutor();
         this.client = new OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)

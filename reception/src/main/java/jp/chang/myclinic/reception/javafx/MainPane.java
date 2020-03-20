@@ -23,6 +23,7 @@ import jp.chang.myclinic.reception.javafx.edit_patient.EnterPatientStage;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
+import jp.chang.myclinic.reception.remote.ComponentFinder;
 import jp.chang.myclinic.reception.tracker.DispatchHook;
 import jp.chang.myclinic.reception.tracker.model.Wqueue;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class MainPane extends VBox implements DispatchHook {
+public class MainPane extends VBox implements DispatchHook, ComponentFinder {
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
 
     private TextField patientIdField = new TextField();
@@ -53,6 +54,7 @@ public class MainPane extends VBox implements DispatchHook {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_LEFT);
             Button newPatientButton = new Button("新規患者");
+            newPatientButton.setId("NewPatientButton");
             Button blankReceiptButton = new Button("領収書用紙");
             newPatientButton.setOnAction(event -> doNewPatient());
             Button searchPatientButton = new Button("患者検索");
@@ -105,6 +107,14 @@ public class MainPane extends VBox implements DispatchHook {
                     noSyncNotice);
             getChildren().add(hbox);
         }
+    }
+
+    @Override
+    public Object findComponent(String[] selectors){
+        if(selectors.length == 1){
+            return lookup(selectors[0]);
+        }
+        return null;
     }
 
     private void doCashier() {

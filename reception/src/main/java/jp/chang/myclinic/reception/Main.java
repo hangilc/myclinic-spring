@@ -13,6 +13,7 @@ import jp.chang.myclinic.reception.javafx.MainPane;
 import jp.chang.myclinic.reception.javafx.WqueueDTOModel;
 import jp.chang.myclinic.reception.javafx.WqueueModel;
 import jp.chang.myclinic.reception.javafx.WqueueTable;
+import jp.chang.myclinic.reception.remote.Remote;
 import jp.chang.myclinic.reception.tracker.Tracker;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static String wsUrl;
     private Tracker tracker;
+    private static Remote remote;
     private MainPane mainPane;
 
     public static void main(String[] args) {
@@ -45,6 +47,7 @@ public class Main extends Application {
         }
         Service.setServerUrl(serviceUrl);
         wsUrl = serviceUrl.replace("/json/", "/practice-log");
+        String remoteUrl = serviceUrl.replace("/json/", "/remote/reception/server");
         Service.api.getClinicInfo()
                 .thenAccept(clinicInfo -> {
                     Globals.setClinicInfo(clinicInfo);
@@ -55,6 +58,8 @@ public class Main extends Application {
                     System.exit(1);
                     return null;
                 });
+        remote = new Remote(remoteUrl);
+        remote.start();
     }
 
     @Override
@@ -80,6 +85,7 @@ public class Main extends Application {
                 doManualUpdate();
             }
         });
+        remote.onWindowCreated("MainPane");
     }
 
     @Override
@@ -87,6 +93,7 @@ public class Main extends Application {
         super.stop();
         Service.stop();
         tracker.shutdown();
+        remote.shutdown();
     }
 
     private MenuBar createMenuBar() {
