@@ -8,7 +8,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.Main;
 import jp.chang.myclinic.reception.javafx.DateComponentFinder;
+import jp.chang.myclinic.reception.javafx.MainPane;
 import jp.chang.myclinic.reception.remote.ComponentFinder;
 import jp.chang.myclinic.reception.remote.NameProvider;
 import jp.chang.myclinic.reception.remote.SexRadioComponent;
@@ -30,6 +32,7 @@ public class EnterPatientStage extends Stage implements ComponentFinder, NamePro
         root.getStylesheets().add("css/Main.css");
         root.getStyleClass().addAll("dialog-root", "enter-patient-stage");
         setScene(new Scene(root));
+        setOnHidden(evt -> Main.remote.onWindowClosed(getNameProviderName()));
     }
 
     public void setOnEnterCallback(Consumer<PatientDTO> callback) {

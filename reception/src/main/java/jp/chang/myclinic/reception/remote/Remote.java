@@ -114,6 +114,12 @@ public class Remote {
         sendEvent(event);
     }
 
+    public void onWindowClosed(String className) {
+        Map<String, Object> event = createEvent("window-closed");
+        event.put("class-name", className);
+        sendEvent(event);
+    }
+
     private String[] subSelectors(String[] selectors) {
         String[] sub = new String[selectors.length - 1];
         System.arraycopy(selectors, 1, sub, 0, selectors.length - 1);
