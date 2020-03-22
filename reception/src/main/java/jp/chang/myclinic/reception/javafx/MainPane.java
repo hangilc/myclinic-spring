@@ -110,9 +110,14 @@ public class MainPane extends VBox implements DispatchHook, ComponentFinder {
     }
 
     @Override
+    public String getComponentFinderId() {
+        return "MainPane";
+    }
+
+    @Override
     public Object findComponent(String[] selectors){
         if(selectors.length == 1){
-            return lookup(selectors[0]);
+            return lookup("#" + selectors[0]);
         }
         return null;
     }

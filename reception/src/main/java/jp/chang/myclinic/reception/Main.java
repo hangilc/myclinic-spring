@@ -30,6 +30,7 @@ public class Main extends Application {
     private Tracker tracker;
     private static Remote remote;
     private MainPane mainPane;
+    public static MainPane appMainPane;
 
     public static void main(String[] args) {
         String serviceUrl;
@@ -67,6 +68,7 @@ public class Main extends Application {
         primaryStage.setTitle("受付");
         BorderPane root = new BorderPane();
         mainPane = new MainPane();
+        appMainPane = mainPane;
         mainPane.setPadding(new Insets(10, 10, 10, 10));
         root.setCenter(mainPane);
         root.setTop(createMenuBar());

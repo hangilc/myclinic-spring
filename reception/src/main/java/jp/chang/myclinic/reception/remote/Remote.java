@@ -3,8 +3,10 @@ package jp.chang.myclinic.reception.remote;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.stage.Window;
+import jp.chang.myclinic.reception.Main;
 import jp.chang.myclinic.reception.tracker.WebsocketClient;
 import okhttp3.Response;
 import okhttp3.WebSocket;
@@ -106,17 +108,31 @@ public class Remote {
         return sub;
     }
 
+    private ComponentFinder resolveComponentFinder(String name){
+        if(name.equals("MainPane")){
+            return (ComponentFinder)Main.appMainPane;
+        } else {
+            for(Window w: javafx.stage.Window.getWindows()) {
+                if (w instanceof ComponentFinder) {
+                    ComponentFinder cf = (ComponentFinder) w;
+                    if (cf.getComponentFinderId().equals(name)) {
+                        return cf;
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
     private Object resolveComponent(String[] selectors){
         if(selectors.length > 0){
             String winClass = selectors[0];
-            for(Window w: javafx.stage.Window.getWindows()){
-                if( w.getClass().getSimpleName().equals(winClass) ){
-                    if(selectors.length > 1) {
-                        ComponentFinder cf = (ComponentFinder) w;
-                        return cf.findComponent(subSelectors(selectors));
-                    } else {
-                        return w;
-                    }
+            ComponentFinder cf = resolveComponentFinder(winClass);
+            if(cf != null){
+                if (selectors.length > 1) {
+                    return cf.findComponent(subSelectors(selectors));
+                } else {
+                    return cf;
                 }
             }
         }
@@ -129,7 +145,7 @@ public class Remote {
 
     private void doClick(SelectorActionCommand cmd){
         Button b = (Button)findTargetComponent(cmd.selector);
-        b.fire();
+        Platform.runLater(b::fire);
     }
 
 }
