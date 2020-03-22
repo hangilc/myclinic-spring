@@ -5,9 +5,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
-import javafx.stage.Window;
-import jp.chang.myclinic.reception.Main;
+import javafx.scene.control.TextField;
 import jp.chang.myclinic.reception.tracker.WebsocketClient;
+import jp.chang.myclinic.util.kanjidate.Gengou;
+import jp.chang.myclinic.utilfx.dateinput.GengouInput;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ public class Remote {
     private String url;
     private WebsocketClient websocketClient;
     private ObjectMapper mapper = new ObjectMapper();
+    private TopComponentFinder topFinder = new TopComponentFinder();
 
     public Remote(String url) {
         this.url = url;
@@ -33,8 +35,12 @@ public class Remote {
         public String selector;
     }
 
-    public void start(){
-        this.websocketClient = new WebsocketClient(url){
+    private static class SetTextCommand extends SelectorActionCommand {
+        public String text;
+    }
+
+    public void start() {
+        this.websocketClient = new WebsocketClient(url) {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 System.out.println("Remote service connected.");
@@ -48,17 +54,23 @@ public class Remote {
             }
 
             @Override
-            protected void onNewMessage(String message){
+            protected void onNewMessage(String message) {
                 System.out.println("Remote request received: " + message);
                 try {
-                    Map<String, Object> cmd = mapper.readValue(message, new TypeReference<Map<String, Object>>(){});
+                    Map<String, Object> cmd = mapper.readValue(message, new TypeReference<Map<String, Object>>() {
+                    });
                     Object commandObj = cmd.get("command");
-                    if( commandObj instanceof String){
-                        String command = (String)commandObj;
-                        switch(command){
-                            case "click":{
+                    if (commandObj instanceof String) {
+                        String command = (String) commandObj;
+                        switch (command) {
+                            case "click": {
                                 SelectorActionCommand clickCommand = mapper.readValue(message, SelectorActionCommand.class);
                                 doClick(clickCommand);
+                                return;
+                            }
+                            case "set-text": {
+                                SetTextCommand setTextCommand = mapper.readValue(message, SetTextCommand.class);
+                                doSetText(setTextCommand);
                                 return;
                             }
                             default: {
@@ -76,19 +88,19 @@ public class Remote {
         };
     }
 
-    public void shutdown(){
-        if( this.websocketClient != null ){
+    public void shutdown() {
+        if (this.websocketClient != null) {
             this.websocketClient.shutdown();
         }
     }
 
-    private Map<String, Object> createEvent(String type){
+    private Map<String, Object> createEvent(String type) {
         Map<String, Object> dict = new HashMap<>();
         dict.put("event", type);
         return dict;
     }
 
-    private void sendEvent(Map<String, Object> event){
+    private void sendEvent(Map<String, Object> event) {
         try {
             this.websocketClient.sendMessage(mapper.writeValueAsString(event));
         } catch (JsonProcessingException e) {
@@ -96,56 +108,59 @@ public class Remote {
         }
     }
 
-    public void onWindowCreated(String className){
+    public void onWindowCreated(String className) {
         Map<String, Object> event = createEvent("window-created");
         event.put("class-name", className);
         sendEvent(event);
     }
 
-    private String[] subSelectors(String[] selectors){
+    private String[] subSelectors(String[] selectors) {
         String[] sub = new String[selectors.length - 1];
         System.arraycopy(selectors, 1, sub, 0, selectors.length - 1);
         return sub;
     }
 
-    private ComponentFinder resolveComponentFinder(String name){
-        if(name.equals("MainPane")){
-            return (ComponentFinder)Main.appMainPane;
-        } else {
-            for(Window w: javafx.stage.Window.getWindows()) {
-                if (w instanceof ComponentFinder) {
-                    ComponentFinder cf = (ComponentFinder) w;
-                    if (cf.getComponentFinderId().equals(name)) {
-                        return cf;
-                    }
-                }
-            }
+    private Object resolveComponent(String[] selectors) {
+        if (selectors.length == 0) {
             return null;
-        }
-    }
-
-    private Object resolveComponent(String[] selectors){
-        if(selectors.length > 0){
-            String winClass = selectors[0];
-            ComponentFinder cf = resolveComponentFinder(winClass);
-            if(cf != null){
-                if (selectors.length > 1) {
-                    return cf.findComponent(subSelectors(selectors));
+        } else {
+            ComponentFinder cf = this.topFinder;
+            for (int i = 0; i < selectors.length - 1; i++) {
+                Object obj = cf.findComponent(selectors[i]);
+                if (obj instanceof ComponentFinder) {
+                    cf = (ComponentFinder) obj;
                 } else {
-                    return cf;
+                    return null;
                 }
             }
+            return cf.findComponent(selectors[selectors.length - 1]);
         }
-        return null;
     }
 
-    private Object findTargetComponent(String selector){
+    private Object findTargetComponent(String selector) {
         return resolveComponent(selector.split("/"));
     }
 
-    private void doClick(SelectorActionCommand cmd){
-        Button b = (Button)findTargetComponent(cmd.selector);
+    private void doClick(SelectorActionCommand cmd) {
+        Button b = (Button) findTargetComponent(cmd.selector);
         Platform.runLater(b::fire);
+    }
+
+    private void doSetText(SetTextCommand cmd) {
+        Object target = findTargetComponent(cmd.selector);
+        if (target instanceof TextField) {
+            TextField tf = (TextField) target;
+            Platform.runLater(() -> tf.setText(cmd.text));
+        } else if (target instanceof GengouInput) {
+            GengouInput input = (GengouInput)target;
+            Gengou gengou = Gengou.fromKanjiRep(cmd.text);
+            if( gengou != null ){
+                Platform.runLater(() -> input.getSelectionModel().select(gengou));
+            }
+        } else if( target instanceof TextConsumerComponent ){
+            TextConsumerComponent tc = (TextConsumerComponent)target;
+            Platform.runLater(() -> tc.setText(cmd.text));
+        }
     }
 
 }

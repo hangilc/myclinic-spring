@@ -28,7 +28,7 @@ public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static String wsUrl;
     private Tracker tracker;
-    private static Remote remote;
+    public static Remote remote;
     private MainPane mainPane;
     public static MainPane appMainPane;
 

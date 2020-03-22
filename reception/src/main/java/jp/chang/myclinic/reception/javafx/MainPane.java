@@ -17,6 +17,7 @@ import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
 import jp.chang.myclinic.reception.Globals;
+import jp.chang.myclinic.reception.Main;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
 import jp.chang.myclinic.reception.event.RefreshEvent;
 import jp.chang.myclinic.reception.javafx.edit_patient.EnterPatientStage;
@@ -110,16 +111,8 @@ public class MainPane extends VBox implements DispatchHook, ComponentFinder {
     }
 
     @Override
-    public String getComponentFinderId() {
-        return "MainPane";
-    }
-
-    @Override
-    public Object findComponent(String[] selectors){
-        if(selectors.length == 1){
-            return lookup("#" + selectors[0]);
-        }
-        return null;
+    public Object findComponent(String selector){
+        return lookup("#" + selector);
     }
 
     private void doCashier() {
@@ -191,6 +184,7 @@ public class MainPane extends VBox implements DispatchHook, ComponentFinder {
                     });
         });
         stage.show();
+        Main.remote.onWindowCreated(stage.getNameProviderName());
     }
 
     private void doSearchPatient() {

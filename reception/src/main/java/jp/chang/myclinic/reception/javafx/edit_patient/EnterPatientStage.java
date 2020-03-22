@@ -8,16 +8,21 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.javafx.DateComponentFinder;
+import jp.chang.myclinic.reception.remote.ComponentFinder;
+import jp.chang.myclinic.reception.remote.NameProvider;
+import jp.chang.myclinic.reception.remote.SexRadioComponent;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.util.logic.LogicValue;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.function.Consumer;
 
-public class EnterPatientStage extends Stage {
+public class EnterPatientStage extends Stage implements ComponentFinder, NameProvider {
 
-    //private static Logger logger = LoggerFactory.getLogger(EnterPatientStage.class);
-    private Consumer<PatientDTO> onEnterCallback = dto -> {};
+    private Consumer<PatientDTO> onEnterCallback = dto -> {
+    };
+    private PatientForm patientForm;
 
     public EnterPatientStage() {
         setTitle("新規患者入力");
@@ -27,36 +32,53 @@ public class EnterPatientStage extends Stage {
         setScene(new Scene(root));
     }
 
-    public void setOnEnterCallback(Consumer<PatientDTO> callback){
+    public void setOnEnterCallback(Consumer<PatientDTO> callback) {
         this.onEnterCallback = callback;
     }
 
-    private Parent createRoot(){
+    private Parent createRoot() {
         VBox root = new VBox(4);
-        PatientForm form = new PatientForm();
-        root.getChildren().add(form);
+        this.patientForm = new PatientForm();
+        root.getChildren().add(patientForm);
         HBox commands = new HBox(4);
         commands.setAlignment(Pos.CENTER_RIGHT);
         Button enterButton = new Button("入力");
+        enterButton.setId("EnterButton");
         Button cancelButton = new Button("キャンセル");
-        enterButton.setOnAction(evt -> doEnter(form));
+        cancelButton.setId("CancelButton");
+        enterButton.setOnAction(evt -> doEnter(patientForm));
         cancelButton.setOnAction(evt -> close());
         commands.getChildren().addAll(enterButton, cancelButton);
         root.getChildren().add(commands);
         return root;
     }
 
-    private void doEnter(PatientForm form){
+    private void doEnter(PatientForm form) {
         PatientFormInputs inputs = form.getInputs();
         ErrorMessages em = new ErrorMessages();
         PatientDTO dto = new LogicValue<>(inputs)
                 .convert(PatientFormLogic::patientFormInputsToPatientDTO)
                 .getValue(null, em);
-        if( em.hasError() ){
+        if (em.hasError()) {
             GuiUtil.alertError(em.getMessage());
             return;
         }
         onEnterCallback.accept(dto);
     }
 
+    @Override
+    public Object findComponent(String selector) {
+        if ("Birthday".equals(selector)) {
+            return new DateComponentFinder(patientForm.getBirthdayInput());
+        } else if ("Sex".equals(selector)) {
+            return new SexRadioComponent(patientForm.getSexInput());
+        } else {
+            return getScene().lookup("#" + selector);
+        }
+    }
+
+    @Override
+    public String getNameProviderName() {
+        return this.getClass().getSimpleName();
+    }
 }
