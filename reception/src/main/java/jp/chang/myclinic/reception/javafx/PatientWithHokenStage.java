@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.Main;
 import jp.chang.myclinic.reception.javafx.edit_kouhi.EditKouhiStage;
 import jp.chang.myclinic.reception.javafx.edit_kouhi.EnterKouhiStage;
 import jp.chang.myclinic.reception.javafx.edit_koukikourei.EditKoukikoureiStage;
@@ -25,6 +26,8 @@ import jp.chang.myclinic.reception.javafx.edit_koukikourei.EnterKoukikoureiStage
 import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EditShahokokuhoStage;
 import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EnterShahokokuhoStage;
 import jp.chang.myclinic.reception.javafx.edit_patient.EditPatientStage;
+import jp.chang.myclinic.reception.remote.ComponentFinder;
+import jp.chang.myclinic.reception.remote.NameProvider;
 import jp.chang.myclinic.util.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -40,7 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-class PatientWithHokenStage extends Stage {
+class PatientWithHokenStage extends Stage implements NameProvider, ComponentFinder {
     private static Logger logger = LoggerFactory.getLogger(PatientWithHokenStage.class);
     private static Pattern scannedDateTimePattern = Pattern.compile(
             "(\\d{8}+)-(\\d{6}+)-\\d+\\.[^.]+$"
@@ -72,6 +75,7 @@ class PatientWithHokenStage extends Stage {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_RIGHT);
             Button editPatientButton = new Button("編集");
+            editPatientButton.setId("EditPatientButton");
             editPatientButton.setOnAction(event -> {
                 EditPatientStage editStage = new EditPatientStage(thePatient.getValue());
                 editStage.setOnEnterCallback(edited -> {
@@ -88,6 +92,7 @@ class PatientWithHokenStage extends Stage {
                                 return null;
                             });
                 });
+                Main.remote.onWindowCreated(editStage.getNameProviderName());
                 editStage.showAndWait();
             });
             hbox.getChildren().add(editPatientButton);
@@ -159,6 +164,7 @@ class PatientWithHokenStage extends Stage {
             row.setAlignment(Pos.CENTER_RIGHT);
             Button registerButton = new Button("診療受付");
             Button closeButton = new Button("閉じる");
+            closeButton.setId("CloseButton");
             registerButton.setOnAction(event -> doRegister());
             closeButton.setOnAction(event -> close());
             row.getChildren().addAll(registerButton, closeButton);
@@ -167,6 +173,7 @@ class PatientWithHokenStage extends Stage {
         Scene scene = new Scene(root, 500, 660);
         setScene(scene);
         sizeToScene();
+        setOnHidden(evt -> Main.remote.onWindowClosed(getNameProviderName()));
     }
 
     private void doHokenshoImage() {
@@ -455,4 +462,13 @@ class PatientWithHokenStage extends Stage {
         }
     }
 
+    @Override
+    public String getNameProviderName() {
+        return this.getClass().getSimpleName();
+    }
+
+    @Override
+    public Object findComponent(String selector) {
+        return getScene().lookup("#" + selector);
+    }
 }

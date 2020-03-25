@@ -175,6 +175,7 @@ public class MainPane extends VBox implements DispatchHook, ComponentFinder {
                         PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(dto, hokenList);
                         patientWithHokenStage.initOwner(mainPane.getScene().getWindow());
                         stage.close();
+                        Main.remote.onWindowCreated(patientWithHokenStage.getNameProviderName());
                         patientWithHokenStage.showAndWait();
                     }, Platform::runLater)
                     .exceptionally(ex -> {

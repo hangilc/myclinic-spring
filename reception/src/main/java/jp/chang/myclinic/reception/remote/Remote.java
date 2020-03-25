@@ -2,9 +2,11 @@ package jp.chang.myclinic.reception.remote;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import jp.chang.myclinic.reception.tracker.WebsocketClient;
 import jp.chang.myclinic.util.kanjidate.Gengou;
@@ -39,6 +41,10 @@ public class Remote {
         public String text;
     }
 
+    private static class GetTextCommand extends SelectorActionCommand {
+        public int id;
+    }
+
     public void start() {
         this.websocketClient = new WebsocketClient(url) {
             @Override
@@ -71,6 +77,11 @@ public class Remote {
                             case "set-text": {
                                 SetTextCommand setTextCommand = mapper.readValue(message, SetTextCommand.class);
                                 doSetText(setTextCommand);
+                                return;
+                            }
+                            case "get-text": {
+                                GetTextCommand queryCommand = mapper.readValue(message, GetTextCommand.class);
+                                doGetText(queryCommand);
                                 return;
                             }
                             default: {
@@ -108,22 +119,24 @@ public class Remote {
         }
     }
 
+    private void sendEvent(JsonNode event) {
+        try {
+            this.websocketClient.sendMessage(mapper.writeValueAsString(event));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void onWindowCreated(String className) {
         Map<String, Object> event = createEvent("window-created");
         event.put("class-name", className);
-        sendEvent(event);
+        Platform.runLater(() -> sendEvent(event));
     }
 
     public void onWindowClosed(String className) {
         Map<String, Object> event = createEvent("window-closed");
         event.put("class-name", className);
-        sendEvent(event);
-    }
-
-    private String[] subSelectors(String[] selectors) {
-        String[] sub = new String[selectors.length - 1];
-        System.arraycopy(selectors, 1, sub, 0, selectors.length - 1);
-        return sub;
+        Platform.runLater(() -> sendEvent(event));
     }
 
     private Object resolveComponent(String[] selectors) {
@@ -165,7 +178,35 @@ public class Remote {
             }
         } else if( target instanceof TextConsumerComponent ){
             TextConsumerComponent tc = (TextConsumerComponent)target;
-            Platform.runLater(() -> tc.setText(cmd.text));
+            Platform.runLater(() -> tc.setComponentText(cmd.text));
+        }
+    }
+
+    private void doGetText(GetTextCommand cmd){
+        Object target = findTargetComponent(cmd.selector);
+        String result = null;
+        if (target instanceof TextField) {
+            TextField tf = (TextField) target;
+            result = tf.getText();
+        } else if (target instanceof GengouInput) {
+            GengouInput input = (GengouInput)target;
+            Gengou gengou = input.getSelectionModel().getSelectedItem();
+            if( gengou != null ){
+                result = gengou.getKanjiRep();
+            }
+        } else if( target instanceof TextProviderComponent ){
+            TextProviderComponent tc = (TextProviderComponent)target;
+            result = tc.getComponentText();
+        } else if( target instanceof Label){
+            Label l = (Label)target;
+            result = l.getText();
+        }
+        if( result != null ){
+            Map<String, Object> event = new HashMap<>();
+            event.put("event", "get-text-result");
+            event.put("id", cmd.id);
+            event.put("result", result);
+            sendEvent(event);
         }
     }
 

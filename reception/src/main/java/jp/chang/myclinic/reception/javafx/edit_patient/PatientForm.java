@@ -13,6 +13,9 @@ import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 class PatientForm extends Form {
 
     private Label patientIdLabel = new Label();
+    {
+        patientIdLabel.setId("PatientIdLabel");
+    }
 
     private TextField lastNameInput = new TextField();
     {

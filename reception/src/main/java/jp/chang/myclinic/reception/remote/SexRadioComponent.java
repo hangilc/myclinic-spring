@@ -14,7 +14,7 @@ public class SexRadioComponent implements TextComponent {
     }
 
     @Override
-    public void setText(String text) {
+    public void setComponentText(String text) {
         Sex sex = Sex.fromKanji(text);
         if( sex != null ){
             this.radioGroup.setValue(sex);
