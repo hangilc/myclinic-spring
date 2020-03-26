@@ -15,12 +15,19 @@ import java.io.FileOutputStream;
 
 public class Main {
 
+    // Usage: inkan.jar unstamped.pdf
     public static void main(String[] args){
         String filePath = args[0];
+        if( !filePath.endsWith(".pdf") ){
+            System.err.println("Argument should be a path to PDF file.");
+            System.err.println("Usage: inkan.jar unstamped.pdf");
+            System.exit(1);
+        }
+        String outPath = filePath.replace(".pdf", "-stamped.pdf");
         Document document = new Document();
         try {
             PdfReader reader = new PdfReader(filePath);
-            PdfStamper stamper = new PdfStamper(reader, new FileOutputStream("work/test.pdf"));
+            PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(outPath));
             Image img = Image.getInstance("config/hanko.png");
             img.scalePercent(65);
             img.setAbsolutePosition(340, 714);
