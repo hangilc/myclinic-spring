@@ -106,6 +106,7 @@
         <module>winutil</module>
         <module>management</module>
         <module>postgresql-dev</module>
+        <module>inkan</module>
     <module>server-postgresql</module>
     <module>dbxfer</module>
     <module>db</module>
