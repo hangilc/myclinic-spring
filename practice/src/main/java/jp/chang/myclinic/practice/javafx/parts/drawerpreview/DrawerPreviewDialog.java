@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.parts.drawerpreview;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -31,6 +32,7 @@ public class DrawerPreviewDialog extends Stage {
     private List<Op> ops;
     private PrinterEnv printerEnv;
     private String defaultPrinterSetting;
+    private HBox commandHBox;
 
     public DrawerPreviewDialog() {
         this(null);
@@ -51,7 +53,7 @@ public class DrawerPreviewDialog extends Stage {
         setScene(new Scene(main));
     }
 
-    public void setContentSize(double mmWidth, double mmHeight) {
+   public void setContentSize(double mmWidth, double mmHeight) {
         drawerCanvas.setContentSize(mmWidth, mmHeight);
     }
 
@@ -66,6 +68,10 @@ public class DrawerPreviewDialog extends Stage {
     public void setOps(List<Op> ops) {
         this.ops = ops;
         drawerCanvas.setOps(ops);
+    }
+
+    public void clearCanvas(){
+        drawerCanvas.clear();
     }
 
     protected void onDefaultSettingChange(String newSettingName) {
@@ -91,6 +97,10 @@ public class DrawerPreviewDialog extends Stage {
     public void setDefaultPrinterSetting(String defaultSetting) {
         this.defaultPrinterSetting = defaultSetting;
         setSettingChoice(defaultSetting);
+    }
+
+    public void addToCommandHBox(Control control){
+        this.commandHBox.getChildren().add(control);
     }
 
     private Node createMenu() {
@@ -174,6 +184,8 @@ public class DrawerPreviewDialog extends Stage {
         settingChoice.getStyleClass().add("printer-setting-choice");
         updateSettingChoice();
         hbox.getChildren().addAll(printButton, settingChoice);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        this.commandHBox = hbox;
         return hbox;
     }
 
@@ -203,7 +215,9 @@ public class DrawerPreviewDialog extends Stage {
 
     private Node createCanvas() {
         drawerCanvas = new DrawerCanvas();
-        return new ScrollPane(drawerCanvas);
+        ScrollPane sp = new ScrollPane(drawerCanvas);
+        //sp.setStyle("-fx-background-color:transparent");
+        return sp;
     }
 
     private void doPrint() {

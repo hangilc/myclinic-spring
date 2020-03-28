@@ -74,6 +74,10 @@ public class DrawerCanvas extends Canvas {
         setHeight(scale(mmHeight));
     }
 
+    public void clear(){
+        gc.clearRect(0, 0, getWidth(), getHeight());
+    }
+
     public void setOps(List<Op> ops){
         for(Op op: ops){
             switch(op.getOpCode()){

@@ -55,6 +55,7 @@ public class ShohousenDialog extends Stage {
     private TextField phoneInput = new TextField();
     private TextField kikancodeInput = new TextField();
     private TextArea contentInput = new TextArea();
+    private CheckBox bwCheckBox = new CheckBox();
 
     public ShohousenDialog() {
         VBox root = new VBox(4);

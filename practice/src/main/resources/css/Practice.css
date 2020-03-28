@@ -184,6 +184,10 @@
     -fx-max-width: 160px;
 }
 
+.drawer-preview-dialog .scroll-pane {
+    -fx-background-color:transparent;
+}
+
 .registered-refer-dialog {
     -fx-padding: 10px;
     -fx-pref-width: 420px;

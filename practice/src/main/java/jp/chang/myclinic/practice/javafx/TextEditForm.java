@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.FlowPane;
@@ -95,6 +96,22 @@ public class TextEditForm extends VBox {
         return wrapper;
     }
 
+    private CheckBox createBlackWhiteCheckBox(DrawerPreviewDialog dlog, ShohousenData data){
+        CheckBox check = new CheckBox("白黒");
+        check.setOnAction(event -> {
+            ShohousenDrawer.ShohousenDrawerSettings settings =
+                    new ShohousenDrawer.ShohousenDrawerSettings();
+            if( check.isSelected() ){
+                settings.setColor(0, 0, 0);
+            }
+            ShohousenDrawer drawer = new ShohousenDrawer(settings);
+            data.applyTo(drawer);
+            dlog.clearCanvas();
+            dlog.setOps(drawer.getOps());
+        });
+        return check;
+    }
+
     private void doShohousen(){
         if( PracticeEnv.INSTANCE.getCurrentVisitId() != visitId ){
             if( !GuiUtil.confirm("現在診察中ではないですか、この処方箋を発行しますか？") ){
@@ -126,6 +143,9 @@ public class TextEditForm extends VBox {
                                 ShohousenUtil.changeDefaultPrinterSetting(newSettingName);
                             }
                         };
+                        CheckBox bwCheck = createBlackWhiteCheckBox(previewDialog, data);
+                        previewDialog.setTitle("処方箋印刷");
+                        previewDialog.addToCommandHBox(bwCheck);
                         previewDialog.setPrinterEnv(printerEnv);
                         previewDialog.setDefaultPrinterSetting(settingName);
                         previewDialog.setScaleFactor(0.8);

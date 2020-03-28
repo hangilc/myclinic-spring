@@ -48,10 +48,29 @@ public class ShohousenDrawer {
     private String NAME_SMALLER_FONT;
     private String NAME_MULTILINE_FONT;
 
+    public static class ShohousenDrawerSettings {
+        public int red = 0;
+        public int green = 255;
+        public int blue = 0;
+
+        public void setColor(int red, int green, int blue){
+            this.red = red;
+            this.green = green;
+            this.blue = blue;
+        }
+    }
+
+    private ShohousenDrawerSettings settings;
+
     public ShohousenDrawer(){
+        this(new ShohousenDrawerSettings());
+    }
+
+    public ShohousenDrawer(ShohousenDrawerSettings settings){
+        this.settings = settings;
         setupFonts();
-        compiler.setTextColor(0, 255, 0);
-        compiler.createPen("default-pen", 0, 255, 0, 0.1);
+        compiler.setTextColor(settings.red, settings.green, settings.blue);
+        compiler.createPen("default-pen", settings.red, settings.green, settings.blue, 0.16);
         compiler.setPen("default-pen");
         wrap = Box.of(PaperSize.A5);
         drawTitle();
@@ -90,7 +109,7 @@ public class ShohousenDrawer {
         Box clinic_info = clinicInfoBox;
         Box clinic_phone = clinicPhoneBox;
         Box r = clinic_info.shift(2, 1);
-        c.setTextColor(0, 255, 0);
+        c.setTextColor(settings.red, settings.green, settings.blue);
         c.setFont("mincho-3");
         c.textIn(address, r, HAlign.Left, VAlign.Top);
         r = r.shift(4, 4);
@@ -109,7 +128,7 @@ public class ShohousenDrawer {
     public void setDoctorName(String name){
         DrawerCompiler c = this.compiler;
         Box r = clinicDoctorBox.shift(35, 0);
-        c.setTextColor(0, 255, 0);
+        c.setTextColor(settings.red, settings.green, settings.blue);
         c.setFont("mincho-3.5");
         c.textIn(name, r, HAlign.Left, VAlign.Top);
     }
