@@ -55,7 +55,7 @@ public class Main {
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(outPath));
             Image img = Image.getInstance(stampPath.toString());
             img.scalePercent(65);
-            img.setAbsolutePosition(340, 714);
+            img.setAbsolutePosition(340, 708);
             stamper.getOverContent(1).addImage(img);
             stamper.close();
         } catch (Exception e) {
