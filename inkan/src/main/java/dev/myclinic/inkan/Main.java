@@ -3,32 +3,57 @@ package dev.myclinic.inkan;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
-import com.itextpdf.text.pdf.PdfWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Main {
 
-    // Usage: inkan.jar unstamped.pdf
+    private static void usage(){
+        System.out.println("Usage inkan.jar [OPTIONS] unstamped.pdf\n" +
+            "    -g stamp gray inkan\n" +
+            "config/hanko.png is used to add stamp\n" +
+            "(in case of -g, config/hanko-gray.png is used)");
+    }
+
+    private static Path filePath;
+    private static boolean isGray = false;
+
+    private static boolean parseArgs(String[] args){
+        for (String arg : args) {
+            if (arg == null) {
+                return false;
+            }
+            if ("-g".equals(arg)) {
+                isGray = true;
+            } else {
+                filePath = Paths.get(arg);
+            }
+        }
+        return filePath != null;
+    }
+
     public static void main(String[] args){
-        String filePath = args[0];
-        if( !filePath.endsWith(".pdf") ){
-            System.err.println("Argument should be a path to PDF file.");
-            System.err.println("Usage: inkan.jar unstamped.pdf");
+        if( !parseArgs(args) ){
+            usage();
             System.exit(1);
         }
-        String outPath = filePath.replace(".pdf", "-stamped.pdf");
+        Path stampPath;
+        if( isGray ){
+            stampPath = Paths.get(System.getenv("MYCLINIC_CONFIG"), "hanko-gray.png");
+        } else {
+            stampPath = Paths.get(System.getenv("MYCLINIC_CONFIG"), "hanko.png");
+        }
+        String outPath = filePath.toString().replace(".pdf", "-stamped.pdf");
         Document document = new Document();
         try {
-            PdfReader reader = new PdfReader(filePath);
+            PdfReader reader = new PdfReader(filePath.toString());
             PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(outPath));
-            Image img = Image.getInstance("config/hanko.png");
+            Image img = Image.getInstance(stampPath.toString());
             img.scalePercent(65);
             img.setAbsolutePosition(340, 714);
             stamper.getOverContent(1).addImage(img);
