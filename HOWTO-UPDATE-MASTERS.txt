@@ -1,0 +1,6 @@
+* Download master using master-app (download)
+
+* Update masters
+  --- Open PowerShell 6 ---
+  > cd master-manip
+  > ./update-master.ps1 ../master-files/y-***.zip ../master-files/s-***.zip ../master-files/t-***.zip
