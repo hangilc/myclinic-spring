@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,27 +146,55 @@ public class MainPane extends BorderPane {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    private CompletableFuture<List<VisitPatientDTO>> listVisitsAt(LocalDate date){
-        return Service.api.pageVisitFullWithPatientAt(date.toString(), 0)
-                .thenApply(result -> {
-                    return result.visitPatients.stream()
-                            .map(item -> {
-                                VisitPatientDTO vp = new VisitPatientDTO();
-                                vp.visit = item.visitFull.visit;
-                                vp.patient = item.patient;
-                                return vp;
-                            })
-                            .collect(Collectors.toList());
-                });
+    private List<VisitPatientDTO> cvtToListVisitPatientDTO(List<VisitFull2PatientDTO> src){
+        return src.stream()
+                .map(item -> {
+                    VisitPatientDTO vp = new VisitPatientDTO();
+                    vp.visit = item.visitFull.visit;
+                    vp.patient = item.patient;
+                    return vp;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private CompletableFuture<Void> iterVisitsAt(
+            LocalDate date,
+            int page,
+            int totalPages,
+            List<VisitPatientDTO> store
+    ){
+        if( page == 0 ){
+            return Service.api.pageVisitFullWithPatientAt(date.toString(), page)
+                    .thenCompose(result -> {
+                        store.addAll(cvtToListVisitPatientDTO(result.visitPatients));
+                        return iterVisitsAt(date, page+1, result.totalPages, store);
+                    });
+        } else {
+            if( page >= totalPages ){
+                return CompletableFuture.completedFuture(null);
+            } else {
+                CompletableFuture<VisitFull2PatientPageDTO> fut;
+                fut = Service.api.pageVisitFullWithPatientAt(date.toString(), page);
+                if( page + 1 >= totalPages ){
+                    return fut.thenApply(result -> {
+                        store.addAll(cvtToListVisitPatientDTO(result.visitPatients));
+                        return null;
+                    });
+                } else {
+                    return iterVisitsAt(date, page + 1, totalPages, store);
+                }
+            }
+        }
     }
 
     private void doVisitsOfPrevDay(){
         ChooseDateDialog dialog = new ChooseDateDialog("診察日の選択", "診察日：");
         dialog.setDate(LocalDate.now());
+        List<VisitPatientDTO> store = new ArrayList<>();
         dialog.setOnEnter(date -> {
-            listVisitsAt(date)
+            iterVisitsAt(date, 0, 0, store)
                     .thenAcceptAsync(result -> {
-                        System.out.println(result);
+                        System.out.println(store);
                     }, Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         });
