@@ -35,6 +35,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Component
@@ -63,17 +64,20 @@ public class MainPane extends BorderPane {
             MenuItem searchMenuItem = new MenuItem("患者検索");
             MenuItem recentVisitsItem = new MenuItem("最近の診察");
             MenuItem todaysVisitsItem = new MenuItem("本日の診察");
+            MenuItem visitsOfPrevDayItem = new MenuItem("以前の診察");
             selectVisitMenu.setOnAction(event -> doSelectVisit());
             selectVisitMenu.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
             searchMenuItem.setOnAction(event -> doSearchPatient());
             searchMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
             recentVisitsItem.setOnAction(event -> doRecentVisits());
             todaysVisitsItem.setOnAction(event -> doTodaysVisits());
+            visitsOfPrevDayItem.setOnAction(event -> doVisitsOfPrevDay());
             selectMenu.getItems().addAll(
                     selectVisitMenu,
                     searchMenuItem,
                     recentVisitsItem,
-                    todaysVisitsItem);
+                    todaysVisitsItem,
+                    visitsOfPrevDayItem);
             menuBar.getMenus().add(selectMenu);
         }
         {
@@ -139,6 +143,33 @@ public class MainPane extends BorderPane {
                     dialog.show();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private CompletableFuture<List<VisitPatientDTO>> listVisitsAt(LocalDate date){
+        return Service.api.pageVisitFullWithPatientAt(date.toString(), 0)
+                .thenApply(result -> {
+                    return result.visitPatients.stream()
+                            .map(item -> {
+                                VisitPatientDTO vp = new VisitPatientDTO();
+                                vp.visit = item.visitFull.visit;
+                                vp.patient = item.patient;
+                                return vp;
+                            })
+                            .collect(Collectors.toList());
+                });
+    }
+
+    private void doVisitsOfPrevDay(){
+        ChooseDateDialog dialog = new ChooseDateDialog("診察日の選択", "診察日：");
+        dialog.setDate(LocalDate.now());
+        dialog.setOnEnter(date -> {
+            listVisitsAt(date)
+                    .thenAcceptAsync(result -> {
+                        System.out.println(result);
+                    }, Platform::runLater)
+                    .exceptionally(HandlerFX::exceptionally);
+        });
+        dialog.showAndWait();
     }
 
     private void doNewVisit() {

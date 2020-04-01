@@ -1,3 +1,7 @@
+.dialog {
+    -fx-padding: 10;
+}
+
 .hyperlink {
     -fx-border-color: transparent;
     -fx-padding: 0 0 0 0;
