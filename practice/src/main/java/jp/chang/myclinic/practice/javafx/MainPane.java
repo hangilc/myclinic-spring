@@ -194,7 +194,9 @@ public class MainPane extends BorderPane {
         dialog.setOnEnter(date -> {
             iterVisitsAt(date, 0, 0, store)
                     .thenAcceptAsync(result -> {
-                        System.out.println(store);
+                        VisitsByDateDialog visitsDialog = new VisitsByDateDialog();
+                        visitsDialog.setValues(store);
+                        visitsDialog.show();
                     }, Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         });

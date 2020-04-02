@@ -3,18 +3,23 @@ package jp.chang.myclinic.practice.javafx;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.TextVisitDTO;
 import jp.chang.myclinic.dto.TextVisitPageDTO;
+import jp.chang.myclinic.dto.VisitPatientDTO;
 import jp.chang.myclinic.practice.javafx.parts.PageNav;
 import jp.chang.myclinic.practice.javafx.parts.SimplePageNav;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.BasicSearchTextInput;
+import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -24,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class SearchTextDialog extends Stage {
 
