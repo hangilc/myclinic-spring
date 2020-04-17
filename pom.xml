@@ -112,6 +112,7 @@
         <module>shohousen-drawer</module>
         <module>server-postgresql</module>
         <module>dbxfer</module>
+        <module>drawer-printer</module>
         <module>db</module>
     </modules>
 

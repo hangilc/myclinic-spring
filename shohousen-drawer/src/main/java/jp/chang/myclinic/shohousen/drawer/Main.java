@@ -2,6 +2,8 @@ package jp.chang.myclinic.shohousen.drawer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import jp.chang.myclinic.drawer.JacksonOpSerializer;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.shohousen.ShohousenData;
 import jp.chang.myclinic.shohousen.ShohousenDrawer;
@@ -69,6 +71,9 @@ public class Main {
             List<Op> ops = drawer.getOps();
             result.add(ops);
         }
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Op.class, new JacksonOpSerializer());
+        mapper.registerModule(module);
         String json = mapper.writeValueAsString(result);
         if (cmdArgs.output == null) {
             System.out.println(json);
@@ -77,6 +82,7 @@ public class Main {
             OutputStreamWriter out = new OutputStreamWriter(fout, StandardCharsets.UTF_8);
             out.write(json);
             out.write("\n");
+            out.close();
         }
     }
 
