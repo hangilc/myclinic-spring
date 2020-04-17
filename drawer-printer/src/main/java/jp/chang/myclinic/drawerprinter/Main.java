@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.pdf.PdfPrinter;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 
 import java.io.FileInputStream;
@@ -21,6 +22,7 @@ public class Main {
 
     private static class CmdArgs {
         public String input;
+        public String pdf;
 
         public CmdArgs(String[] args) {
             for (int i = 0; i < args.length; i++) {
@@ -30,6 +32,10 @@ public class Main {
                     case "--in": {
                         this.input = args[i + 1];
                         i += 1;
+                        break;
+                    }
+                    case "--pdf": {
+                        this.pdf = args[++i];
                         break;
                     }
                     default: {
@@ -44,10 +50,11 @@ public class Main {
             System.err.println("Usage: drawer-printer [options] [INPUT]");
             System.err.println("  options:");
             System.err.println("    -i, --in INPUT: read from file");
+            System.err.println("    --pdf OUTPUT: write as PDF file to OUTPUT");
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         CmdArgs cmdArgs = new CmdArgs(args);
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
@@ -62,11 +69,15 @@ public class Main {
             InputStream fin = new FileInputStream(cmdArgs.input);
             reader = new InputStreamReader(fin, StandardCharsets.UTF_8);
         }
-        pages = mapper.readValue(reader, new TypeReference<List<List<Op>>>() {
-        });
+        pages = mapper.readValue(reader, new TypeReference<List<List<Op>>>(){});
         reader.close();
-        PrinterEnv penv = new PrinterEnv(Paths.get(getPrinterSettingsDir()));
-        penv.print(pages, null);
+        if( cmdArgs.pdf != null ){
+            PdfPrinter printer = new PdfPrinter();
+            printer.print(pages, cmdArgs.pdf);
+        } else {
+            PrinterEnv penv = new PrinterEnv(Paths.get(getPrinterSettingsDir()));
+            penv.print(pages, null);
+        }
     }
 
     private static String getPrinterSettingsDir() {
