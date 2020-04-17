@@ -9,7 +9,9 @@ import jp.chang.myclinic.shohousen.ShohousenData;
 import jp.chang.myclinic.shohousen.ShohousenDrawer;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +57,7 @@ public class Main {
         CmdArgs cmdArgs = CmdArgs.parse(args);
         InputStreamReader in;
         if (cmdArgs.input == null) {
-            in = new InputStreamReader(System.in);
+            in = new InputStreamReader(System.in, Charset.defaultCharset());
         } else {
             FileInputStream fs = new FileInputStream(cmdArgs.input);
             in = new InputStreamReader(fs, StandardCharsets.UTF_8);
@@ -97,11 +99,27 @@ public class Main {
     private static ShohousenData toData(ShohousenInput input) {
         ShohousenData data = new ShohousenData();
         data.clinicAddress = input.clinicAddress;
+        data.clinicName = input.clinicName;
+        data.clinicPhone = input.clinicPhone;
+        data.kikancode = input.kikancode;
+        data.doctorName = input.doctorName;
+        data.hokenshaBangou = input.hokenshaBangou;
+        data.hihokensha = input.hihokensha;
+        data.futansha = input.futansha;
+        data.jukyuusha = input.jukyuusha;
+        data.futansha2 = input.futansha2;
+        data.jukyuusha2 = input.jukyuusha2;
+        data.shimei = input.shimei;
+        data.birthday = LocalDate.parse(input.birthday);
+        data.sex = input.sex;
+        data.honnin = input.honnin;
+        data.futanWari = input.futanWari;
+        data.koufuDate = LocalDate.parse(input.koufuDate);
+        if(  input.validUptoDate != null && !input.validUptoDate.equals("") ){
+            data.validUptoDate = LocalDate.parse(input.validUptoDate);
+        }
         data.setDrugs(input.content);
         return data;
     }
 
-//    private static String getPrinterSettingsDir(){
-//        return System.getenv("MYCLINIC_PRINTER_SETTINGS_DIR");
-//    }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,21 +13,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Main {
 
     private static class CmdArgs {
         public String input;
 
-        public CmdArgs(String[] args){
-            for(int i=0;i<args.length;i++){
+        public CmdArgs(String[] args) {
+            for (int i = 0; i < args.length; i++) {
                 String arg = args[i];
-                switch(arg){
-                    case "-i": case "--in": {
-                        this.input = args[i+1];
+                switch (arg) {
+                    case "-i":
+                    case "--in": {
+                        this.input = args[i + 1];
                         i += 1;
                         break;
                     }
@@ -38,7 +40,7 @@ public class Main {
             }
         }
 
-        public static void usage(){
+        public static void usage() {
             System.err.println("Usage: drawer-printer [options] [INPUT]");
             System.err.println("  options:");
             System.err.println("    -i, --in INPUT: read from file");
@@ -53,19 +55,22 @@ public class Main {
         mapper.registerModule(module);
         List<List<Op>> pages = null;
         InputStreamReader reader = null;
-        if( cmdArgs.input == null ){
+        if (cmdArgs.input == null) {
             reader = new InputStreamReader(System.in, Charset.defaultCharset());
         } else {
             System.out.println(cmdArgs.input);
             InputStream fin = new FileInputStream(cmdArgs.input);
             reader = new InputStreamReader(fin, StandardCharsets.UTF_8);
         }
-        pages = mapper.readValue(reader, new TypeReference<List<List<Op>>>(){});
+        pages = mapper.readValue(reader, new TypeReference<List<List<Op>>>() {
+        });
         reader.close();
-        System.out.println(pages);
+        PrinterEnv penv = new PrinterEnv(Paths.get(getPrinterSettingsDir()));
+        penv.print(pages, null);
     }
 
-    private Main(List<List<Op>> pages){
-        System.out.println(pages);
+    private static String getPrinterSettingsDir() {
+        return System.getenv("MYCLINIC_PRINTER_SETTINGS_DIR");
     }
 }
+
