@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import jp.chang.myclinic.dto.*;
@@ -149,6 +151,8 @@ public class ShohousenData {
         this.validUptoDate = date;
     }
 
+    private final Pattern patValidUptoDate = Pattern.compile("^@有効期限\\s*[:：]\\s*(\\d{4}-\\d{2}-\\d{2})\\s*");
+
     public void setDrugs(String content){
         if( content != null ){
             content = content.trim();
@@ -157,11 +161,39 @@ public class ShohousenData {
             if( lines.size() > 0 && lines.get(0).startsWith("院外処方") ){
                 lines.remove(0);
             }
-            if( lines.size() > 0 ) {
-                lines.add("------以下余白------");
+            List<String> dLines = new ArrayList<>();
+            for(String line: lines){
+                if( line.startsWith("@") ){
+                    Matcher m = patValidUptoDate.matcher(line);
+                    if( m.matches() ){
+                        String value = m.group(1);
+                        LocalDate d = LocalDate.parse(value);
+                        setValidUptoDate(d);
+                    } else {
+                        System.err.println("Invalid control line: " + line);
+                    }
+                } else {
+                    dLines.add(line);
+                }
             }
-            drugLines = lines;
+            if( dLines.size() > 0 ) {
+                dLines.add("------以下余白------");
+            }
+            this.drugLines = dLines;
         }
+
+//        if( content != null ){
+//            content = content.trim();
+//            List<String> lines = Arrays.stream(content.split("\\s*(?:\\r\\n|\\r|\\n)"))
+//                    .collect(Collectors.toList());
+//            if( lines.size() > 0 && lines.get(0).startsWith("院外処方") ){
+//                lines.remove(0);
+//            }
+//            if( lines.size() > 0 ) {
+//                lines.add("------以下余白------");
+//            }
+//            drugLines = lines;
+//        }
     }
 
     private String composeHihokensha(ShahokokuhoDTO shahokokuho){
