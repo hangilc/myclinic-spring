@@ -254,6 +254,16 @@ public class PdfPrinter {
                         cb.lineTo(x, y);
                         break;
                     }
+                    case Circle: {
+                        cb.stroke();
+                        OpCircle opCircle = (OpCircle)op;
+                        float x = getX(opCircle.getCx());
+                        float y = getY(opCircle.getCy());
+                        float r = (float)milliToPoint(opCircle.getR());
+                        cb.arc(x-r, y+r, x+r, y-r, 0, 360);
+                        cb.stroke();
+                        break;
+                    }
 //                default:
 //                    throw new RuntimeException("Unknown op");
                 }
