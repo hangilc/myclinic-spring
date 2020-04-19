@@ -278,6 +278,13 @@ public class ShohousenDrawer {
         setDrugLines(lines);
     }
 
+    public void setMemo(String memo){
+        DrawerCompiler c = this.compiler;
+        c.setFont("gothic-4.5");
+        c.setTextColor(0, 0, 0);
+        c.paragraph(memo, memoPaneBox.shift(1, 1), HAlign.Left, VAlign.Top, 1);
+    }
+
     private void frameDate(Box[] cols){
         double offset = 1;
         compiler.textIn("年", cols[0].flipRight().shiftToRight(offset), HAlign.Left, VAlign.Center);
