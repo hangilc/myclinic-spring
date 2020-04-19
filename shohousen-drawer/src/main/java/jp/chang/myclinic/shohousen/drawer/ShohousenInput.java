@@ -26,5 +26,6 @@ public class ShohousenInput {
     public String koufuDate = "";
     public String validUptoDate = "";
     public String content;
+    public String pharmacyName;
 
 }

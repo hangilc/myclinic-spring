@@ -32,6 +32,7 @@ public class ShohousenData {
     public LocalDate koufuDate;
     public LocalDate validUptoDate;
     public List<String> drugLines;
+    public String pharmacyName;
 
     public void applyTo(ShohousenDrawer drawer){
         drawer.setHakkouKikan(clinicAddress, clinicName, clinicPhone, kikancode);
@@ -80,6 +81,9 @@ public class ShohousenData {
         }
         if( drugLines != null ){
             drawer.setDrugLines(drugLines);
+        }
+        if( pharmacyName != null && !pharmacyName.isEmpty() ){
+            drawer.setPharmacyName(pharmacyName);
         }
     }
 

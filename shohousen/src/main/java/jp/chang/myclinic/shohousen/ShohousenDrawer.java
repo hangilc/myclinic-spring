@@ -268,14 +268,21 @@ public class ShohousenDrawer {
         c.multilineText(drugLines, drugsPaneBox, HAlign.Left, VAlign.Top, 0);
     }
 
-    public void setDrugLines(String concatenatedLines){
-        if( concatenatedLines == null || concatenatedLines.isEmpty() ){
-            return;
-        }
-        List<String> lines = new ArrayList<>(Arrays.asList(concatenatedLines.split("\\r?\\n")));
-        lines.add("------以下余白------");
-        setDrugLines(lines);
+    public void setPharmacyName(String pharmacyName){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-2.5");
+        c.textIn(pharmacyName, memoPaneBox.shift(-1, -1), HAlign.Right, VAlign.Bottom);
     }
+
+//    public void setDrugLines(String concatenatedLines){
+//        if( concatenatedLines == null || concatenatedLines.isEmpty() ){
+//            return;
+//        }
+//        List<String> lines = new ArrayList<>(Arrays.asList(concatenatedLines.split("\\r?\\n")));
+//        lines.add("------以下余白------");
+//        setDrugLines(lines);
+//    }
 
     private void frameDate(Box[] cols){
         double offset = 1;
@@ -510,7 +517,6 @@ public class ShohousenDrawer {
         c.setFont("mincho-2.5");
         c.textInVertJustified("備考", rr[0].inset(0, 7), HAlign.Center);
         memoPaneBox = rr[1];
-        //c.setBox("memoPane", rr[1]);
     }
 
     private void drawChouzai1(Box r){

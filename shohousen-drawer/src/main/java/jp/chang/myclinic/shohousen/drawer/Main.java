@@ -119,6 +119,7 @@ public class Main {
             data.validUptoDate = LocalDate.parse(input.validUptoDate);
         }
         data.setDrugs(input.content);
+        data.pharmacyName = input.pharmacyName;
         return data;
     }
 
