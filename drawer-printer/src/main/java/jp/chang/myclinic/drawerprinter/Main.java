@@ -82,8 +82,6 @@ public class Main {
         reader.close();
         if (cmdArgs.pdf != null) {
             PaperSize paperSize = getPaperSize(cmdArgs.pdfPageSize);
-            System.out.println(paperSize.getWidth());
-            System.out.println(paperSize.getHeight());
             PdfPrinter printer = new PdfPrinter(paperSize);
             printer.print(pages, cmdArgs.pdf);
         } else {
