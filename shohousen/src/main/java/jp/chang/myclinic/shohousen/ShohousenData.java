@@ -3,6 +3,7 @@ package jp.chang.myclinic.shohousen;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -165,8 +166,11 @@ public class ShohousenData {
     public void setDrugs(String content){
         if( content != null ){
             content = content.trim();
-            List<String> lines = Arrays.stream(content.split("\\s*(?:\\r\\n|\\r|\\n)"))
-                    .collect(Collectors.toList());
+            List<String> lines = Collections.emptyList();
+            if( !content.isEmpty() && !content.startsWith("@") ) {
+                lines = Arrays.stream(content.split("\\s*(?:\\r\\n|\\r|\\n)"))
+                        .collect(Collectors.toList());
+            }
             if( lines.size() > 0 && lines.get(0).startsWith("院外処方") ){
                 lines.remove(0);
             }
@@ -198,19 +202,6 @@ public class ShohousenData {
             }
             this.drugLines = dLines;
         }
-
-//        if( content != null ){
-//            content = content.trim();
-//            List<String> lines = Arrays.stream(content.split("\\s*(?:\\r\\n|\\r|\\n)"))
-//                    .collect(Collectors.toList());
-//            if( lines.size() > 0 && lines.get(0).startsWith("院外処方") ){
-//                lines.remove(0);
-//            }
-//            if( lines.size() > 0 ) {
-//                lines.add("------以下余白------");
-//            }
-//            drugLines = lines;
-//        }
     }
 
     private String composeHihokensha(ShahokokuhoDTO shahokokuho){

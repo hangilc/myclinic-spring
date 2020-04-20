@@ -110,11 +110,11 @@ public class Main {
         data.futansha2 = input.futansha2;
         data.jukyuusha2 = input.jukyuusha2;
         data.shimei = input.shimei;
-        data.birthday = LocalDate.parse(input.birthday);
+        data.birthday = input.birthday != null ? LocalDate.parse(input.birthday) : null;
         data.sex = input.sex;
         data.honnin = input.honnin;
         data.futanWari = input.futanWari;
-        data.koufuDate = LocalDate.parse(input.koufuDate);
+        data.koufuDate = input.koufuDate != null ? LocalDate.parse(input.koufuDate) : null;
         if(  input.validUptoDate != null && !input.validUptoDate.equals("") ){
             data.validUptoDate = LocalDate.parse(input.validUptoDate);
         }
