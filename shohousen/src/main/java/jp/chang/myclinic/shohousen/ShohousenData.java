@@ -33,6 +33,7 @@ public class ShohousenData {
     public LocalDate validUptoDate;
     public List<String> drugLines;
     public String pharmacyName;
+    public String memo = "";
 
     public void applyTo(ShohousenDrawer drawer){
         drawer.setHakkouKikan(clinicAddress, clinicName, clinicPhone, kikancode);
@@ -84,6 +85,9 @@ public class ShohousenData {
         }
         if( pharmacyName != null && !pharmacyName.isEmpty() ){
             drawer.setPharmacyName(pharmacyName);
+        }
+        if( memo != null && !memo.isEmpty() ){
+            drawer.setMemo(memo);
         }
     }
 
@@ -155,7 +159,8 @@ public class ShohousenData {
         this.validUptoDate = date;
     }
 
-    private final Pattern patValidUptoDate = Pattern.compile("^@有効期限\\s*[:：]\\s*(\\d{4}-\\d{2}-\\d{2})\\s*");
+    private final Pattern patValidUptoDate = Pattern.compile("@有効期限\\s*[:：]\\s*(\\d{4}-\\d{2}-\\d{2})\\s*");
+    private final Pattern pat0410 = Pattern.compile("@(0410対応|@０４１０対応)"); //新型コロナ感染対策
 
     public void setDrugs(String content){
         if( content != null ){
@@ -173,9 +178,17 @@ public class ShohousenData {
                         String value = m.group(1);
                         LocalDate d = LocalDate.parse(value);
                         setValidUptoDate(d);
-                    } else {
-                        System.err.println("Invalid control line: " + line);
+                        continue;
                     }
+                    m = pat0410.matcher(line);
+                    if( m.matches() ){
+                        //noinspection StringConcatenationInLoop
+                        memo = memo + "0410対応\n";
+                        continue;
+                    }
+                    throw new RuntimeException("Unknown command: " + line + "\n" +
+                            "@有効期限：2020-04-19\n" +
+                            "@0410対応");
                 } else {
                     dLines.add(line);
                 }
