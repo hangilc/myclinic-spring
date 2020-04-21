@@ -32,6 +32,7 @@ public class PdfPrinter {
     private BaseColor strokeColor = new BaseColor(0, 0, 0);
     private float strokeWidth = 1;
     private int strokeStyle = OpCreatePen.PS_SOLID;
+    private double shrinkMargin = 0;
 
     public PdfPrinter() {
         this(jp.chang.myclinic.drawer.PaperSize.A4);
@@ -44,6 +45,10 @@ public class PdfPrinter {
     public PdfPrinter(double paperWidth, double paperHeight){
         this.paperWidth = milliToPoint(paperWidth);
         this.paperHeight = milliToPoint(paperHeight);
+    }
+
+    public void setShrink(double margin){
+        this.shrinkMargin = margin;
     }
 
     private double milliToPoint(double milli) {
@@ -121,6 +126,12 @@ public class PdfPrinter {
         return (float)(paperHeight - pointY);
     }
 
+    private void applyShrink(PdfContentByte cb, double margin){
+        double uMargin = milliToPoint(margin);
+        double scale = (paperWidth - 2 * uMargin) / paperWidth;
+        cb.concatCTM(scale, 0, 0, scale, uMargin, uMargin);
+    }
+
     public void print(List<List<Op>> pages, String savePath) throws Exception {
         Map<String, BaseFontData> fontMap = new HashMap<>();
         Map<String, DrawerFont> drawerFontMap = new HashMap<>();
@@ -129,6 +140,9 @@ public class PdfPrinter {
         PdfWriter pdfWriter = PdfWriter.getInstance(doc, new FileOutputStream(savePath));
         doc.open();
         PdfContentByte cb = pdfWriter.getDirectContent();
+        if( shrinkMargin != 0.0 ){
+            applyShrink(cb, shrinkMargin);
+        }
         for (int i = 0; i < pages.size(); i++) {
             if (i != 0) {
                 doc.newPage();

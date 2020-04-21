@@ -25,6 +25,7 @@ public class Main {
         public String input;
         public String pdf;
         public String pdfPageSize;
+        public double pdfShrink = 0;
 
         public CmdArgs(String[] args) {
             for (int i = 0; i < args.length; i++) {
@@ -45,6 +46,17 @@ public class Main {
                         this.pdfPageSize = args[++i];
                         break;
                     }
+                    case "--pdf-shrink": {
+                        String opt = args[++i];
+                        try {
+                            this.pdfShrink = Double.parseDouble(opt);
+                        } catch(NumberFormatException ex){
+                            System.err.println("Invalid --pdf-shrink option: " + opt);
+                            System.err.println("This option should be a number (in mm unit)");
+                            System.exit(1);
+                        }
+                        break;
+                    }
                     default: {
                         usage();
                         System.exit(1);
@@ -59,6 +71,7 @@ public class Main {
             System.err.println("    -i, --in INPUT: read from file");
             System.err.println("    --pdf OUTPUT: write as PDF file to OUTPUT");
             System.err.println("    --pdf-page-size SIZE: A5, 148x210, ...");
+            System.err.println("    --pdf-shrink AMOUNT: shrink output with AMOUNT margin (unit: mm)");
         }
     }
 
@@ -73,7 +86,6 @@ public class Main {
         if (cmdArgs.input == null) {
             reader = new InputStreamReader(System.in, Charset.defaultCharset());
         } else {
-            System.out.println(cmdArgs.input);
             InputStream fin = new FileInputStream(cmdArgs.input);
             reader = new InputStreamReader(fin, StandardCharsets.UTF_8);
         }
@@ -83,6 +95,9 @@ public class Main {
         if (cmdArgs.pdf != null) {
             PaperSize paperSize = getPaperSize(cmdArgs.pdfPageSize);
             PdfPrinter printer = new PdfPrinter(paperSize);
+            if( cmdArgs.pdfShrink != 0.0 ){
+                printer.setShrink(cmdArgs.pdfShrink);
+            }
             printer.print(pages, cmdArgs.pdf);
         } else {
             PrinterEnv penv = new PrinterEnv(Paths.get(getPrinterSettingsDir()));
