@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpSerializer;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.multidrawercli.seal8x3.Seal8x3Command;
 import jp.chang.myclinic.multidrawercli.text.TextCommand;
 
 import java.io.*;
@@ -128,6 +129,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception{
         commandMap.put("text", new TextCommand());
+        commandMap.put("seal8x3", new Seal8x3Command());
         if( args.length == 0 ){
             usage();
             System.exit(1);
