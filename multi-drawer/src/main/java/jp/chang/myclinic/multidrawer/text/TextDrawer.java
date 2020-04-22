@@ -8,6 +8,7 @@ import jp.chang.myclinic.multidrawer.DataDrawer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class TextDrawer implements DataDrawer<String> {
 
@@ -21,27 +22,42 @@ public class TextDrawer implements DataDrawer<String> {
     public List<List<Op>> draw(String data) {
         List<List<Op>> pages = new ArrayList<>();
         DrawerCompiler c = new DrawerCompiler();
-        setupPage(c);
-        Box box = getContentArea();
-        List<String> lines = new ArrayList<>();
-        for(String line: splitToLines(data)){
-            lines.addAll(c.breakLine(line, box.getWidth()));
-        }
-        while( true ){
-            DrawerCompiler.MultiTextResult result = c.tryMultilineText(
-                    lines, box, DrawerCompiler.HAlign.Left, DrawerCompiler.VAlign.Top, leading);
-            if( result.allDrawn ){
-                break;
-            } else {
-                pages.add(c.getOps());
-                c.clearOps();
-                setupPage(c);
-                lines = lines.subList(result.linesRendered, lines.size());
-                box = getContentArea();
+        for(String pageSrc: splitToPages(data)){
+            Box box = getContentArea();
+            c.clearOps();
+            setupPage(c);
+            List<String> lines = new ArrayList<>();
+            for(String line: splitToLines(pageSrc)){
+                lines.addAll(c.breakLine(line, box.getWidth()));
             }
+            while( true ){
+                DrawerCompiler.MultiTextResult result = c.tryMultilineText(
+                        lines, box, DrawerCompiler.HAlign.Left, DrawerCompiler.VAlign.Top, leading);
+                if( result.allDrawn ){
+                    break;
+                } else {
+                    pages.add(c.getOps());
+                    box = getContentArea();
+                    c.clearOps();
+                    setupPage(c);
+                    lines = lines.subList(result.linesRendered, lines.size());
+                }
+            }
+            pages.add(c.getOps());
         }
-        pages.add(c.getOps());
         return pages;
+    }
+
+    private static final Pattern pageSeparatorPattern = Pattern.compile(
+            "\\n\\{\\{\\s*new-page\\s*}}\\n"
+    );
+
+    private String[] splitToPages(String data){
+        return pageSeparatorPattern.split(data);
+    }
+
+    private String trimRight(String s){
+        return s.replaceAll("\\s+$", "");
     }
 
     private void setupPage(DrawerCompiler c){
