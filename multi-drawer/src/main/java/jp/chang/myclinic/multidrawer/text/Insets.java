@@ -1,4 +1,4 @@
-package jp.chang.myclinic.multidrawer.paragraph;
+package jp.chang.myclinic.multidrawer.text;
 
 public class Insets {
 

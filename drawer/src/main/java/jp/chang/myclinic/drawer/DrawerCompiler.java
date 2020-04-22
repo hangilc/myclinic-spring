@@ -575,10 +575,12 @@ public class DrawerCompiler {
     }
 
     public static class MultiTextResult {
+        public boolean allDrawn;
         public int linesRendered;
         public double vertOffsetInBox; // vertical offset of bottom of last line relative to box
 
-        public MultiTextResult(int linesRendered, double vertOffsetInBox) {
+        public MultiTextResult(boolean allDrawn, int linesRendered, double vertOffsetInBox) {
+            this.allDrawn = allDrawn;
             this.linesRendered = linesRendered;
             this.vertOffsetInBox = vertOffsetInBox;
         }
@@ -588,7 +590,7 @@ public class DrawerCompiler {
     public MultiTextResult tryMultilineText(Collection<String> lines, Box box, HAlign halign, VAlign valign,
                                             double leading){
         if (lines == null || lines.size() == 0) {
-            return new MultiTextResult(0, 0);
+            return new MultiTextResult(true, 0, 0);
         }
         int nLines = lines.size();
         double y;
@@ -627,13 +629,13 @@ public class DrawerCompiler {
                     y += leading;
                 }
                 textAt(line, x, y, halign, VAlign.Top);
-                y = getCurrentFontSize();
+                y += getCurrentFontSize();
                 index += 1;
             } else {
                 break;
             }
         }
-        return new MultiTextResult(index, box.getTop() - y);
+        return new MultiTextResult(index == lines.size(), index, box.getTop() - y);
     }
 
     public double multilineText(Collection<String> lines, Box box, HAlign halign, VAlign valign, double leading) {
