@@ -574,6 +574,68 @@ public class DrawerCompiler {
         return LineBreaker.breakLine(line, getCurrentFontSize(), lineWidth);
     }
 
+    public static class MultiTextResult {
+        public int linesRendered;
+        public double vertOffsetInBox; // vertical offset of bottom of last line relative to box
+
+        public MultiTextResult(int linesRendered, double vertOffsetInBox) {
+            this.linesRendered = linesRendered;
+            this.vertOffsetInBox = vertOffsetInBox;
+        }
+    }
+
+    // returns number of liines that are successfully drawn
+    public MultiTextResult tryMultilineText(Collection<String> lines, Box box, HAlign halign, VAlign valign,
+                                            double leading){
+        if (lines == null || lines.size() == 0) {
+            return new MultiTextResult(0, 0);
+        }
+        int nLines = lines.size();
+        double y;
+        switch (valign) {
+            case Top:
+                y = box.getTop();
+                break;
+            case Center:
+                y = box.getTop() + (box.getHeight() - calcTotalHeight(nLines, getCurrentFontSize(), leading)) / 2;
+                break;
+            case Bottom:
+                y = box.getTop() + box.getHeight() - calcTotalHeight(nLines, getCurrentFontSize(), leading);
+                break;
+            default:
+                throw new RuntimeException("invalid valign: " + valign);
+        }
+        double x;
+        switch (halign) {
+            case Left:
+                x = box.getLeft();
+                break;
+            case Center:
+                x = box.getCx();
+                break;
+            case Right:
+                x = box.getRight();
+                break;
+            default:
+                throw new RuntimeException("invalid halign: " + halign);
+        }
+        int index = 0;
+        for (String line : lines) {
+            double remain = box.getBottom() - y;
+            if( getCurrentFontSize() <= remain ){
+                if( index != 0 ){
+                    y += leading;
+                }
+                textAt(line, x, y, halign, VAlign.Top);
+                y = getCurrentFontSize();
+                index += 1;
+            } else {
+                break;
+            }
+        }
+        return new MultiTextResult(index, box.getTop() - y);
+    }
+
     public double multilineText(Collection<String> lines, Box box, HAlign halign, VAlign valign, double leading) {
         if (lines == null || lines.size() == 0) {
             return box.getTop();

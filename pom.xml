@@ -116,9 +116,11 @@
         <module>shohousen</module>
         <module>shohousen-drawer</module>
         <module>server-postgresql</module>
+        <module>db</module>
         <module>dbxfer</module>
         <module>drawer-printer</module>
-        <module>db</module>
+        <module>multi-drawer</module>
+        <module>multi-drawer-cli</module>
     </modules>
 
 </project>
