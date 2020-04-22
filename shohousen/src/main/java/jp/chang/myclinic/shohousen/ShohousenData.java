@@ -207,14 +207,14 @@ public class ShohousenData {
     private String composeHihokensha(ShahokokuhoDTO shahokokuho){
         String kigou = shahokokuho.hihokenshaKigou;
         String bangou = shahokokuho.hihokenshaBangou;
-        if( kigou == null ){
-            if( bangou == null ){
+        if( kigou == null || kigou.isEmpty() ){
+            if( bangou == null || bangou.isEmpty() ){
                 return "";
             } else {
                 return bangou;
             }
         } else {
-            if( bangou == null ){
+            if( bangou == null || bangou.isEmpty() ){
                 return kigou;
             } else {
                 return kigou + " ・ " + bangou;
