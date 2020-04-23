@@ -58,6 +58,7 @@ public class Main {
                         break;
                     }
                     default: {
+                        System.err.println("Invalid argument: " + arg);
                         usage();
                         System.exit(1);
                     }

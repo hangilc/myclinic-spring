@@ -5,6 +5,7 @@ import jp.chang.myclinic.drawer.DrawerCompiler;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.multidrawer.DataDrawer;
+import jp.chang.myclinic.multidrawer.MultiDrawerLib;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +48,9 @@ public class Seal8x3Drawer implements DataDrawer<Seal8x3Data> {
     }
 
     private void startPage(DrawerCompiler c, Seal8x3Data data){
+        String fontName = MultiDrawerLib.adaptFontName(data.fontName);
         c.clearOps();
-        c.createFont("default", data.fontName, data.fontSize);
+        c.createFont("default", fontName, data.fontSize);
         c.setFont("default");
     }
 
