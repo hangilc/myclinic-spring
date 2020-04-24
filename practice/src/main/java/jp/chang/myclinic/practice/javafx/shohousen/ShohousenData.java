@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ShohousenData {
-
+/*
     private String clinicAddress = "";
     private String clinicName = "";
     private String clinicPhone = "";
@@ -215,4 +215,6 @@ public class ShohousenData {
             }
         }
     }
+
+ */
 }

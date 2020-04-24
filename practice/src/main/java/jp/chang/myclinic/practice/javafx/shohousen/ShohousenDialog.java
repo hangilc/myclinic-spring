@@ -23,8 +23,11 @@ import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.shohousen.ShohousenData;
+import jp.chang.myclinic.shohousen.ShohousenDrawer;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class ShohousenDialog extends Stage {
 
@@ -36,26 +39,26 @@ public class ShohousenDialog extends Stage {
     }
 
     private PrinterEnv printerEnv;
-    private TextField patientNameInput = new TextField();
-    private DateForm birthdayForm = new DateForm(Gengou.values(), Gengou.Shouwa);
-    private SexInput sexInput = new SexInput(Sex.Female);
-    private RadioButtonGroup<HokenKubun> hokenKubunInput = new RadioButtonGroup<>();
-    private TextField futanWariInput = new TextField();
-    private DateForm issueDateForm = new DateForm(Gengou.Recent, Gengou.Current);
-    private TextField hokenshaInput = new TextField();
-    private TextField kigouBangouInput = new TextField();
-    private TextField kouhiFutansha1 = new TextField();
-    private TextField kouhiJukyuusha1 = new TextField();
-    private TextField kouhiFutansha2 = new TextField();
-    private TextField kouhiJukyuusha2 = new TextField();
-    private TextField doctorNameInput = new TextField("");
-    private TextField postalCodeInput = new TextField("〒");
-    private TextField addressInput = new TextField();
-    private TextField clinicNameInput = new TextField();
-    private TextField phoneInput = new TextField();
-    private TextField kikancodeInput = new TextField();
-    private TextArea contentInput = new TextArea();
-    private CheckBox bwCheckBox = new CheckBox();
+    private final TextField patientNameInput = new TextField();
+    private final DateForm birthdayForm = new DateForm(Gengou.values(), Gengou.Shouwa);
+    private final SexInput sexInput = new SexInput(Sex.Female);
+    private final RadioButtonGroup<HokenKubun> hokenKubunInput = new RadioButtonGroup<>();
+    private final TextField futanWariInput = new TextField();
+    private final DateForm issueDateForm = new DateForm(Gengou.Recent, Gengou.Current);
+    private final TextField hokenshaInput = new TextField();
+    private final TextField kigouBangouInput = new TextField();
+    private final TextField kouhiFutansha1 = new TextField();
+    private final TextField kouhiJukyuusha1 = new TextField();
+    private final TextField kouhiFutansha2 = new TextField();
+    private final TextField kouhiJukyuusha2 = new TextField();
+    private final TextField doctorNameInput = new TextField("");
+    private final TextField postalCodeInput = new TextField("〒");
+    private final TextField addressInput = new TextField();
+    private final TextField clinicNameInput = new TextField();
+    private final TextField phoneInput = new TextField();
+    private final TextField kikancodeInput = new TextField();
+    private final TextArea contentInput = new TextArea();
+    private final CheckBox bwCheckBox = new CheckBox();
 
     public ShohousenDialog() {
         VBox root = new VBox(4);
@@ -217,7 +220,9 @@ public class ShohousenDialog extends Stage {
     }
 
     private void setDrugs(ShohousenDrawer drawer){
-        drawer.setDrugLines(contentInput.getText().trim());
+        String src = contentInput.getText().trim();
+        String[] lines = src.split("\\r\\n|\\n|\\r");
+        drawer.setDrugLinesAndMemo(List.of(lines), "");
     }
 
     private boolean setKouhiFutansha1(ShohousenDrawer drawer){

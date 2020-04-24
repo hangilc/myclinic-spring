@@ -13,8 +13,8 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
-import jp.chang.myclinic.practice.javafx.shohousen.ShohousenData;
-import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDrawer;
+//import jp.chang.myclinic.practice.javafx.shohousen.ShohousenData;
+//import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDrawer;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenInfo;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenUtil;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -96,15 +96,15 @@ public class TextEditForm extends VBox {
         return wrapper;
     }
 
-    private CheckBox createBlackWhiteCheckBox(DrawerPreviewDialog dlog, ShohousenData data){
+    private CheckBox createBlackWhiteCheckBox(DrawerPreviewDialog dlog, jp.chang.myclinic.shohousen.ShohousenData data){
         CheckBox check = new CheckBox("白黒");
         check.setOnAction(event -> {
-            ShohousenDrawer.ShohousenDrawerSettings settings =
-                    new ShohousenDrawer.ShohousenDrawerSettings();
+            jp.chang.myclinic.shohousen.ShohousenDrawer.ShohousenDrawerSettings settings =
+                    new jp.chang.myclinic.shohousen.ShohousenDrawer.ShohousenDrawerSettings();
             if( check.isSelected() ){
                 settings.setColor(0, 0, 0);
             }
-            ShohousenDrawer drawer = new ShohousenDrawer(settings);
+            jp.chang.myclinic.shohousen.ShohousenDrawer drawer = new jp.chang.myclinic.shohousen.ShohousenDrawer(settings);
             data.applyTo(drawer);
             dlog.clearCanvas();
             dlog.setOps(drawer.getOps());
@@ -119,8 +119,8 @@ public class TextEditForm extends VBox {
             }
         }
         try {
-            ShohousenDrawer drawer = new ShohousenDrawer();
-            ShohousenData data = new ShohousenData();
+            jp.chang.myclinic.shohousen.ShohousenDrawer drawer = new jp.chang.myclinic.shohousen.ShohousenDrawer();
+            jp.chang.myclinic.shohousen.ShohousenData data = new jp.chang.myclinic.shohousen.ShohousenData();
             PracticeEnv practiceEnv = PracticeEnv.INSTANCE;
             PrinterEnv printerEnv = practiceEnv.getMyclinicEnv().getPrinterEnv();
             data.setClinicInfo(practiceEnv.getClinicInfo());
@@ -133,7 +133,9 @@ public class TextEditForm extends VBox {
                     .thenAccept(info -> Platform.runLater(() -> {
                         data.setHoken(info.getHoken());
                         LocalDate visitedAt = LocalDate.parse(info.getVisit().visitedAt.substring(0, 10));
-                        data.setFutanWari(info.getHoken(), patient, visitedAt);
+                        if( patient != null ) {
+                            data.setFutanWari(info.getHoken(), patient, visitedAt);
+                        }
                         data.setKoufuDate(visitedAt);
                         data.setDrugs(content);
                         data.applyTo(drawer);

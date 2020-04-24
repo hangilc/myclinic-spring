@@ -21,16 +21,16 @@ public class ShohousenUtil {
         return clinicInfo.todoufukencode + clinicInfo.tensuuhyoucode + clinicInfo.kikancode;
     }
 
-    public static void setClinicInfo(ShohousenDrawer drawer, ClinicInfoDTO clinicInfo){
-        String addr = clinicInfo.postalCode + " " + clinicInfo.address;
-        String name = clinicInfo.name;
-        String phone = "電話 " + clinicInfo.tel;
-        String kikancode = composeFullKikanCode(clinicInfo);
-        drawer.setHakkouKikan(addr, name, phone, kikancode);
-        drawer.setDoctorName(clinicInfo.doctorName);
-        LocalDate today = LocalDate.now();
-        drawer.setKoufuDate(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
-    }
+//    public static void setClinicInfo(ShohousenDrawer drawer, ClinicInfoDTO clinicInfo){
+//        String addr = clinicInfo.postalCode + " " + clinicInfo.address;
+//        String name = clinicInfo.name;
+//        String phone = "電話 " + clinicInfo.tel;
+//        String kikancode = composeFullKikanCode(clinicInfo);
+//        drawer.setHakkouKikan(addr, name, phone, kikancode);
+//        drawer.setDoctorName(clinicInfo.doctorName);
+//        LocalDate today = LocalDate.now();
+//        drawer.setKoufuDate(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+//    }
 
     public static void changeDefaultPrinterSetting(String newSetting){
         try {

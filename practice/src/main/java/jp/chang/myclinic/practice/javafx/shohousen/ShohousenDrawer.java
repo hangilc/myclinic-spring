@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ShohousenDrawer {
-
+/*
     private DrawerCompiler compiler = new DrawerCompiler();
     private Box wrap;
     private Box clinicInfoBox;
@@ -619,5 +619,5 @@ public class ShohousenDrawer {
             c.frameRight(qq[i]);
         }
     }
-
+*/
 }

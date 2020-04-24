@@ -81,15 +81,22 @@ public class ShohousenData {
                 drawer.setValidUptoDate(validUptoDate.getYear(), validUptoDate.getMonthValue(), validUptoDate.getDayOfMonth());
             }
         }
-        if( drugLines != null ){
-            drawer.setDrugLines(drugLines);
-        }
         if( pharmacyName != null && !pharmacyName.isEmpty() ){
             drawer.setPharmacyName(pharmacyName);
         }
-        if( memo != null && !memo.isEmpty() ){
-            drawer.setMemo(memo);
+        if( drugLines == null ){
+            drugLines = Collections.emptyList();
         }
+        if( memo == null ){
+            memo = "";
+        }
+        drawer.setDrugLinesAndMemo(drugLines, memo);
+//        if( drugLines != null ){
+//            drawer.setDrugLines(drugLines);
+//        }
+//        if( memo != null && !memo.isEmpty() ){
+//            drawer.setMemo(memo);
+//        }
     }
 
     public void setClinicInfo(ClinicInfoDTO clinicInfo){
@@ -161,7 +168,7 @@ public class ShohousenData {
     }
 
     private final Pattern patValidUptoDate = Pattern.compile("@有効期限\\s*[:：]\\s*(\\d{4}-\\d{2}-\\d{2})\\s*");
-    private final Pattern pat0410 = Pattern.compile("@(0410対応|@０４１０対応)"); //新型コロナ感染対策
+    private final Pattern pat0410 = Pattern.compile("@(0410|０４１０)対応"); //新型コロナ感染対策
 
     public void setDrugs(String content){
         if( content != null ){
