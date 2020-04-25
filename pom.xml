@@ -121,6 +121,7 @@
         <module>drawer-printer</module>
         <module>multi-drawer</module>
         <module>multi-drawer-cli</module>
+        <module>romaji</module>
     </modules>
 
 </project>
