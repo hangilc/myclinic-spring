@@ -24,6 +24,7 @@
         <jackson-databind.version>2.10.3</jackson-databind.version>
         <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
         <spring.boot.maven.plugin.version>${spring.boot.version}</spring.boot.maven.plugin.version>
+        <itext.version>5.5.13.1</itext.version>
     </properties>
 
     <dependencyManagement>
@@ -71,7 +72,7 @@
             <dependency>
                 <groupId>com.itextpdf</groupId>
                 <artifactId>itextpdf</artifactId>
-                <version>5.5.13.1</version>
+                <version>${itext.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -122,6 +123,7 @@
         <module>multi-drawer</module>
         <module>multi-drawer-cli</module>
         <module>romaji</module>
+        <module>pdf-bundle</module>
     </modules>
 
 </project>
