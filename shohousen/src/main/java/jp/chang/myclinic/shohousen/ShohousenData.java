@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.ShahokokuhoUtil;
 
 public class ShohousenData {
 
@@ -112,7 +113,7 @@ public class ShohousenData {
     public void setHoken(HokenDTO hoken){
         if( hoken != null ){
             if( hoken.shahokokuho != null ){
-                hokenshaBangou = hoken.shahokokuho.hokenshaBangou + "";
+                hokenshaBangou = ShahokokuhoUtil.hokenshaBangouRep(hoken.shahokokuho.hokenshaBangou);
                 hihokensha = composeHihokensha(hoken.shahokokuho);
                 this.honnin = hoken.shahokokuho.honnin != 0;
             } else if( hoken.koukikourei != null ){

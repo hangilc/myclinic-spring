@@ -144,6 +144,7 @@ public class Romaji {
         regularMap.put('ぞ', "zo");
         regularMap.put('だ', "da");
         regularMap.put('ぢ', "di");
+        regularMap.put('づ', "zu");
         regularMap.put('で', "de");
         regularMap.put('ど', "do");
         regularMap.put('ば', "ba");
