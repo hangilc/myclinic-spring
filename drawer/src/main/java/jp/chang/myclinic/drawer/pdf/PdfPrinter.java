@@ -140,12 +140,12 @@ public class PdfPrinter {
         PdfWriter pdfWriter = PdfWriter.getInstance(doc, new FileOutputStream(savePath));
         doc.open();
         PdfContentByte cb = pdfWriter.getDirectContent();
-        if( shrinkMargin != 0.0 ){
-            applyShrink(cb, shrinkMargin);
-        }
         for (int i = 0; i < pages.size(); i++) {
             if (i != 0) {
                 doc.newPage();
+            }
+            if( shrinkMargin != 0.0 ){
+                applyShrink(cb, shrinkMargin);
             }
             doc.add(new Chunk(""));
             List<Op> ops = pages.get(i);
