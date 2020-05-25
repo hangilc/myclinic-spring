@@ -269,6 +269,10 @@ public class PdfPrinter {
                         break;
                     }
                     case Circle: {
+                        if( inText ){
+                            cb.endText();
+                            inText = false;
+                        }
                         cb.stroke();
                         OpCircle opCircle = (OpCircle)op;
                         float x = getX(opCircle.getCx());

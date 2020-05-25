@@ -30,6 +30,7 @@ public class Seal8x3Drawer implements DataDrawer<Seal8x3Data> {
         for(List<String> content: data.labels){
             Box cell = getCell(box, row, col);
             cell = cell.inset(data.padding);
+            cell = cell.shift(data.shiftX, data.shiftY);
             c.multilineText(content, cell, DrawerCompiler.HAlign.Left,
                     DrawerCompiler.VAlign.Top, 0);
             col += 1;

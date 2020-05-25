@@ -84,6 +84,13 @@ public class JacksonOpSerializer extends StdSerializer<Op> {
                 gen.writeString(opSetPen.getName());
                 break;
             }
+            case Circle: {
+                OpCircle opCircle = (OpCircle)op;
+                gen.writeNumber(opCircle.getCx());
+                gen.writeNumber(opCircle.getCy());
+                gen.writeNumber(opCircle.getR());
+                break;
+            }
             default: throw new RuntimeException("unknown drawer op: " + op);
         }
         gen.writeEndArray();

@@ -85,6 +85,12 @@ public class JacksonOpDeserializer extends StdDeserializer<Op> {
                 String name = node.get(1).asText();
                 return new OpSetPen(name);
             }
+            case Circle: {
+                double cx = node.get(1).asDouble();
+                double cy = node.get(2).asDouble();
+                double r = node.get(3).asDouble();
+                return new OpCircle(cx, cy, r);
+            }
             default: throw new RuntimeException("unknown op code of drawer: " + ident);
         }
     }
