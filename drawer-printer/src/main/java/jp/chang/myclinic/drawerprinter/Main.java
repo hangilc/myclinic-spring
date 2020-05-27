@@ -23,6 +23,7 @@ public class Main {
 
     private static class CmdArgs {
         public String input;
+        public String encoding;
         public String pdf;
         public String pdfPageSize;
         public double pdfShrink = 0;
@@ -34,6 +35,11 @@ public class Main {
                     case "-i":
                     case "--in": {
                         this.input = args[i + 1];
+                        i += 1;
+                        break;
+                    }
+                    case "-e": {
+                        this.encoding = args[i + 1];
                         i += 1;
                         break;
                     }
@@ -70,6 +76,7 @@ public class Main {
             System.err.println("Usage: drawer-printer [options] [INPUT]");
             System.err.println("  options:");
             System.err.println("    -i, --in INPUT: read from file");
+            System.err.println("    -e ENCODING: charset of input file");
             System.err.println("    --pdf OUTPUT: write as PDF file to OUTPUT");
             System.err.println("    --pdf-page-size SIZE: A5, 148x210, ...");
             System.err.println("    --pdf-shrink AMOUNT: shrink output with AMOUNT margin (unit: mm)");
@@ -85,10 +92,18 @@ public class Main {
         List<List<Op>> pages = null;
         InputStreamReader reader = null;
         if (cmdArgs.input == null) {
-            reader = new InputStreamReader(System.in, Charset.defaultCharset());
+            Charset charset = Charset.defaultCharset();
+            if( cmdArgs.encoding != null ){
+                charset = Charset.forName(cmdArgs.encoding);
+            }
+            reader = new InputStreamReader(System.in, charset);
         } else {
+            Charset charset = StandardCharsets.UTF_8;
+            if( cmdArgs.encoding != null ){
+                charset = Charset.forName(cmdArgs.encoding);
+            }
             InputStream fin = new FileInputStream(cmdArgs.input);
-            reader = new InputStreamReader(fin, StandardCharsets.UTF_8);
+            reader = new InputStreamReader(fin, charset);
         }
         pages = mapper.readValue(reader, new TypeReference<List<List<Op>>>() {
         });
