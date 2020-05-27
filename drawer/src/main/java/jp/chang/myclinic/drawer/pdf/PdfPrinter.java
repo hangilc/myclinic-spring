@@ -15,6 +15,7 @@ import jp.chang.myclinic.drawer.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -137,7 +138,13 @@ public class PdfPrinter {
         Map<String, DrawerFont> drawerFontMap = new HashMap<>();
         Map<String, StrokeData> strokeMap = new HashMap<>();
         Document doc = new Document(new Rectangle((float)paperWidth, (float)paperHeight), 0, 0, 0, 0);
-        PdfWriter pdfWriter = PdfWriter.getInstance(doc, new FileOutputStream(savePath));
+        OutputStream outStream;
+        if( "-".equals(savePath) ){
+            outStream = System.out;
+        } else {
+            outStream = new FileOutputStream(savePath);
+        }
+        PdfWriter pdfWriter = PdfWriter.getInstance(doc, outStream);
         doc.open();
         PdfContentByte cb = pdfWriter.getDirectContent();
         for (int i = 0; i < pages.size(); i++) {
