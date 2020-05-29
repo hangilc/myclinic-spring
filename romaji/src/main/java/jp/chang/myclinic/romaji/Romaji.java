@@ -5,39 +5,65 @@ import java.util.Map;
 
 public class Romaji {
 
-    public static String toRomaji(String hiragana) {
-        StringBuilder sb = new StringBuilder();
+    private StringBuilder sb = new StringBuilder();
+    private enum Mode { Regular, Kitsuon };
+    private Mode mode = Mode.Regular;
+
+    private void append(String romaji){
+        if( mode == Mode.Regular ){
+            sb.append(romaji);
+        } else if( mode == Mode.Kitsuon ) {
+            char ch = romaji.charAt(0);
+            if( ch == 'a' || ch == 'i' || ch == 'u' || ch == 'e' || ch == 'o' ){
+                sb.append(romaji);
+            } else {
+                sb.append(ch);
+                sb.append(romaji);
+            }
+            mode = Mode.Regular;
+        }
+    }
+
+    private String convert(String hiragana){
         for (int i = 0; i < hiragana.length(); i++) {
             char c = hiragana.charAt(i);
+            if( c == 'っ' ){
+                mode = Mode.Kitsuon;
+                continue;
+            }
             if (i < hiragana.length() - 1) {
                 char cc = hiragana.charAt(i + 1);
                 if (cc == 'ゃ') {
                     if (yaMap.containsKey(c)) {
-                        sb.append(yaMap.get(c));
+                        append(yaMap.get(c));
                         i += 1;
                         continue;
                     }
                 } else if (cc == 'ゅ') {
                     if (yuMap.containsKey(c)) {
-                        sb.append(yuMap.get(c));
+                        append(yuMap.get(c));
                         i += 1;
                         continue;
                     }
                 } else if (cc == 'ょ') {
                     if (yoMap.containsKey(c)) {
-                        sb.append(yoMap.get(c));
+                        append(yoMap.get(c));
                         i += 1;
                         continue;
                     }
                 }
             }
             if( regularMap.containsKey(c) ) {
-                sb.append(regularMap.get(c));
+                append(regularMap.get(c));
             } else {
                 System.err.println("Cannot convert to romaji: " + c);
             }
         }
         return sb.toString();
+    }
+
+    public static String toRomaji(String hiragana) {
+        return new Romaji().convert(hiragana);
     }
 
     private final static Map<Character, String> yaMap = new HashMap<>();
