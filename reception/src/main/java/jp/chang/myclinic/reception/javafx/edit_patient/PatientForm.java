@@ -12,24 +12,30 @@ import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 
 class PatientForm extends Form {
 
-    //private static Logger logger = LoggerFactory.getLogger(PatientForm.class);
     private Label patientIdLabel = new Label();
+    {
+        patientIdLabel.setId("PatientIdLabel");
+    }
 
     private TextField lastNameInput = new TextField();
     {
         lastNameInput.setPromptText("姓");
+        lastNameInput.setId("LastNameInput");
     }
     private TextField firstNameInput = new TextField();
     {
         firstNameInput.setPromptText("名");
+        firstNameInput.setId("FirstNameInput");
     }
     private TextField lastNameYomiInput = new TextField();
     {
         lastNameYomiInput.setPromptText("姓のよみ");
+        lastNameYomiInput.setId("LastNameYomiInput");
     }
     private TextField firstNameYomiInput = new TextField();
     {
         firstNameYomiInput.setPromptText("名のよみ");
+        firstNameYomiInput.setId("FirstNameYomiInput");
     }
     private DateForm birthdayInput = new DateForm();
     {
@@ -38,9 +44,13 @@ class PatientForm extends Form {
     }
     private RadioButtonGroup<Sex> sexInput = new RadioButtonGroup<>();
     private TextField addressInput = new TextField();
+    {
+        addressInput.setId("AddressInput");
+    }
     private TextField phoneInput = new TextField();
     {
         phoneInput.getStyleClass().add("phone-input");
+        phoneInput.setId("PhoneInput");
     }
 
     PatientForm(boolean withPatientId){
@@ -89,6 +99,14 @@ class PatientForm extends Form {
         sexInput.setValue(inputs.sexInput);
         addressInput.setText(inputs.addressInput);
         phoneInput.setText(inputs.phoneInput);
+    }
+
+    DateForm getBirthdayInput(){
+        return birthdayInput;
+    }
+
+    RadioButtonGroup<Sex> getSexInput(){
+        return sexInput;
     }
 
 }

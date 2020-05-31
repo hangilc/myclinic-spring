@@ -8,16 +8,21 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.remote.ComponentFinder;
+import jp.chang.myclinic.reception.remote.DateFormComponent;
+import jp.chang.myclinic.reception.remote.NameProvider;
+import jp.chang.myclinic.reception.remote.SexRadioComponent;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.util.logic.LogicValue;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.function.Consumer;
 
-public class EditPatientStage extends Stage {
+public class EditPatientStage extends Stage implements NameProvider, ComponentFinder {
 
     //private static Logger logger = LoggerFactory.getLogger(EditPatientStage.class);
     private Consumer<PatientDTO> onEnterCallback = dto -> {};
+    private PatientForm form;
 
     public EditPatientStage(PatientDTO patientDTO) {
         setTitle("患者情報編集");
@@ -33,7 +38,7 @@ public class EditPatientStage extends Stage {
 
     private Parent createRoot(PatientDTO orig){
         VBox root = new VBox(4);
-        PatientForm form = new PatientForm(true);
+        this.form = new PatientForm(true);
         ErrorMessages em = new ErrorMessages();
         PatientFormInputs inputs = new LogicValue<>(orig)
                 .convert(PatientFormLogic::patientDTOToPatientFormInputs)
@@ -68,4 +73,19 @@ public class EditPatientStage extends Stage {
         onEnterCallback.accept(dto);
     }
 
+    @Override
+    public String getNameProviderName() {
+        return this.getClass().getSimpleName();
+    }
+
+    @Override
+    public Object findComponent(String selector) {
+        if( "Birthday".equals(selector) ) {
+            return new DateFormComponent(form.getBirthdayInput());
+        } else if( "Sex".equals(selector) ){
+            return new SexRadioComponent(form.getSexInput());
+        } else {
+            return getScene().lookup("#" + selector);
+        }
+    }
 }

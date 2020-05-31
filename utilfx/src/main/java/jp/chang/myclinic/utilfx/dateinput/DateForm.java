@@ -106,4 +106,20 @@ public class DateForm extends HBox {
         dayLabel.setOnMouseClicked(handler::accept);
     }
 
+    public GengouInput getGengouInput(){
+        return gengouInput;
+    }
+
+    public TextField getNenInput(){
+        return nenField;
+    }
+
+    public TextField getMonthInput(){
+        return monthField;
+    }
+
+    public TextField getDayInput(){
+        return dayField;
+    }
+
 }

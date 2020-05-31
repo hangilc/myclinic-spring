@@ -88,6 +88,10 @@ public class DateTimeUtil {
         return sqlDateTimeToKanji(sqlDateTime, dateFormatter, timeFormatter, " ");
     }
 
+    public static String toSqlDate(LocalDate date) {
+        return date.format(sqlDateFormatter);
+    }
+
 	public static String toSqlDateTime(LocalDateTime at){
 		return at.format(sqlDateTimeFormatter);
 	}
