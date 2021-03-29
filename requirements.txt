@@ -9,7 +9,7 @@ pelican==3.7.1
 prettytable==0.7.2
 protobuf==3.6.1
 psycopg2==2.7.6.1
-Pygments==2.2.0
+Pygments==2.7.4
 python-dateutil==2.7.3
 pytz==2018.4
 six==1.11.0
