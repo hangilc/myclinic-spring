@@ -631,7 +631,8 @@ public class RcptDrawer {
     }
 
     public void putHihokenshashou(String s) {
-        compiler.setFont("Gothic4");
+        //compiler.setFont("Gothic4");
+        compiler.setFont("Gothic3");
         compiler.textIn(s, hihokenshashou.displaceLeftEdge(3), HAlign.Left, VAlign.Center);
     }
 
