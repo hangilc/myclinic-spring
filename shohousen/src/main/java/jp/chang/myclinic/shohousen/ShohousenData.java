@@ -160,6 +160,10 @@ public class ShohousenData {
         }
     }
 
+    public void setFutanWariValue(int futanWariValue){
+        this.futanWari = futanWariValue;
+    }
+
     public void setKoufuDate(LocalDate koufuDate){
         this.koufuDate = koufuDate;
     }
@@ -169,7 +173,9 @@ public class ShohousenData {
     }
 
     private final Pattern patValidUptoDate = Pattern.compile("@有効期限\\s*[:：]\\s*(\\d{4}-\\d{2}-\\d{2})\\s*");
-    private final Pattern pat0410 = Pattern.compile("@(0410|０４１０)対応"); //新型コロナ感染対策
+    private final Pattern pat0410 = Pattern.compile("@(0410|０４１０)対応([+＋]?)"); //新型コロナ感染対策
+    private final Pattern patMemo = Pattern.compile("@memo[:：]\\s*(.+)");
+    private final Pattern patFutanwari = Pattern.compile("@futanwari[:：]\\s*(\\d+)");
 
     public void setDrugs(String content){
         if( content != null ){
@@ -195,12 +201,29 @@ public class ShohousenData {
                     m = pat0410.matcher(line);
                     if( m.matches() ){
                         //noinspection StringConcatenationInLoop
-                        memo = memo + "0410対応\n";
+                        if( m.group(2) != null && !m.group(2).equals("") ){
+                            memo = memo + "0410対応（本人来店・原本郵送）\n";
+                        } else {
+                            memo = memo + "0410対応\n";
+                        }
+                        continue;
+                    }
+                    m = patMemo.matcher(line);
+                    if( m.matches() ){
+                        memo = memo + m.group(1) + "\n";
+                        continue;
+                    }
+                    m = patFutanwari.matcher(line);
+                    if( m.matches() ){
+                        int futanwari = Integer.parseInt(m.group(1));
+                        setFutanWariValue(futanwari);
                         continue;
                     }
                     throw new RuntimeException("Unknown command: " + line + "\n" +
                             "@有効期限：2020-04-19\n" +
-                            "@0410対応");
+                            "@memo:...\n" +
+                            "@futanwari:\\d\n" +
+                            "@0410対応(+)\n" + "@memo:\n");
                 } else {
                     dLines.add(line);
                 }
