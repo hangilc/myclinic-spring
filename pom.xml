@@ -21,7 +21,7 @@
         <maven.compiler.target>1.9</maven.compiler.target>
         <maven.compiler.source>1.9</maven.compiler.source>
         <jackson.version>2.10.3</jackson.version>
-        <jackson-databind.version>2.10.3</jackson-databind.version>
+        <jackson-databind.version>2.12.7.1</jackson-databind.version>
         <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
         <spring.boot.maven.plugin.version>${spring.boot.version}</spring.boot.maven.plugin.version>
         <itext.version>5.5.13.1</itext.version>
